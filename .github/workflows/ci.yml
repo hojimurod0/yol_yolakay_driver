@@ -1,0 +1,81 @@
+name: Driver App Production CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  validate_and_build:
+    name: Analyze, Test & Release Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Verify Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Run Static Analysis
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run Localization Parity & Unit/BLoC Tests
+        run: flutter test --coverage
+
+      - name: Upload Test Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov-coverage
+          path: coverage/lcov.info
+
+      - name: Configure Production Release Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_PROPERTIES: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEY_PROPERTIES" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+            echo "$KEY_PROPERTIES" > android/key.properties
+          else
+            echo "Using placeholder CI release key for build verification..."
+            keytool -genkey -v -keystore android/app/upload-keystore.jks \
+              -alias yolyolakay-driver -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass android -keypass android -dname "CN=CI Runner, O=YolYolakay, C=UZ"
+            cat <<EOF > android/key.properties
+          storePassword=android
+          keyPassword=android
+          keyAlias=yolyolakay-driver
+          storeFile=upload-keystore.jks
+          EOF
+          fi
+
+      - name: Build Android Release APK
+        run: flutter build apk --release
+
+      - name: Build Android Release AppBundle (AAB)
+        run: flutter build appbundle --release
+
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-binaries
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab

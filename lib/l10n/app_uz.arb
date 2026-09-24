@@ -1,0 +1,620 @@
+{
+  "@@locale": "uz",
+  "appName": "YolYolakay",
+  "appTagline": "Shaharlararo qulay va tezkor safarlar",
+  "skip": "O'tkazib yuborish",
+  "next": "Keyingisi",
+  "getStarted": "Boshlash",
+  "continueText": "Davom etish",
+  "confirm": "Tasdiqlash",
+  "cancel": "Bekor qilish",
+  "save": "Saqlash",
+  "edit": "Tahrirlash",
+  "delete": "O'chirish",
+  "close": "Yopish",
+  "search": "Qidirish",
+  "filter": "Filtr",
+  "sort": "Saralash",
+  "clear": "Tozalash",
+  "apply": "Qo'llash",
+  "back": "Orqaga",
+  "retry": "Qayta urinish",
+  "done": "Tayyor",
+  "onboarding1Title": "Shaharlararo safarlar osonlashdi",
+  "onboarding1Desc": "O'zbekistonning istalgan shahriga ishonchli va qulay taksi toping.",
+  "onboarding2Title": "Qulay va xavfsiz avtomobillar",
+  "onboarding2Desc": "Tajribali va tasdiqlangan haydovchilar bilan xavfsiz sayohat qiling.",
+  "onboarding3Title": "O'z joyingizni oson band qiling",
+  "onboarding3Desc": "Sizga mos vaqt, narx va qulaylikdagi joyni bir necha bosqichda band qiling.",
+  "onboarding4Title": "Safaringizni jonli kuzating",
+  "onboarding4Desc": "Haydovchi qayerdaligini xaritada ko'ring va safar tafsilotlaridan doim xabardor bo'ling.",
+  "welcomeTitle": "YolYolakayga xush kelibsiz!",
+  "welcomeSubtitle": "Shaharlararo safarlaringiz uchun ishonchli hamkor",
+  "loginOrRegister": "Kirish yoki ro'yxatdan o'tish",
+  "enterPhoneNumber": "Telefon raqamingizni kiriting",
+  "phoneLabel": "Telefon raqami",
+  "phoneHint": "90 123 45 67",
+  "sendOtp": "Kodni yuborish",
+  "otpSentTo": "Tasdiqlash kodi {phone} raqamiga yuborildi",
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "enterOtp": "Tasdiqlash kodini kiriting",
+  "resendOtp": "Kodni qayta yuborish",
+  "resendIn": "Qayta yuborish: {seconds} soniya",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "createProfileTitle": "Profilingizni to'ldiring",
+  "createProfileSubtitle": "Haydovchilar sizni tanishi uchun ma'lumotlaringizni kiriting",
+  "firstName": "Ism",
+  "firstNameHint": "Ismingizni kiriting",
+  "lastName": "Familiya",
+  "lastNameHint": "Familiyangizni kiriting",
+  "email": "Email (ixtiyoriy)",
+  "emailHint": "example@mail.com",
+  "completeRegistration": "Ro'yxatdan o'tishni yakunlash",
+  "navHome": "Asosiy",
+  "navTrips": "Safarlarim",
+  "navNotifications": "Bildirishnomalar",
+  "navProfile": "Profil",
+  "greeting": "Salom, {name}!",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "whereToGo": "Qayerga bormoqchisiz?",
+  "from": "Qayerdan",
+  "to": "Qayerga",
+  "selectDepartureCity": "Ketish shahrini tanlang",
+  "selectDestinationCity": "Borish shahrini tanlang",
+  "travelDate": "Sana",
+  "today": "Bugun",
+  "tomorrow": "Ertaga",
+  "passengerCount": "Yo'lovchilar soni",
+  "passengers": "{count} yo'lovchi",
+  "@passengers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchRides": "Qatnovlarni qidirish",
+  "swapCities": "Shaharlarni almashtirish",
+  "recentSearches": "So'nggi qidiruvlar",
+  "popularRoutes": "Mashhur yo'nalishlar",
+  "savedRoutes": "Saqlangan yo'nalishlar",
+  "noRecentSearches": "So'nggi qidiruvlar mavjud emas",
+  "selectCityTitle": "Shaharni tanlang",
+  "searchCityHint": "Shahar nomini yozing...",
+  "popularCities": "Mashhur shaharlar",
+  "allCities": "Barcha shaharlar",
+  "currentLocation": "Joriy joylashuv",
+  "availableRides": "Mavjud qatnovlar",
+  "ridesFound": "{count} ta qatnov topildi",
+  "@ridesFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRidesFound": "Afsuski, qatnovlar topilmadi",
+  "noRidesDesc": "Boshqa sana yoki yo'nalishni tanlab ko'ring",
+  "sortCheapest": "Eng arzon",
+  "sortEarliest": "Eng ertangi",
+  "sortFastest": "Eng tez",
+  "sortRating": "Yuqori reytingli",
+  "filterPrice": "Narx bo'yicha",
+  "filterCarType": "Avtomobil turi",
+  "filterSeats": "Bo'sh joylar soni",
+  "filterRating": "Haydovchi reytingi",
+  "pricePerSeat": "{price} / o'rin",
+  "seatsAvailable": "{available} / {total} ta bo'sh",
+  "@seatsAvailable": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "durationApprox": "~{hours} soat",
+  "@durationApprox": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "rideDetails": "Qatnov tafsilotlari",
+  "schedule": "Jadval",
+  "departureTime": "Jo'nash vaqti",
+  "estimatedArrival": "Taxminiy yetib borish",
+  "driver": "Haydovchi",
+  "verifiedDriver": "Tasdiqlangan haydovchi",
+  "completedTripsCount": "{count} ta muvaffaqiyatli safar",
+  "@completedTripsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicle": "Avtomobil",
+  "pickupLocation": "Chiqish joyi",
+  "dropoffLocation": "Tushish joyi",
+  "amenities": "Qulayliklar",
+  "amenityAc": "Konditsioner",
+  "amenityLuggage": "Katta yukxona",
+  "amenityWifi": "Wi-Fi",
+  "amenitySmoking": "Chekish mumkin emas",
+  "bookSeat": "Joyni band qilish",
+  "contactDriver": "Haydovchi bilan bog'lanish",
+  "shareTrip": "Safarni ulashish",
+  "bookingTitle": "Band qilish",
+  "stepSelectSeats": "1. Joylar soni",
+  "stepPassengerInfo": "2. Yo'lovchi ma'lumotlari",
+  "stepPickup": "3. Chiqish nuqtasi",
+  "stepReview": "4. Tekshirish",
+  "selectedSeats": "Tanlangan joylar: {count}",
+  "@selectedSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalPrice": "Jami to'lov",
+  "cancellationPolicy": "Bekor qilish qoidalari",
+  "cancellationPolicyDesc": "Safar boshlanishiga 2 soat qolguncha bepul bekor qilish mumkin.",
+  "confirmBooking": "Band qilishni tasdiqlash",
+  "paymentMethod": "To'lov usuli",
+  "paymentCash": "Haydovchiga naqd to'lash",
+  "paymentClick": "Click orqali to'lash",
+  "paymentPayme": "Payme orqali to'lash",
+  "paymentUzum": "Uzum Bank orqali to'lash",
+  "bookingSuccessTitle": "Muvaffaqiyatli band qilindi!",
+  "bookingSuccessDesc": "Sizning buyurtmangiz qabul qilindi. Haydovchi siz bilan bog'lanadi.",
+  "bookingId": "Buyurtma ID",
+  "viewTrip": "Safarni ko'rish",
+  "backToHome": "Bosh sahifaga",
+  "tabUpcoming": "Kutilayotgan",
+  "tabActive": "Faol",
+  "tabCompleted": "Tugallangan",
+  "tabCancelled": "Bekor qilingan",
+  "noTripsTitle": "Qatnovlar tarixi bo'sh",
+  "noTripsDesc": "Sizda ushbu bo'limda hech qanday safar yo'q.",
+  "tripDetails": "Safar tafsilotlari",
+  "trackingTitle": "Safarni kuzatish",
+  "statusBookingConfirmed": "Band qilish tasdiqlandi",
+  "statusDriverPreparing": "Haydovchi yo'lga chiqishga tayyorlanmoqda",
+  "statusDriverArrived": "Haydovchi yetib keldi",
+  "statusPassengerPickedUp": "Yo'lovchi olindi",
+  "statusTripStarted": "Safar boshlandi",
+  "statusNearDestination": "Manzilga oz qoldi",
+  "statusTripCompleted": "Safar yakunlandi",
+  "notificationsTitle": "Bildirishnomalar",
+  "markAllAsRead": "Barchasini o'qilgan qilish",
+  "noNotificationsTitle": "Bildirishnomalar yo'q",
+  "noNotificationsDesc": "Yangi xabarlar paydo bo'lganda shu yerda ko'rinadi.",
+  "profileTitle": "Profil",
+  "editProfile": "Profilni tahrirlash",
+  "personalInfo": "Shaxsiy ma'lumotlar",
+  "myActivity": "Mening faolligim",
+  "totalTrips": "Jami safarlar",
+  "savedPlaces": "Saqlangan manzillar",
+  "homePlace": "Uy",
+  "workPlace": "Ish",
+  "addPlace": "Manzil qo'shish",
+  "settings": "Sozlamalar",
+  "language": "Til",
+  "theme": "Mavzu",
+  "themeSystem": "Tizim sozlamasi",
+  "themeLight": "Yorug' mavzu",
+  "themeDark": "Qorong'i mavzu",
+  "support": "Yordam va qo'llab-quvvatlash",
+  "helpCenter": "Yordam markazi",
+  "faq": "Ko'p beriladigan savollar",
+  "contactSupport": "Qo'llab-quvvatlash xizmati",
+  "reportProblem": "Muammo haqida xabar berish",
+  "termsOfService": "Foydalanish shartlari",
+  "privacyPolicy": "Maxfiylik siyosati",
+  "logout": "Chiqish",
+  "logoutConfirm": "Haqiqatan ham hisobingizdan chiqmoqchimisiz?",
+  "deleteAccount": "Hisobni o'chirish",
+  "ratingTitle": "Safaringiz qanday o'tdi?",
+  "ratingSubtitle": "Haydovchiga baho bering va xizmat sifatini oshirishga yordam bering",
+  "ratingFeedbackHint": "Fikringizni qoldiring (ixtiyoriy)...",
+  "submitRating": "Baholashni yuborish",
+  "tagCleanCar": "Toza avtomobil",
+  "tagFriendlyDriver": "Xushmuomala haydovchi",
+  "tagOnTime": "O'z vaqtida",
+  "tagComfortable": "Qulay",
+  "tagSafeDriving": "Xavfsiz haydash",
+  "cancelTripTitle": "Safarni bekor qilish",
+  "cancelTripDesc": "Haqiqatan ham ushbu safarni bekor qilmoqchimisiz?",
+  "cancelReason": "Bekor qilish sababi",
+  "reasonChangePlans": "Rejalarim o'zgardi",
+  "reasonFoundAnother": "Boshqa transport topdim",
+  "reasonDriverAsked": "Haydovchi bekor qilishni so'radi",
+  "reasonOther": "Boshqa sabab",
+  "confirmCancel": "Bekor qilishni tasdiqlash",
+  "offlineTitle": "Internet aloqasi yo'q",
+  "offlineDesc": "Iltimos, internet ulanishini tekshiring va qayta urinib ko'ring.",
+  "errorGeneric": "Kutilmagan xatolik yuz berdi. Qayta urinib ko'ring.",
+  "errorPhoneInvalid": "Telefon raqami noto'g'ri kiritildi",
+  "errorOtpInvalid": "Tasdiqlash kodi noto'g'ri",
+  "errorOtpExpired": "Tasdiqlash kodi muddati tugagan",
+  "onboardingSlide1Badge": "Shaharlararo qatnovlar",
+  "onboardingSlide1Title": "O'zbekiston bo'ylab\nqulay va tezkor safarlar",
+  "onboardingSlide1Desc": "Toshkent, Samarqand, Andijon, Farg'ona, Buxoro va barcha viloyatlar bo'ylab ishonchli taksilar.",
+  "onboardingSlide2Badge": "Sun'iy yo'ldosh xaritasi",
+  "onboardingSlide2Title": "Xaritadan manzilni\noson va aniq tanlang",
+  "onboardingSlide2Desc": "O'zbekistonning barcha shahar va tumanlarini sun'iy yo'ldosh xaritasidan tanlang va masofani ko'ring.",
+  "onboardingSlide3Badge": "Hamyonbop va shaffof",
+  "onboardingSlide3Title": "Shaffof narxlar va\ntasdiqlangan haydovchilar",
+  "onboardingSlide3Desc": "Har bir kilometr uchun adolatli narxlar, qulay avtomobillar va xavfsiz sayohat kafolati.",
+  "satelliteMode": "Sun'iy yo'ldosh",
+  "standardMode": "Standart xarita",
+  "searchCityDistrictHint": "Shahar yoki tumanni qidiring...",
+  "allRegions": "Barchasi",
+  "tashkentRegion": "Toshkent",
+  "ferganaValley": "Farg'ona vodiysi",
+  "samarkandRegion": "Samarqand",
+  "bukharaRegion": "Buxoro",
+  "southernRegion": "Qashqadaryo / Surxondaryo",
+  "westernRegion": "Xorazm / Qoraqalpog'iston",
+  "notificationsAll": "Barchasi",
+  "notificationsTrips": "Safarlar",
+  "notificationsPromo": "Aksiyalar",
+  "notificationsSystem": "Tizim",
+  "clearAll": "Tozalash",
+  "phoneCall": "Qo'ng'iroq qilish",
+  "tripLinkCopied": "Safar havolasi nusxalandi: {route}",
+  "@tripLinkCopied": {
+    "placeholders": {
+      "route": {
+        "type": "String"
+      }
+    }
+  },
+  "callingDriver": "Haydovchiga qo'ng'iroq qilinmoqda: {phone}",
+  "@callingDriver": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "appVersion": "Ilova versiyasi",
+  "selectLanguage": "Tilni tanlang",
+  "selectTheme": "Mavzuni tanlang",
+  "themeDarkDesc": "Qorong'i rejim, ko'zga qulay",
+  "themeLightDesc": "Yorug' va tiniq interfeys",
+  "themeSystemDesc": "Tizim sozlamasiga moslashadi",
+  "comfortAndSafety": "Qulaylik va xavfsizlik",
+  "statusPending": "Kutilmoqda",
+  "statusApproved": "Tasdiqlangan",
+  "statusRejected": "Rad etilgan",
+  "statusCompleted": "Yakunlangan",
+  "statusCancelled": "Bekor qilingan",
+  "statusActive": "Faol",
+  "statusInProgress": "Jarayonda",
+  "statusArrived": "Yetib keldi",
+  "statusAccepted": "Qabul qilindi",
+  "statusOnline": "Onlayn",
+  "statusOffline": "Oflayn",
+  "statusOnTrip": "Safarda",
+  "driverHomeTitle": "Yo'l-Yo'lakay Haydovchi",
+  "shiftOnlineTitle": "Siz smenadasiz (Onlayn)",
+  "shiftOfflineTitle": "Smena o'chirilgan (Oflayn)",
+  "shiftOnlineSubtitle": "Buyurtmalarni qabul qilishga tayyorsiz",
+  "shiftOfflineSubtitle": "Buyurtmalar olish uchun smenani yoqing",
+  "startShift": "Smenani boshlash",
+  "endShift": "Smenani tugatish",
+  "todayPerformance": "Bugungi ko'rsatkichlar",
+  "dailyLabel": "Kunlik",
+  "todayEarnings": "Kunlik daromad",
+  "completedTrips": "Bajarilgan safarlar",
+  "onlineHours": "Onlayn vaqt",
+  "acceptanceRate": "Qabul qilish ko'rsatkichi",
+  "walletBalance": "Hamyon balansi",
+  "topUpBalance": "Balansni to'ldirish",
+  "activeTaxiOrderBanner": "Faol tezkor taksi buyurtmasi mavjud",
+  "activeIntercityTripBanner": "Faol shaharlararo qatnovingiz mavjud",
+  "viewDetails": "Ko'rish",
+  "radarOrdersTitle": "Buyurtmalar Radari",
+  "noRadarOrdersTitle": "Hozircha yangi buyurtmalar yo'q",
+  "noRadarOrdersDesc": "Yangi buyurtmalar paydo bo'lganda bu yerda ko'rinadi va signal beriladi.",
+  "orderIncoming": "Yangi taksi buyurtmasi",
+  "acceptOrder": "Qabul qilish",
+  "declineOrder": "Rad etish",
+  "driverAssignedStatus": "Yo'lovchi tomon harakatlanmoqdasiz",
+  "driverArrivedStatus": "Yetib keldingiz. Yo'lovchi kutilyapti",
+  "finishTrip": "Safarni yakunlash",
+  "finalAmountPrompt": "Yakuniy to'lov miqdori (so'mda):",
+  "cancelOrderPrompt": "Buyurtmani bekor qilish",
+  "netEarningsLabel": "Sizning sof daromadingiz: {amount}",
+  "commissionDeductedLabel": "Ushlab qolingan komissiya: {amount}",
+  "backToRadarAction": "Radarga qaytish",
+  "markArrived": "Yetib keldim",
+  "startTrip": "Safarni boshlash",
+  "callPassenger": "Qo'ng'iroq qilish",
+  "intercityTripsTitle": "Shaharlararo qatnovlar",
+  "publishTrip": "Qatnov e'lon qilish",
+  "emptyTripsHistory": "Qatnovlar tarixi bo'sh",
+  "emptyTripsActiveDesc": "Sizda hozircha faol qatnov yo'q. Yangi qatnov e'lon qilishingiz mumkin.",
+  "emptyTripsGeneralDesc": "Ushbu bo'limda qatnovlar mavjud emas.",
+  "tripDetailsTitle": "Qatnov tafsilotlari",
+  "createTripTitle": "Yangi qatnov e'lon qilish",
+  "departureCity": "Jo'nash shahri",
+  "destinationCity": "Yetib borish shahri",
+  "totalSeats": "O'rinlar soni",
+  "tripAmenities": "Qulayliklar",
+  "hasAc": "Konditsioner",
+  "allowLuggage": "Yuk joyi",
+  "allowSmoking": "Chekishga ruxsat",
+  "womenOnly": "Faqat ayollar uchun",
+  "publishAction": "Qatnovni e'lon qilish",
+  "tripPublishedSuccess": "Qatnov muvaffaqiyatli e'lon qilindi!",
+  "walletAndEarnings": "Hamyon va Daromadlar",
+  "currentBalance": "Joriy balans",
+  "mainWallet": "Asosiy hamyon",
+  "lowBalanceWarning": "Balansingiz minimal miqdordan kam. Buyurtmalarni qabul qilish uchun to'ldiring.",
+  "depositTitle": "Hisobni to'ldirish",
+  "selectPaymentSystem": "To'lov tizimini tanlang:",
+  "amountInSum": "Miqdor (so'mda):",
+  "todayTab": "Bugun",
+  "weeklyTab": "Hafta",
+  "monthlyTab": "Oy",
+  "totalEarnings": "Jami daromad",
+  "tripsCount": "Safarlar soni",
+  "totalDistance": "Masofa",
+  "totalHours": "Onlayn vaqt",
+  "dailyChart": "Kunlik grafik",
+  "transactionHistory": "Tranzaksiyalar tarixi",
+  "noTransactions": "Hozircha tranzaksiyalar yo'q",
+  "noTransactionsDesc": "Bajarilgan safarlar va hisob to'ldirishlar shu yerda aks etadi.",
+  "paymentProcessing": "To'lov jarayoni",
+  "paymentVerifying": "Server orqali tekshirilmoqda...",
+  "verifyPayment": "To'lovni tekshirish",
+  "reopenPayment": "Qayta ochish",
+  "paymentSuccessMessage": "To'lov muvaffaqiyatli qabul qilindi va balans yangilandi!",
+  "paymentPendingMessage": "To'lov hali tasdiqlanmadi. Qayta urinib ko'ring yoki biroz kuting.",
+  "driverProfileTitle": "Haydovchi profili",
+  "vehicleInfo": "Avtomobil ma'lumotlari",
+  "documentsVerification": "Hujjatlar verifikatsiyasi",
+  "logoutConfirmTitle": "Tizimdan chiqish",
+  "logoutConfirmDesc": "Haqiqatan ham hisobingizdan chiqmoqchimisiz?",
+  "logoutAction": "Chiqish",
+  "tripsCountPlural": "{count, plural, =1{1 ta safar} other{{count} ta safar}}",
+  "@tripsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seatsCountPlural": "{count, plural, =1{1 ta o'rin} other{{count} ta o'rin}}",
+  "@seatsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refresh": "Yangilash",
+  "daily": "Kunlik",
+  "topUp": "To'ldirish",
+  "genericErrorMessage": "Xatolik yuz berdi",
+  "fieldRequiredError": "{field} to'ldirilishi majburiy",
+  "@fieldRequiredError": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTitle": "Yo'l-Yo'lakay Haydovchi",
+  "todayStats": "Bugungi ko'rsatkichlar",
+  "statEarnings": "Daromad",
+  "statTripsCount": "Safarlar soni",
+  "statOnlineTime": "Onlayn vaqt",
+  "statAcceptanceRate": "Qabul darajasi",
+  "activeTaxiOrderAlert": "Faol taksi buyurtmangiz bor!",
+  "activeTaxiOrderDesc": "Safar sahifasiga o'tish uchun bosing",
+  "activeIntercityTripAlert": "Faol shaharlararo qatnovingiz bor!",
+  "activeIntercityTripDesc": "Qatnov tafsilotlarini ko'rish uchun bosing",
+  "tripsCountUnit": "{count} ta",
+  "@tripsCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{count} soat",
+  "@hours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPrice": "Safar narxi:",
+  "arrivedAtPickupAction": "Yetib keldim (Manzildaman)",
+  "startRideAction": "Yo'lga chiqdik (Safarni boshlash)",
+  "completeRideAction": "Safarni yakunlash",
+  "cancelOrderAction": "Buyurtmani bekor qilish",
+  "completeRideModalTitle": "Safarni yakunlash",
+  "finalPaymentAmountLabel": "Yakuniy to'lov miqdori (so'mda):",
+  "completeAction": "Yakunlash",
+  "cancelReasonPassengerNoShow": "Yo'lovchi aloqaga chiqmadi",
+  "cancelReasonPassengerTookAnother": "Yo'lovchi boshqa mashina bilan ketdi",
+  "cancelReasonCarIssue": "Avtomobil nosozligi",
+  "cancelReasonOther": "Boshqa sabab",
+  "acceptWithTimer": "Qabul qilish ({seconds} s)",
+  "@acceptWithTimer": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "@netEarningsLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@commissionDeductedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsPageTitle": "Shaharlararo qatnovlar",
+  "createTripAction": "Qatnov e'lon qilish",
+  "noActiveTripsDesc": "Sizda hozircha faol qatnov yo'q. Yangi qatnov e'lon qilishingiz mumkin.",
+  "noTripsHistoryDesc": "Ushbu bo'limda qatnovlar mavjud emas.",
+  "@pricePerSeat": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "seatsDetail": "O'rinlar: {booked} ta band, {available} ta bo'sh (Jami: {total})",
+  "@seatsDetail": {
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passengersCount": "Yo'lovchilar ({count} ta)",
+  "@passengersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noPassengersBooked": "Hozircha yo'lovchilar bron qilmagan.",
+  "markRideStartedAction": "Safar boshlandi deb belgilash",
+  "cancelTripAction": "Qatnovni bekor qilish",
+  "passengerSeatsDetail": "{seats} ta o'rin • {price}",
+  "@passengerSeatsDetail": {
+    "placeholders": {
+      "seats": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultCancelTripReason": "Texnik sabablarga ko'ra",
+  "cancelTripReasonPrompt": "Bekor qilish sababi yo'lovchilarga yuboriladi:",
+  "selectCitiesPrompt": "Iltimos, jo'nash va yetib borish shaharlarini tanlang",
+  "citiesMustBeDifferentPrompt": "Jo'nash va borish shaharlari bir xil bo'lishi mumkin emas",
+  "tripCreatedSuccess": "Qatnov muvaffaqiyatli e'lon qilindi!",
+  "fromCityLabel": "Qayerdan (Jo'nash shahri)",
+  "toCityLabel": "Qayerga (Borish shahri)",
+  "departureDateLabel": "Jo'nash sanasi va vaqti",
+  "pricePerSeatLabel": "Bir o'rin narxi (so'm)",
+  "seatsOption": "{count} o'rin",
+  "@seatsOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupAddressLabel": "Kutib olish manzili (Mo'ljal)",
+  "dropoffAddressLabel": "Yetkazib qo'yish manzili",
+  "amenitiesSectionTitle": "Qulayliklar va qoidalar",
+  "hasAcLabel": "Konditsioner bor",
+  "allowLuggageLabel": "Bagaj joyi bor",
+  "womenOnlyLabel": "Faqat ayollar uchun",
+  "additionalCommentLabel": "Qo'shimcha izoh (ixtiyoriy)",
+  "publishTripAction": "Qatnovni e'lon qilish",
+  "logoutTitle": "Tizimdan chiqish",
+  "logoutConfirmPrompt": "Haqiqatan ham hisobingizdan chiqmoqchimisiz?",
+  "avatarUpdatedSuccess": "Avatar muvaffaqiyatli yangilandi",
+  "verificationApprovedTitle": "Tasdiqlangan haydovchi",
+  "verificationApprovedSubtitle": "Barcha xizmatlardan cheklovlarsiz foydalanishingiz mumkin.",
+  "verificationUnderReviewTitle": "Verifikatsiya tekshirilmoqda",
+  "verificationUnderReviewSubtitle": "Hujjatlaringiz moderatorlar tomonidan ko'rib chiqilmoqda (24 soatgacha).",
+  "verificationRejectedTitle": "Arizangiz rad etilgan",
+  "verificationRejectedSubtitle": "Hujjatlarni qayta yuklash uchun bosing.",
+  "verificationMissingTitle": "Hujjatlar topshirilmagan",
+  "verificationMissingSubtitle": "Buyurtma olishni boshlash uchun verifikatsiyadan o'ting.",
+  "vehicleInfoTitle": "Avtomobil ma'lumotlari",
+  "vehicleYearAndColor": "Yili: {year} • Rangi: {color}",
+  "@vehicleYearAndColor": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "color": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewsAndRatingMenu": "Sharhlar va Reyting",
+  "walletAndEarningsMenu": "Hamyon va Daromadlar",
+  "notificationsMenu": "Bildirishnomalar",
+  "supportMenu": "Qo'llab-quvvatlash",
+  "driverVerificationTitle": "Haydovchi verifikatsiyasi",
+  "verificationBannerText": "Buyurtmalarni qabul qilish uchun shaxsingiz va avtomobilingiz hujjatlarini tasdiqlang.",
+  "personalInfoSectionTitle": "1. Shaxsiy ma'lumotlar",
+  "vehicleInfoSectionTitle": "2. Avtomobil ma'lumotlari",
+  "documentsAndPhotosSectionTitle": "3. Hujjat va avtomobil fotosuratlari",
+  "submitApplicationAction": "Hujjatlarni tekshirishga yuborish",
+  "cameraOption": "Kameradan olish",
+  "galleryOption": "Galereyadan tanlash",
+  "uploadAllPhotosPrompt": "Iltimos, barcha 6 ta hujjat va avtomobil rasmlarini yuklang!",
+  "applicationSubmittedModalTitle": "Arizangiz qabul qilindi!",
+  "goToHomeAction": "Bosh sahifaga o'tish",
+  "locationPermissionRequired": "Joylashuv ruxsati talab qilinadi",
+  "backgroundLocationRequired": "Fonda joylashuv ruxsati talab qilinadi",
+  "enableLocationServices": "GPS xizmatini yoqing",
+  "notificationPermissionDisabled": "Bildirishnomalar ruxsati o'chirilgan",
+  "cameraPermissionRequired": "Kamera ruxsati talab qilinadi",
+  "photoPermissionRequired": "Fotosuratlarga kirish ruxsati talab qilinadi",
+  "permissionDenied": "Ruxsat berilmadi",
+  "permissionPermanentlyDenied": "Ruxsat butunlay rad etildi",
+  "openSettings": "Sozlamalarni ochish",
+  "notNow": "Keyinroq",
+  "tryAgain": "Qayta urinish",
+  "continueAction": "Davom etish",
+  "someFeaturesUnavailable": "Ba'zi funksiyalar to'liq ishlamasligi mumkin",
+  "accountBlockedTitle": "Hisob bloklangan",
+  "accountBlockedMessage": "Hisobingiz ma'muriyat tomonidan to'xtatilgan yoki bloklangan. Qo'llab-quvvatlash xizmati bilan bog'laning.",
+  "verificationRequiredTitle": "Verifikatsiya talab qilinadi",
+  "verificationRequiredMessage": "Buyurtmalarni qabul qilish uchun shaxsingiz va avtomobil hujjatlari tasdiqlanishi kerak."
+}

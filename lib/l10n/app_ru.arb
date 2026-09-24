@@ -1,0 +1,606 @@
+{
+  "@@locale": "ru",
+  "appName": "Йўл-Йўлакай",
+  "appTagline": "Удобные и быстрые междугородние поездки",
+  "skip": "Пропустить",
+  "next": "Далее",
+  "getStarted": "Начать",
+  "continueText": "Продолжить",
+  "confirm": "Подтвердить",
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "edit": "Редактировать",
+  "delete": "Удалить",
+  "close": "Закрыть",
+  "search": "Поиск",
+  "filter": "Фильтр",
+  "sort": "Сортировка",
+  "clear": "Очистить",
+  "apply": "Применить",
+  "back": "Назад",
+  "retry": "Повторить",
+  "done": "Готово",
+  "onboarding1Title": "Междугородние поездки стали проще",
+  "onboarding1Desc": "Находите надежные и комфортные такси в любой город Узбекистана.",
+  "onboarding2Title": "Комфортные и безопасные авто",
+  "onboarding2Desc": "Путешествуйте безопасно с опытными и проверенными водителями.",
+  "onboarding3Title": "Бронируйте места легко",
+  "onboarding3Desc": "Выберите удобное время, цену и комфорт и забронируйте за пару шагов.",
+  "onboarding4Title": "Отслеживайте поездку онлайн",
+  "onboarding4Desc": "Смотрите местоположение водителя на карте и будьте в курсе деталей поездки.",
+  "welcomeTitle": "Добро пожаловать в Йўл-Йўлакай!",
+  "welcomeSubtitle": "Ваш надежный спутник в междугородних поездках",
+  "loginOrRegister": "Вход или регистрация",
+  "enterPhoneNumber": "Введите ваш номер телефона",
+  "phoneLabel": "Номер телефона",
+  "phoneHint": "90 123 45 67",
+  "sendOtp": "Отправить код",
+  "otpSentTo": "Код подтверждения отправлен на номер {phone}",
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "enterOtp": "Введите проверочный код",
+  "resendOtp": "Отправить код повторно",
+  "resendIn": "Повторная отправка через {seconds} сек",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "createProfileTitle": "Заполните профиль",
+  "createProfileSubtitle": "Укажите ваши данные, чтобы водитель мог с вами связаться",
+  "firstName": "Имя",
+  "firstNameHint": "Введите ваше имя",
+  "lastName": "Фамилия",
+  "lastNameHint": "Введите вашу фамилию",
+  "email": "Эл. почта (необязательно)",
+  "emailHint": "почта@mail.ru",
+  "completeRegistration": "Завершить регистрацию",
+  "navHome": "Главная",
+  "navTrips": "Поездки",
+  "navNotifications": "Уведомления",
+  "navProfile": "Профиль",
+  "greeting": "Привет, {name}!",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "whereToGo": "Куда вы хотите поехать?",
+  "from": "Откуда",
+  "to": "Куда",
+  "selectDepartureCity": "Выберите город отправления",
+  "selectDestinationCity": "Выберите город назначения",
+  "travelDate": "Дата",
+  "today": "Сегодня",
+  "tomorrow": "Завтра",
+  "passengerCount": "Количество пассажиров",
+  "passengers": "{count} пасс.",
+  "@passengers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchRides": "Найти поездки",
+  "swapCities": "Поменять города местами",
+  "recentSearches": "Недавние поиски",
+  "popularRoutes": "Популярные маршруты",
+  "savedRoutes": "Сохраненные маршруты",
+  "noRecentSearches": "Нет недавних поисков",
+  "selectCityTitle": "Выберите город",
+  "searchCityHint": "Название города...",
+  "popularCities": "Популярные города",
+  "allCities": "Все города",
+  "currentLocation": "Текущее местоположение",
+  "availableRides": "Доступные поездки",
+  "ridesFound": "Найдено поездок: {count}",
+  "@ridesFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRidesFound": "Поездки не найдены",
+  "noRidesDesc": "Попробуйте выбрать другую дату или маршрут",
+  "sortCheapest": "Сначала дешевые",
+  "sortEarliest": "Сначала ранние",
+  "sortFastest": "Самые быстрые",
+  "sortRating": "Высокий рейтинг",
+  "filterPrice": "По цене",
+  "filterCarType": "Тип автомобиля",
+  "filterSeats": "Количество мест",
+  "filterRating": "Рейтинг водителя",
+  "pricePerSeat": "{price} / место",
+  "seatsAvailable": "{available} / {total} свободно",
+  "@seatsAvailable": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "durationApprox": "~{hours} ч.",
+  "@durationApprox": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "rideDetails": "Детали поездки",
+  "schedule": "Расписание",
+  "departureTime": "Время отправления",
+  "estimatedArrival": "Примерное прибытие",
+  "driver": "Водитель",
+  "verifiedDriver": "Проверенный водитель",
+  "completedTripsCount": "{count} успешных поездок",
+  "@completedTripsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicle": "Автомобиль",
+  "pickupLocation": "Место посадки",
+  "dropoffLocation": "Место высадки",
+  "amenities": "Удобства",
+  "amenityAc": "Кондиционер",
+  "amenityLuggage": "Большой багажник",
+  "amenityWifi": "Вай-фай",
+  "amenitySmoking": "Курение запрещено",
+  "bookSeat": "Забронировать место",
+  "contactDriver": "Связаться с водителем",
+  "shareTrip": "Поделиться поездкой",
+  "bookingTitle": "Бронирование",
+  "stepSelectSeats": "1. Количество мест",
+  "stepPassengerInfo": "2. Данные пассажиров",
+  "stepPickup": "3. Точка посадки",
+  "stepReview": "4. Проверка",
+  "selectedSeats": "Выбрано мест: {count}",
+  "@selectedSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalPrice": "Итого к оплате",
+  "cancellationPolicy": "Правила отмены",
+  "cancellationPolicyDesc": "Бесплатная отмена за 2 часа до начала поездки.",
+  "confirmBooking": "Подтвердить бронирование",
+  "paymentMethod": "Способ оплаты",
+  "paymentCash": "Наличными водителю",
+  "paymentClick": "Оплата через Клик",
+  "paymentPayme": "Оплата через Пайме",
+  "paymentUzum": "Оплата через Узум Банк",
+  "bookingSuccessTitle": "Успешно забронировано!",
+  "bookingSuccessDesc": "Ваш заказ принят. Водитель свяжется с вами перед отправлением.",
+  "bookingId": "Номер брони",
+  "viewTrip": "Посмотреть поездку",
+  "backToHome": "На главную",
+  "tabUpcoming": "Предстоящие",
+  "tabActive": "Активные",
+  "tabCompleted": "Завершенные",
+  "tabCancelled": "Отмененные",
+  "noTripsTitle": "История поездок пуста",
+  "noTripsDesc": "В этом разделе пока нет поездок.",
+  "tripDetails": "Детали поездки",
+  "trackingTitle": "Отслеживание поездки",
+  "statusBookingConfirmed": "Бронь подтверждена",
+  "statusDriverPreparing": "Водитель готовится к выезду",
+  "statusDriverArrived": "Водитель прибыл на место",
+  "statusPassengerPickedUp": "Пассажир в машине",
+  "statusTripStarted": "Поездка началась",
+  "statusNearDestination": "Подъезжаем к месту назначения",
+  "statusTripCompleted": "Поездка завершена",
+  "notificationsTitle": "Уведомления",
+  "markAllAsRead": "Прочитать все",
+  "noNotificationsTitle": "Нет уведомлений",
+  "noNotificationsDesc": "Здесь появятся новые оповещения о ваших поездках.",
+  "profileTitle": "Профиль",
+  "editProfile": "Редактировать профиль",
+  "personalInfo": "Личная информация",
+  "myActivity": "Моя активность",
+  "totalTrips": "Всего поездок",
+  "savedPlaces": "Сохраненные адреса",
+  "homePlace": "Дом",
+  "workPlace": "Работа",
+  "addPlace": "Добавить адрес",
+  "settings": "Настройки",
+  "language": "Язык",
+  "theme": "Тема оформления",
+  "themeSystem": "Системная",
+  "themeLight": "Светлая",
+  "themeDark": "Темная",
+  "support": "Помощь и поддержка",
+  "helpCenter": "Центр помощи",
+  "faq": "Частые вопросы",
+  "contactSupport": "Служба поддержки",
+  "reportProblem": "Сообщить о проблеме",
+  "termsOfService": "Условия использования",
+  "privacyPolicy": "Политика конфиденциальности",
+  "logout": "Выйти",
+  "logoutConfirm": "Вы уверены, что хотите выйти из аккаунта?",
+  "deleteAccount": "Удалить аккаунт",
+  "ratingTitle": "Как прошла поездка?",
+  "ratingSubtitle": "Оцените поездку и помогите улучшить сервис",
+  "ratingFeedbackHint": "Оставьте отзыв (необязательно)...",
+  "submitRating": "Отправить оценку",
+  "tagCleanCar": "Чистый салон",
+  "tagFriendlyDriver": "Вежливый водитель",
+  "tagOnTime": "Вовремя",
+  "tagComfortable": "Комфортно",
+  "tagSafeDriving": "Безопасное вождение",
+  "cancelTripTitle": "Отмена поездки",
+  "cancelTripDesc": "Вы уверены, что хотите отменить эту поездку?",
+  "cancelReason": "Причина отмены",
+  "reasonChangePlans": "Изменились планы",
+  "reasonFoundAnother": "Нашел другой транспорт",
+  "reasonDriverAsked": "Водитель попросил отменить",
+  "reasonOther": "Другая причина",
+  "confirmCancel": "Подтвердить отмену",
+  "offlineTitle": "Нет подключения к интернету",
+  "offlineDesc": "Пожалуйста, проверьте подключение к сети и попробуйте снова.",
+  "errorGeneric": "Произошла непредвиденная ошибка. Попробуйте еще раз.",
+  "errorPhoneInvalid": "Неверный формат номера телефона",
+  "errorOtpInvalid": "Неверный код подтверждения",
+  "errorOtpExpired": "Срок действия кода истек",
+  "onboardingSlide1Badge": "Междугородние поездки",
+  "onboardingSlide1Title": "Удобные и быстрые поездки\nпо всему Узбекистану",
+  "onboardingSlide1Desc": "Надежные такси по Ташкенту, Самарканду, Андижану, Фергане, Бухаре и всем регионам страны.",
+  "onboardingSlide2Badge": "Спутниковая карта",
+  "onboardingSlide2Title": "Легко выбирайте адрес\nпрямо на карте",
+  "onboardingSlide2Desc": "Выбирайте любые города и районы Узбекистана со спутника и сразу видите маршрут и расстояние.",
+  "onboardingSlide3Badge": "Доступно и прозрачно",
+  "onboardingSlide3Title": "Прозрачные цены и\nпроверенные водители",
+  "onboardingSlide3Desc": "Справедливая цена за километр, комфортные автомобили и гарантия безопасной поездки.",
+  "satelliteMode": "Спутник",
+  "standardMode": "Обычная карта",
+  "searchCityDistrictHint": "Поиск города или района...",
+  "allRegions": "Все регионы",
+  "tashkentRegion": "Ташкент",
+  "ferganaValley": "Ферганская долина",
+  "samarkandRegion": "Самарканд",
+  "bukharaRegion": "Бухара",
+  "southernRegion": "Кашкадарья / Сурхандарья",
+  "westernRegion": "Хорезм / Каракалпакстан",
+  "notificationsAll": "Все",
+  "notificationsTrips": "Поездки",
+  "notificationsPromo": "Акции",
+  "notificationsSystem": "Система",
+  "clearAll": "Очистить всё",
+  "phoneCall": "Позвонить",
+  "tripLinkCopied": "Ссылка на поездку скопирована: {route}",
+  "callingDriver": "Звонок водителю: {phone}",
+  "appVersion": "Версия приложения",
+  "selectLanguage": "Выберите язык",
+  "selectTheme": "Выберите тему",
+  "themeDarkDesc": "Темная тема, бережет глаза",
+  "themeLightDesc": "Светлая и яркая тема",
+  "themeSystemDesc": "Автоматически по системе",
+  "comfortAndSafety": "Комфорт и безопасность",
+  "statusPending": "Ожидается",
+  "statusApproved": "Одобрено",
+  "statusRejected": "Отклонено",
+  "statusCompleted": "Завершено",
+  "statusCancelled": "Отменено",
+  "statusActive": "Активный",
+  "statusInProgress": "В пути",
+  "statusArrived": "Прибыл",
+  "statusAccepted": "Принят",
+  "statusOnline": "На линии",
+  "statusOffline": "Не на линии",
+  "statusOnTrip": "В рейсе",
+  "driverHomeTitle": "Yo'l-Yo'lakay Водитель",
+  "shiftOnlineTitle": "Вы на смене (Онлайн)",
+  "shiftOfflineTitle": "Смена выключена (Офлайн)",
+  "shiftOnlineSubtitle": "Вы готовы принимать заказы",
+  "shiftOfflineSubtitle": "Включите смену, чтобы получать заказы",
+  "startShift": "Начать смену",
+  "endShift": "Завершить смену",
+  "todayPerformance": "Показатели за сегодня",
+  "dailyLabel": "За день",
+  "todayEarnings": "Дневной заработок",
+  "completedTrips": "Завершенные поездки",
+  "onlineHours": "Время на линии",
+  "acceptanceRate": "Уровень принятия",
+  "walletBalance": "Баланс кошелька",
+  "topUpBalance": "Пополнить баланс",
+  "activeTaxiOrderBanner": "Есть активный заказ такси",
+  "activeIntercityTripBanner": "Есть активная междугородняя поездка",
+  "viewDetails": "Смотреть",
+  "radarOrdersTitle": "Радар заказов",
+  "noRadarOrdersTitle": "Пока нет новых заказов",
+  "noRadarOrdersDesc": "Новые заказы появятся здесь и прозвучит сигнал.",
+  "orderIncoming": "Новый заказ такси",
+  "acceptOrder": "Принять",
+  "declineOrder": "Отклонить",
+  "driverAssignedStatus": "Вы движетесь к пассажиру",
+  "driverArrivedStatus": "Вы прибыли. Ожидание пассажира",
+  "finishTrip": "Завершить поездку",
+  "finalAmountPrompt": "Итоговая сумма (в сумах):",
+  "cancelOrderPrompt": "Отменить заказ",
+  "netEarningsLabel": "Ваш чистый доход: {amount}",
+  "commissionDeductedLabel": "Удержанная комиссия: {amount}",
+  "backToRadarAction": "Вернуться в радар",
+  "markArrived": "Я прибыл",
+  "startTrip": "Начать поездку",
+  "callPassenger": "Позвонить",
+  "intercityTripsTitle": "Междугородние поездки",
+  "publishTrip": "Создать поездку",
+  "emptyTripsHistory": "История поездок пуста",
+  "emptyTripsActiveDesc": "У вас пока нет активных поездок. Вы можете создать новую поездку.",
+  "emptyTripsGeneralDesc": "В этом разделе нет поездок.",
+  "tripDetailsTitle": "Детали поездки",
+  "createTripTitle": "Опубликовать новую поездку",
+  "departureCity": "Город отправления",
+  "destinationCity": "Город прибытия",
+  "totalSeats": "Количество мест",
+  "tripAmenities": "Удобства",
+  "hasAc": "Кондиционер",
+  "allowLuggage": "Багаж",
+  "allowSmoking": "Разрешено курить",
+  "womenOnly": "Только для женщин",
+  "publishAction": "Опубликовать поездку",
+  "tripPublishedSuccess": "Поездка успешно опубликована!",
+  "walletAndEarnings": "Кошелек и доходы",
+  "currentBalance": "Текущий баланс",
+  "mainWallet": "Основной кошелек",
+  "lowBalanceWarning": "Ваш баланс ниже минимума. Пополните счет для приема заказов.",
+  "depositTitle": "Пополнение счета",
+  "selectPaymentSystem": "Выберите платежную систему:",
+  "amountInSum": "Сумма (в сумах):",
+  "todayTab": "Сегодня",
+  "weeklyTab": "Неделя",
+  "monthlyTab": "Месяц",
+  "totalEarnings": "Общий доход",
+  "tripsCount": "Количество поездок",
+  "totalDistance": "Расстояние",
+  "totalHours": "Время онлайн",
+  "dailyChart": "График за день",
+  "transactionHistory": "История транзакций",
+  "noTransactions": "Транзакций пока нет",
+  "noTransactionsDesc": "Здесь будут отображаться поездки и пополнения.",
+  "paymentProcessing": "Процесс оплаты",
+  "paymentVerifying": "Проверка через сервер...",
+  "verifyPayment": "Проверить оплату",
+  "reopenPayment": "Открыть снова",
+  "paymentSuccessMessage": "Оплата успешно подтверждена и баланс обновлен!",
+  "paymentPendingMessage": "Оплата еще не подтверждена. Попробуйте еще раз или подождите немного.",
+  "driverProfileTitle": "Профиль водителя",
+  "vehicleInfo": "Данные автомобиля",
+  "documentsVerification": "Верификация документов",
+  "logoutConfirmTitle": "Выход из системы",
+  "logoutConfirmDesc": "Вы действительно хотите выйти из аккаунта?",
+  "logoutAction": "Выйти",
+  "tripsCountPlural": "{count, plural, =1{1 поездка} few{{count} поездки} other{{count} поездок}}",
+  "@tripsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seatsCountPlural": "{count, plural, =1{1 место} few{{count} места} other{{count} мест}}",
+  "@seatsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refresh": "Обновить",
+  "daily": "Дневной",
+  "topUp": "Пополнить",
+  "genericErrorMessage": "Произошла ошибка",
+  "fieldRequiredError": "Поле {field} обязательно для заполнения",
+  "@fieldRequiredError": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTitle": "Yo'l-Yo'lakay Водитель",
+  "todayStats": "Показатели за сегодня",
+  "statEarnings": "Доход",
+  "statTripsCount": "Количество поездок",
+  "statOnlineTime": "Время онлайн",
+  "statAcceptanceRate": "Уровень принятия",
+  "activeTaxiOrderAlert": "У вас есть активный заказ такси!",
+  "activeTaxiOrderDesc": "Нажмите для перехода к поездке",
+  "activeIntercityTripAlert": "У вас есть активная междугородняя поездка!",
+  "activeIntercityTripDesc": "Нажмите для просмотра деталей",
+  "tripsCountUnit": "{count}",
+  "@tripsCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{count} ч.",
+  "@hours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPrice": "Стоимость поездки:",
+  "arrivedAtPickupAction": "Я на месте",
+  "startRideAction": "Поехали (Начать поездку)",
+  "completeRideAction": "Завершить поездку",
+  "cancelOrderAction": "Отменить заказ",
+  "completeRideModalTitle": "Завершить поездку",
+  "finalPaymentAmountLabel": "Итоговая сумма оплаты (в сумах):",
+  "completeAction": "Завершить",
+  "cancelReasonPassengerNoShow": "Пассажир не вышел на связь",
+  "cancelReasonPassengerTookAnother": "Пассажир уехал на другой машине",
+  "cancelReasonCarIssue": "Неисправность автомобиля",
+  "cancelReasonOther": "Другая причина",
+  "acceptWithTimer": "Принять ({seconds} с)",
+  "@acceptWithTimer": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "@netEarningsLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@commissionDeductedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsPageTitle": "Междугородние поездки",
+  "createTripAction": "Создать поездку",
+  "noActiveTripsDesc": "У вас пока нет активных поездок. Вы можете создать новую поездку.",
+  "noTripsHistoryDesc": "В этом разделе нет поездок.",
+  "@pricePerSeat": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "seatsDetail": "Места: {booked} занято, {available} свободно (Всего: {total})",
+  "@seatsDetail": {
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passengersCount": "Пассажиры ({count})",
+  "@passengersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noPassengersBooked": "Пока нет забронированных пассажиров.",
+  "markRideStartedAction": "Отметить начало поездки",
+  "cancelTripAction": "Отменить поездку",
+  "passengerSeatsDetail": "{seats} мест • {price}",
+  "@passengerSeatsDetail": {
+    "placeholders": {
+      "seats": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultCancelTripReason": "По техническим причинам",
+  "cancelTripReasonPrompt": "Причина отмены будет отправлена пассажирам:",
+  "selectCitiesPrompt": "Пожалуйста, выберите города отправления и назначения",
+  "citiesMustBeDifferentPrompt": "Города отправления и назначения не могут совпадать",
+  "tripCreatedSuccess": "Поездка успешно опубликована!",
+  "fromCityLabel": "Откуда (Город отправления)",
+  "toCityLabel": "Куда (Город назначения)",
+  "departureDateLabel": "Дата и время отправления",
+  "pricePerSeatLabel": "Цена за одно место (сум)",
+  "seatsOption": "{count} мест",
+  "@seatsOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupAddressLabel": "Место посадки (Ориентир)",
+  "dropoffAddressLabel": "Место высадки",
+  "amenitiesSectionTitle": "Удобства и правила",
+  "hasAcLabel": "Кондиционер",
+  "allowLuggageLabel": "Багаж",
+  "womenOnlyLabel": "Только для женщин",
+  "additionalCommentLabel": "Дополнительный комментарий (необязательно)",
+  "publishTripAction": "Опубликовать поездку",
+  "logoutTitle": "Выход из системы",
+  "logoutConfirmPrompt": "Вы действительно хотите выйти из своего аккаунта?",
+  "avatarUpdatedSuccess": "Аватар успешно обновлен",
+  "verificationApprovedTitle": "Верифицированный водитель",
+  "verificationApprovedSubtitle": "Вы можете пользоваться всеми услугами без ограничений.",
+  "verificationUnderReviewTitle": "Верификация на проверке",
+  "verificationUnderReviewSubtitle": "Ваши документы проверяются модераторами (до 24 часов).",
+  "verificationRejectedTitle": "Заявка отклонена",
+  "verificationRejectedSubtitle": "Нажмите для повторной загрузки документов.",
+  "verificationMissingTitle": "Документы не поданы",
+  "verificationMissingSubtitle": "Пройдите верификацию, чтобы начать принимать заказы.",
+  "vehicleInfoTitle": "Данные автомобиля",
+  "vehicleYearAndColor": "Год: {year} • Цвет: {color}",
+  "@vehicleYearAndColor": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "color": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewsAndRatingMenu": "Отзывы и Рейтинг",
+  "walletAndEarningsMenu": "Кошелек и Доходы",
+  "notificationsMenu": "Уведомления",
+  "supportMenu": "Служба поддержки",
+  "driverVerificationTitle": "Верификация водителя",
+  "verificationBannerText": "Подтвердите личность и документы на автомобиль, чтобы принимать заказы.",
+  "personalInfoSectionTitle": "1. Личные данные",
+  "vehicleInfoSectionTitle": "2. Данные автомобиля",
+  "documentsAndPhotosSectionTitle": "3. Фото документов и автомобиля",
+  "submitApplicationAction": "Отправить документы на проверку",
+  "cameraOption": "Сделать фото",
+  "galleryOption": "Выбрать из галереи",
+  "uploadAllPhotosPrompt": "Пожалуйста, загрузите все 6 фото документов и авто!",
+  "applicationSubmittedModalTitle": "Ваша заявка принята!",
+  "goToHomeAction": "Перейти на главную",
+  "locationPermissionRequired": "Требуется разрешение на геолокацию",
+  "backgroundLocationRequired": "Требуется доступ к геолокации в фоновом режиме",
+  "enableLocationServices": "Включите службы геолокации GPS",
+  "notificationPermissionDisabled": "Разрешение на уведомления отключено",
+  "cameraPermissionRequired": "Требуется доступ к камере",
+  "photoPermissionRequired": "Требуется доступ к фотографиям",
+  "permissionDenied": "В разрешении отказано",
+  "permissionPermanentlyDenied": "Разрешение навсегда отклонено",
+  "openSettings": "Открыть настройки",
+  "notNow": "Не сейчас",
+  "tryAgain": "Попробовать снова",
+  "continueAction": "Продолжить",
+  "someFeaturesUnavailable": "Некоторые функции могут быть недоступны",
+  "accountBlockedTitle": "Аккаунт заблокирован",
+  "accountBlockedMessage": "Ваш аккаунт приостановлен или заблокирован администрацией. Пожалуйста, обратитесь в службу поддержки.",
+  "verificationRequiredTitle": "Требуется верификация",
+  "verificationRequiredMessage": "Для приема заказов необходимо подтвердить личность и документы на автомобиль."
+}

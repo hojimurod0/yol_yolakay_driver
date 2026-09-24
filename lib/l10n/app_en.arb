@@ -1,0 +1,606 @@
+{
+  "@@locale": "en",
+  "appName": "YolYolakay",
+  "appTagline": "Comfortable and fast intercity travel",
+  "skip": "Skip",
+  "next": "Next",
+  "getStarted": "Get Started",
+  "continueText": "Continue",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "close": "Close",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+  "clear": "Clear",
+  "apply": "Apply",
+  "back": "Back",
+  "retry": "Retry",
+  "done": "Done",
+  "onboarding1Title": "Intercity travel made easy",
+  "onboarding1Desc": "Find reliable and comfortable taxis to any city across Uzbekistan.",
+  "onboarding2Title": "Comfortable & safe vehicles",
+  "onboarding2Desc": "Travel safely with experienced and verified background-checked drivers.",
+  "onboarding3Title": "Book your seat securely",
+  "onboarding3Desc": "Choose convenient departure time, seat comfort, and book in just a few taps.",
+  "onboarding4Title": "Track your journey live",
+  "onboarding4Desc": "See your driver's location on the map and stay informed of trip progress.",
+  "welcomeTitle": "Welcome to YolYolakay!",
+  "welcomeSubtitle": "Your trusted partner for intercity journeys",
+  "loginOrRegister": "Sign in or Register",
+  "enterPhoneNumber": "Enter your phone number",
+  "phoneLabel": "Phone Number",
+  "phoneHint": "90 123 45 67",
+  "sendOtp": "Send Verification Code",
+  "otpSentTo": "Verification code sent to {phone}",
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "enterOtp": "Enter verification code",
+  "resendOtp": "Resend code",
+  "resendIn": "Resend in {seconds}s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "createProfileTitle": "Complete your profile",
+  "createProfileSubtitle": "Add your basic information so drivers can recognize you",
+  "firstName": "First Name",
+  "firstNameHint": "Enter your first name",
+  "lastName": "Last Name",
+  "lastNameHint": "Enter your last name",
+  "email": "Email (optional)",
+  "emailHint": "example@mail.com",
+  "completeRegistration": "Complete Registration",
+  "navHome": "Home",
+  "navTrips": "Trips",
+  "navNotifications": "Alerts",
+  "navProfile": "Profile",
+  "greeting": "Hello, {name}!",
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "whereToGo": "Where do you want to go?",
+  "from": "From",
+  "to": "To",
+  "selectDepartureCity": "Select departure city",
+  "selectDestinationCity": "Select destination city",
+  "travelDate": "Date",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "passengerCount": "Passengers",
+  "passengers": "{count} pass.",
+  "@passengers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchRides": "Search Rides",
+  "swapCities": "Swap cities",
+  "recentSearches": "Recent searches",
+  "popularRoutes": "Popular routes",
+  "savedRoutes": "Saved routes",
+  "noRecentSearches": "No recent searches yet",
+  "selectCityTitle": "Select City",
+  "searchCityHint": "Search city name...",
+  "popularCities": "Popular Cities",
+  "allCities": "All Cities",
+  "currentLocation": "Current Location",
+  "availableRides": "Available Rides",
+  "ridesFound": "{count} rides found",
+  "@ridesFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRidesFound": "No rides found",
+  "noRidesDesc": "Try selecting another departure date or route",
+  "sortCheapest": "Cheapest",
+  "sortEarliest": "Earliest departure",
+  "sortFastest": "Shortest duration",
+  "sortRating": "Highest rated",
+  "filterPrice": "Price range",
+  "filterCarType": "Vehicle type",
+  "filterSeats": "Available seats",
+  "filterRating": "Driver rating",
+  "pricePerSeat": "{price} / seat",
+  "seatsAvailable": "{available} / {total} free",
+  "@seatsAvailable": {
+    "placeholders": {
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "durationApprox": "~{hours}h",
+  "@durationApprox": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "rideDetails": "Ride Details",
+  "schedule": "Schedule",
+  "departureTime": "Departure Time",
+  "estimatedArrival": "Estimated Arrival",
+  "driver": "Driver",
+  "verifiedDriver": "Verified Driver",
+  "completedTripsCount": "{count} completed trips",
+  "@completedTripsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vehicle": "Vehicle",
+  "pickupLocation": "Pickup Location",
+  "dropoffLocation": "Drop-off Location",
+  "amenities": "Amenities",
+  "amenityAc": "Air Conditioning",
+  "amenityLuggage": "Spacious Trunk",
+  "amenityWifi": "Free Wi-Fi",
+  "amenitySmoking": "No Smoking",
+  "bookSeat": "Book Seat",
+  "contactDriver": "Contact Driver",
+  "shareTrip": "Share Trip",
+  "bookingTitle": "Booking",
+  "stepSelectSeats": "1. Seats",
+  "stepPassengerInfo": "2. Passenger",
+  "stepPickup": "3. Pickup Point",
+  "stepReview": "4. Review",
+  "selectedSeats": "Selected seats: {count}",
+  "@selectedSeats": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "totalPrice": "Total Price",
+  "cancellationPolicy": "Cancellation Policy",
+  "cancellationPolicyDesc": "Free cancellation up to 2 hours before scheduled departure.",
+  "confirmBooking": "Confirm Booking",
+  "paymentMethod": "Payment Method",
+  "paymentCash": "Cash to driver",
+  "paymentClick": "Pay with Click",
+  "paymentPayme": "Pay with Payme",
+  "paymentUzum": "Pay with Uzum Bank",
+  "bookingSuccessTitle": "Booking Confirmed!",
+  "bookingSuccessDesc": "Your ride request has been confirmed. The driver will contact you prior to departure.",
+  "bookingId": "Booking ID",
+  "viewTrip": "View Trip",
+  "backToHome": "Back to Home",
+  "tabUpcoming": "Upcoming",
+  "tabActive": "Active",
+  "tabCompleted": "Completed",
+  "tabCancelled": "Cancelled",
+  "noTripsTitle": "No trips history",
+  "noTripsDesc": "You have no trips in this category.",
+  "tripDetails": "Trip Details",
+  "trackingTitle": "Trip Tracking",
+  "statusBookingConfirmed": "Booking Confirmed",
+  "statusDriverPreparing": "Driver Preparing",
+  "statusDriverArrived": "Driver Arrived at Pickup",
+  "statusPassengerPickedUp": "Passenger Picked Up",
+  "statusTripStarted": "Trip in Progress",
+  "statusNearDestination": "Approaching Destination",
+  "statusTripCompleted": "Trip Completed",
+  "notificationsTitle": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "noNotificationsTitle": "No notifications",
+  "noNotificationsDesc": "Updates about your bookings and trips will appear here.",
+  "profileTitle": "Profile",
+  "editProfile": "Edit Profile",
+  "personalInfo": "Personal Information",
+  "myActivity": "My Activity",
+  "totalTrips": "Total Trips",
+  "savedPlaces": "Saved Places",
+  "homePlace": "Home",
+  "workPlace": "Work",
+  "addPlace": "Add Place",
+  "settings": "Settings",
+  "language": "Language",
+  "theme": "Appearance Theme",
+  "themeSystem": "System Default",
+  "themeLight": "Light Theme",
+  "themeDark": "Dark Theme",
+  "support": "Help & Support",
+  "helpCenter": "Help Center",
+  "faq": "Frequently Asked Questions",
+  "contactSupport": "Contact Support",
+  "reportProblem": "Report a Problem",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "logout": "Log Out",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "deleteAccount": "Delete Account",
+  "ratingTitle": "How was your trip?",
+  "ratingSubtitle": "Rate your driver and help improve our community experience",
+  "ratingFeedbackHint": "Leave a review (optional)...",
+  "submitRating": "Submit Review",
+  "tagCleanCar": "Clean Car",
+  "tagFriendlyDriver": "Friendly Driver",
+  "tagOnTime": "On Time",
+  "tagComfortable": "Comfortable",
+  "tagSafeDriving": "Safe Driving",
+  "cancelTripTitle": "Cancel Ride",
+  "cancelTripDesc": "Are you sure you want to cancel this booking?",
+  "cancelReason": "Cancellation Reason",
+  "reasonChangePlans": "Plans changed",
+  "reasonFoundAnother": "Found alternative transport",
+  "reasonDriverAsked": "Driver requested cancellation",
+  "reasonOther": "Other reason",
+  "confirmCancel": "Confirm Cancellation",
+  "offlineTitle": "No Internet Connection",
+  "offlineDesc": "Please check your network settings and try again.",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorPhoneInvalid": "Invalid phone number format",
+  "errorOtpInvalid": "Invalid verification code",
+  "errorOtpExpired": "Verification code has expired",
+  "onboardingSlide1Badge": "Intercity Rides",
+  "onboardingSlide1Title": "Comfortable & Fast Rides\nAcross Uzbekistan",
+  "onboardingSlide1Desc": "Reliable taxis across Tashkent, Samarkand, Andijan, Fergana, Bukhara and all regions.",
+  "onboardingSlide2Badge": "Satellite Map",
+  "onboardingSlide2Title": "Pick Destination Easily\non Interactive Map",
+  "onboardingSlide2Desc": "Select any cities and districts of Uzbekistan with satellite view and instant distance calculation.",
+  "onboardingSlide3Badge": "Affordable & Fair",
+  "onboardingSlide3Title": "Transparent Pricing &\nVerified Drivers",
+  "onboardingSlide3Desc": "Fair price per kilometer, comfortable vehicles, and guaranteed safe travel.",
+  "satelliteMode": "Satellite",
+  "standardMode": "Standard Map",
+  "searchCityDistrictHint": "Search city or district...",
+  "allRegions": "All Regions",
+  "tashkentRegion": "Tashkent",
+  "ferganaValley": "Fergana Valley",
+  "samarkandRegion": "Samarkand",
+  "bukharaRegion": "Bukhara",
+  "southernRegion": "Kashkadarya / Surkhandarya",
+  "westernRegion": "Khorezm / Karakalpakstan",
+  "notificationsAll": "All",
+  "notificationsTrips": "Trips",
+  "notificationsPromo": "Promos",
+  "notificationsSystem": "System",
+  "clearAll": "Clear All",
+  "phoneCall": "Call",
+  "tripLinkCopied": "Trip link copied: {route}",
+  "callingDriver": "Calling driver: {phone}",
+  "appVersion": "App version",
+  "selectLanguage": "Select Language",
+  "selectTheme": "Select Theme",
+  "themeDarkDesc": "Dark theme, comfortable for eyes",
+  "themeLightDesc": "Bright & crisp interface",
+  "themeSystemDesc": "Adapts to system settings",
+  "comfortAndSafety": "Comfort & Safety",
+  "statusPending": "Pending",
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "statusActive": "Active",
+  "statusInProgress": "In Progress",
+  "statusArrived": "Arrived",
+  "statusAccepted": "Accepted",
+  "statusOnline": "Online",
+  "statusOffline": "Offline",
+  "statusOnTrip": "On Trip",
+  "driverHomeTitle": "Yo'l-Yo'lakay Driver",
+  "shiftOnlineTitle": "You are on shift (Online)",
+  "shiftOfflineTitle": "Shift is turned off (Offline)",
+  "shiftOnlineSubtitle": "You are ready to receive orders",
+  "shiftOfflineSubtitle": "Turn on shift to start receiving orders",
+  "startShift": "Start Shift",
+  "endShift": "End Shift",
+  "todayPerformance": "Today's Performance",
+  "dailyLabel": "Daily",
+  "todayEarnings": "Today's Earnings",
+  "completedTrips": "Completed Trips",
+  "onlineHours": "Online Hours",
+  "acceptanceRate": "Acceptance Rate",
+  "walletBalance": "Wallet Balance",
+  "topUpBalance": "Top Up Balance",
+  "activeTaxiOrderBanner": "Active taxi order in progress",
+  "activeIntercityTripBanner": "Active intercity trip in progress",
+  "viewDetails": "View",
+  "radarOrdersTitle": "Order Radar",
+  "noRadarOrdersTitle": "No new orders yet",
+  "noRadarOrdersDesc": "New orders will appear here as soon as they become available.",
+  "orderIncoming": "New Taxi Order",
+  "acceptOrder": "Accept",
+  "declineOrder": "Decline",
+  "driverAssignedStatus": "Moving towards passenger",
+  "driverArrivedStatus": "You arrived. Waiting for passenger",
+  "finishTrip": "Complete Trip",
+  "finalAmountPrompt": "Final payment amount (UZS):",
+  "cancelOrderPrompt": "Cancel Order",
+  "netEarningsLabel": "Your net earnings: {amount}",
+  "commissionDeductedLabel": "Commission deducted: {amount}",
+  "backToRadarAction": "Back to radar",
+  "markArrived": "I Have Arrived",
+  "startTrip": "Start Trip",
+  "callPassenger": "Call Passenger",
+  "intercityTripsTitle": "Intercity Trips",
+  "publishTrip": "Publish Trip",
+  "emptyTripsHistory": "No trips history",
+  "emptyTripsActiveDesc": "You have no active trips. You can create and publish a new trip.",
+  "emptyTripsGeneralDesc": "No trips found in this category.",
+  "tripDetailsTitle": "Trip Details",
+  "createTripTitle": "Publish New Trip",
+  "departureCity": "Departure City",
+  "destinationCity": "Destination City",
+  "totalSeats": "Total seats",
+  "tripAmenities": "Amenities",
+  "hasAc": "Air Conditioning",
+  "allowLuggage": "Luggage Space",
+  "allowSmoking": "Smoking Allowed",
+  "womenOnly": "Women Only",
+  "publishAction": "Publish Trip",
+  "tripPublishedSuccess": "Trip published successfully!",
+  "walletAndEarnings": "Wallet & Earnings",
+  "currentBalance": "Current Balance",
+  "mainWallet": "Main Wallet",
+  "lowBalanceWarning": "Your balance is below minimum threshold. Please top up to accept orders.",
+  "depositTitle": "Top Up Balance",
+  "selectPaymentSystem": "Select Payment System:",
+  "amountInSum": "Amount (UZS):",
+  "todayTab": "Today",
+  "weeklyTab": "Week",
+  "monthlyTab": "Month",
+  "totalEarnings": "Total Earnings",
+  "tripsCount": "Trips Count",
+  "totalDistance": "Distance",
+  "totalHours": "Online Time",
+  "dailyChart": "Daily Chart",
+  "transactionHistory": "Transaction History",
+  "noTransactions": "No transactions yet",
+  "noTransactionsDesc": "Completed rides and top-up transactions will appear here.",
+  "paymentProcessing": "Payment Processing",
+  "paymentVerifying": "Verifying with server...",
+  "verifyPayment": "Verify Payment",
+  "reopenPayment": "Reopen Payment",
+  "paymentSuccessMessage": "Payment verified successfully and balance updated!",
+  "paymentPendingMessage": "Payment not confirmed yet. Please retry or wait a moment.",
+  "driverProfileTitle": "Driver Profile",
+  "vehicleInfo": "Vehicle Information",
+  "documentsVerification": "Documents Verification",
+  "logoutConfirmTitle": "Log Out",
+  "logoutConfirmDesc": "Are you sure you want to log out of your driver account?",
+  "logoutAction": "Log Out",
+  "tripsCountPlural": "{count, plural, =1{1 trip} other{{count} trips}}",
+  "@tripsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seatsCountPlural": "{count, plural, =1{1 seat} other{{count} seats}}",
+  "@seatsCountPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "daily": "Daily",
+  "topUp": "Top-up",
+  "genericErrorMessage": "An error occurred",
+  "fieldRequiredError": "{field} is required",
+  "@fieldRequiredError": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "homeTitle": "Yol-Yolakay Driver",
+  "todayStats": "Today's Performance",
+  "statEarnings": "Earnings",
+  "statTripsCount": "Trips Count",
+  "statOnlineTime": "Online Time",
+  "statAcceptanceRate": "Acceptance Rate",
+  "activeTaxiOrderAlert": "You have an active taxi order!",
+  "activeTaxiOrderDesc": "Tap to view trip details",
+  "activeIntercityTripAlert": "You have an active intercity trip!",
+  "activeIntercityTripDesc": "Tap to view ride details",
+  "tripsCountUnit": "{count} trips",
+  "@tripsCountUnit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hours": "{count} hours",
+  "@hours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tripPrice": "Trip price:",
+  "arrivedAtPickupAction": "Arrived at pickup",
+  "startRideAction": "Start ride",
+  "completeRideAction": "Complete ride",
+  "cancelOrderAction": "Cancel order",
+  "completeRideModalTitle": "Complete Trip",
+  "finalPaymentAmountLabel": "Final payment amount (UZS):",
+  "completeAction": "Complete",
+  "cancelReasonPassengerNoShow": "Passenger did not respond",
+  "cancelReasonPassengerTookAnother": "Passenger took another car",
+  "cancelReasonCarIssue": "Car breakdown",
+  "cancelReasonOther": "Other reason",
+  "acceptWithTimer": "Accept ({seconds} s)",
+  "@acceptWithTimer": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "@netEarningsLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "@commissionDeductedLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsPageTitle": "Intercity Trips",
+  "createTripAction": "Create trip",
+  "noActiveTripsDesc": "You have no active trips currently. You can publish a new one.",
+  "noTripsHistoryDesc": "No trips found in this section.",
+  "@pricePerSeat": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "seatsDetail": "Seats: {booked} booked, {available} free (Total: {total})",
+  "@seatsDetail": {
+    "placeholders": {
+      "booked": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "passengersCount": "Passengers ({count})",
+  "@passengersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noPassengersBooked": "No passengers have booked yet.",
+  "markRideStartedAction": "Mark ride started",
+  "cancelTripAction": "Cancel trip",
+  "passengerSeatsDetail": "{seats} seats • {price}",
+  "@passengerSeatsDetail": {
+    "placeholders": {
+      "seats": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultCancelTripReason": "Due to technical reasons",
+  "cancelTripReasonPrompt": "Cancellation reason will be sent to passengers:",
+  "selectCitiesPrompt": "Please select departure and destination cities",
+  "citiesMustBeDifferentPrompt": "Departure and destination cities cannot be the same",
+  "tripCreatedSuccess": "Trip published successfully!",
+  "fromCityLabel": "From (Departure city)",
+  "toCityLabel": "To (Destination city)",
+  "departureDateLabel": "Departure date and time",
+  "pricePerSeatLabel": "Price per seat (UZS)",
+  "seatsOption": "{count} seats",
+  "@seatsOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickupAddressLabel": "Pickup address (Landmark)",
+  "dropoffAddressLabel": "Dropoff address",
+  "amenitiesSectionTitle": "Amenities & rules",
+  "hasAcLabel": "Air conditioning",
+  "allowLuggageLabel": "Luggage allowed",
+  "womenOnlyLabel": "Women only",
+  "additionalCommentLabel": "Additional notes (optional)",
+  "publishTripAction": "Publish trip",
+  "logoutTitle": "Logout",
+  "logoutConfirmPrompt": "Are you sure you want to log out of your account?",
+  "avatarUpdatedSuccess": "Avatar updated successfully",
+  "verificationApprovedTitle": "Verified Driver",
+  "verificationApprovedSubtitle": "You can access all platform features without limits.",
+  "verificationUnderReviewTitle": "Verification Under Review",
+  "verificationUnderReviewSubtitle": "Your documents are under review by moderators (up to 24h).",
+  "verificationRejectedTitle": "Application Rejected",
+  "verificationRejectedSubtitle": "Tap to re-upload your verification documents.",
+  "verificationMissingTitle": "Documents Not Submitted",
+  "verificationMissingSubtitle": "Complete driver verification to start receiving orders.",
+  "vehicleInfoTitle": "Vehicle Information",
+  "vehicleYearAndColor": "Year: {year} • Color: {color}",
+  "@vehicleYearAndColor": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "color": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewsAndRatingMenu": "Reviews & Rating",
+  "walletAndEarningsMenu": "Wallet & Earnings",
+  "notificationsMenu": "Notifications",
+  "supportMenu": "Support Service",
+  "driverVerificationTitle": "Driver Verification",
+  "verificationBannerText": "Confirm your identity and vehicle documents to begin receiving orders.",
+  "personalInfoSectionTitle": "1. Personal Information",
+  "vehicleInfoSectionTitle": "2. Vehicle Information",
+  "documentsAndPhotosSectionTitle": "3. Documents & Vehicle Photos",
+  "submitApplicationAction": "Submit for Verification",
+  "cameraOption": "Take photo",
+  "galleryOption": "Choose from gallery",
+  "uploadAllPhotosPrompt": "Please upload all 6 document and vehicle photos!",
+  "applicationSubmittedModalTitle": "Application Submitted!",
+  "goToHomeAction": "Go to Home",
+  "locationPermissionRequired": "Location permission required",
+  "backgroundLocationRequired": "Background location permission required",
+  "enableLocationServices": "Enable GPS location services",
+  "notificationPermissionDisabled": "Notification permission disabled",
+  "cameraPermissionRequired": "Camera permission required",
+  "photoPermissionRequired": "Photo access required",
+  "permissionDenied": "Permission denied",
+  "permissionPermanentlyDenied": "Permission permanently denied",
+  "openSettings": "Open settings",
+  "notNow": "Not now",
+  "tryAgain": "Try again",
+  "continueAction": "Continue",
+  "someFeaturesUnavailable": "Some features may not work properly",
+  "accountBlockedTitle": "Account suspended",
+  "accountBlockedMessage": "Your account has been suspended or blocked by administration. Please contact support.",
+  "verificationRequiredTitle": "Verification required",
+  "verificationRequiredMessage": "You must verify your identity and vehicle documents before accepting orders."
+}
