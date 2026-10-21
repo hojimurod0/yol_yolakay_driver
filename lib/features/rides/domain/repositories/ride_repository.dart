@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/mock_ride_repository.dart';
 import '../entities/ride_entity.dart';
 
 class RideSearchParams {
@@ -28,6 +26,3 @@ abstract class RideRepository {
   Future<RideEntity> getRideDetails(String rideId);
   Future<List<RideEntity>> getPopularRides();
 }
-
-final rideRepositoryProvider =
-    Provider<RideRepository>((ref) => MockRideRepository());

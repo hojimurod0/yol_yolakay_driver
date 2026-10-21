@@ -23,8 +23,8 @@ class LocalStorageService {
   Future<bool> setLocale(String languageCode) =>
       _preferences.setString(_keyLocale, languageCode);
 
-  // Theme Mode
-  String getThemeMode() => _preferences.getString(_keyThemeMode) ?? 'system';
+  // Theme Mode (Defaults to 'light' for clean, light mode on first launch)
+  String getThemeMode() => _preferences.getString(_keyThemeMode) ?? 'light';
 
   Future<bool> setThemeMode(String mode) =>
       _preferences.setString(_keyThemeMode, mode);

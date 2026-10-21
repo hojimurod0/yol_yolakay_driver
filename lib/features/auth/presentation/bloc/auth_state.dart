@@ -41,6 +41,10 @@ class UnauthenticatedState extends AuthState {
   const UnauthenticatedState();
 }
 
+class PasswordSetSuccessState extends AuthState {
+  const PasswordSetSuccessState();
+}
+
 class AuthErrorState extends AuthState {
   const AuthErrorState({
     required this.message,

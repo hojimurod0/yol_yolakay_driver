@@ -1,6 +1,27 @@
 import '../entities/driver_user_entity.dart';
 import '../repositories/auth_repository.dart';
 
+class LoginWithPasswordUseCase {
+  const LoginWithPasswordUseCase(this._repository);
+  final AuthRepository _repository;
+
+  Future<DriverAuthEntity> call({
+    required String phone,
+    required String password,
+  }) {
+    return _repository.loginWithPassword(phone: phone, password: password);
+  }
+}
+
+class SetPasswordUseCase {
+  const SetPasswordUseCase(this._repository);
+  final AuthRepository _repository;
+
+  Future<void> call(String newPassword) {
+    return _repository.setPassword(newPassword: newPassword);
+  }
+}
+
 class SendOtpUseCase {
   const SendOtpUseCase(this._repository);
   final AuthRepository _repository;

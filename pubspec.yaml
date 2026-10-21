@@ -17,7 +17,7 @@ dependencies:
   # State Management & Navigation
   flutter_bloc: ^8.1.6
   equatable: ^2.0.5
-  flutter_riverpod: ^2.5.1
+  get_it: ^7.7.0
   go_router: ^14.2.0
 
   # Network & Storage
@@ -27,7 +27,6 @@ dependencies:
   web_socket_channel: ^3.0.3
 
   # UI & Media
-  shimmer: ^3.0.0
   image_picker: ^1.1.2
 
   # Utilities
@@ -52,6 +51,8 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   build_runner: ^2.4.15
   json_serializable: ^6.9.4
+  flutter_launcher_icons: ^0.14.3
+  image: ^4.5.2
 
 flutter:
   uses-material-design: true
@@ -59,3 +60,11 @@ flutter:
   assets:
     - assets/icon/
     - assets/images/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_logo_full_yellow.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFC107"
+  adaptive_icon_foreground: "assets/icon/app_logo_full_yellow.png"

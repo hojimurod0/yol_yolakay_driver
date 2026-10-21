@@ -1,22 +1,25 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/providers/core_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/localization/locale_cubit.dart';
+import '../../../../core/storage/local_storage_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
+import '../../../auth/domain/repositories/auth_repository.dart';
 
-class OnboardingPage extends ConsumerStatefulWidget {
+class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
   @override
-  ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
+  State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends ConsumerState<OnboardingPage> {
-  final PageController _pageController = PageController();
+class _OnboardingPageState extends State<OnboardingPage> {
+  late final PageController _pageController;
   int _currentPage = 0;
   Timer? _autoSlideTimer;
   bool _isNavigating = false;
@@ -24,6 +27,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _startAutoSlideTimer();
   }
 
@@ -33,7 +37,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       if (_isNavigating || !mounted) return;
       if (_currentPage < 2) {
         _pageController.nextPage(
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 550),
           curve: Curves.easeOutCubic,
         );
       } else {
@@ -56,13 +60,21 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     HapticFeedback.mediumImpact();
     setState(() => _isNavigating = true);
 
-    final storage = ref.read(localStorageServiceProvider);
+    final storage = sl<LocalStorageService>();
     await storage.setOnboardingCompleted(true);
-    final prefs = ref.read(sharedPreferencesProvider);
+    final prefs = sl<SharedPreferences>();
     await prefs.setBool('is_first_launch', false);
 
     if (mounted) {
-      context.go('/driver/home');
+      final authRepo = sl<AuthRepository>();
+      final isAuth = await authRepo.isAuthenticated();
+      if (mounted) {
+        if (isAuth) {
+          context.go('/driver/home');
+        } else {
+          context.go('/login');
+        }
+      }
     }
   }
 
@@ -70,7 +82,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     HapticFeedback.mediumImpact();
     if (_currentPage < totalSlides - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 450),
         curve: Curves.easeOutCubic,
       );
     } else {
@@ -80,77 +92,89 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currentLocale = ref.watch(localeNotifierProvider);
+    final currentLocale = context.watch<LocaleCubit>().state;
     final isRu = currentLocale.languageCode == 'ru';
     final screenHeight = MediaQuery.of(context).size.height;
-    final imageHeight = screenHeight * 0.56;
+    // 58% screen height for the hero visual as per specification
+    final imageHeight = screenHeight * 0.58;
 
     final slides = [
-      // 1. Shaharlararo Taksi va Safar
+      // 1. Ishonchli daromad
       _SlideData(
-        tag: isRu ? 'БЫСТРО И НАДЕЖНО' : 'ISHONCHLI VA TEZ',
+        tag: isRu ? 'НАДЁЖНЫЙ ДОХОД' : 'ISHONCHLI DAROMAD',
         title: isRu
-            ? 'Путь далекий иль короткий —\nдовезем надежно, четко!'
-            : 'Yo‘lingiz bo‘lsin bexatar,\nBiz bilan oson har safar!',
+            ? 'Постоянные пассажиры,\nгарантированные заказы!'
+            : 'Doimiy yo‘lovchilar,\nkafolatlangan buyurtmalar!',
         description: isRu
-            ? 'Комфортные поездки по городам и регионам Узбекистана без лишних хлопот.'
-            : 'O‘zbekiston bo‘ylab qulay taksilar — bir zumda eshigingiz oldida.',
+            ? 'Тысячи междугородних и городских пассажиров ждут вас каждый день.'
+            : 'Har kuni minglab shaharlararo va shahar ichi yo‘lovchilari sizni kutmoqda.',
         imagePath: 'assets/images/onboarding_1.jpg',
-        badgeText: isRu ? 'Комфорт и скорость' : 'Tezkor & Qulay',
+        badgeText: isRu ? 'НАДЁЖНЫЙ ДОХОД' : 'ISHONCHLI DAROMAD',
       ),
 
-      // 2. To'g'ridan-to'g'ri kelishuv / 0% Komissiya
+      // 2. 0% Komissiya
       _SlideData(
-        tag: isRu ? 'БЕЗ ПОСРЕДНИКОВ' : '0% VOSITACHI',
+        tag: isRu ? '0% КОМИССИЯ' : '0% KOMISSIYA',
         title: isRu
-            ? 'Без посредников звоните,\nцену сами согласуйте!'
-            : 'Narxni o‘zingiz kelishing,\nOrtiqcha to‘lovni unuting!',
+            ? 'Деньги остаются у вас,\nбез посредников и скрытых плат!'
+            : 'Pulingiz o‘zingizda qoladi,\nvositachisiz to‘g‘ridan-to‘g‘ri!',
         description: isRu
-            ? 'Прямой контакт с водителем и честная цена без скрытых комиссий.'
-            : 'Hech qanday ortiqcha to‘lovsiz, haydovchi bilan to‘g‘ridan-to‘g‘ri bog‘laning.',
+            ? 'Расплачивайтесь напрямую с пассажиром, получайте 100% заработка.'
+            : 'Yo‘lovchi bilan to‘g‘ridan-to‘g‘ri hisob-kitob qiling, ortiqcha to‘lovlarsiz 100% daromad oling.',
         imagePath: 'assets/images/onboarding_2.jpg',
-        badgeText: isRu ? 'Честная цена' : '0% Komissiya',
+        badgeText: isRu ? '0% КОМИССИЯ' : '0% KOMISSIYA',
       ),
 
-      // 3. Tezkor Posilka / 1 kunda yetkazish
+      // 3. Yuk va posilkalar
       _SlideData(
-        tag: isRu ? 'СРОЧНАЯ ПОЧТА' : 'TEZKOR POCHTA',
+        tag: isRu ? 'ГРУЗЫ И ПОСЫЛКИ' : 'YUK VA POSILKALAR',
         title: isRu
-            ? 'Утром отдадите груз —\nв тот же день доставят в плюс!'
-            : 'Bugun topshiring posilka,\nBugunoq yetsin manzilga!',
+            ? 'Берите грузы в дорогу,\nполучайте доп. доход!'
+            : 'Bo‘sh joyingizga yuk oling,\nqo‘shimcha daromad qiling!',
         description: isRu
-            ? 'Надежная экспресс-доставка посылок и документов прямо в руки адресату.'
-            : 'Hujjat va yuklaringizni ishonchli haydovchilar bilan 1 kunda yetkazing.',
+            ? 'Доставляйте попутные посылки и зарабатывайте больше на каждой поездке.'
+            : 'Yo‘l-yo‘lakay posilka va yuklarni yetkazib, har bir safardan maksimal daromad ko‘ring.',
         imagePath: 'assets/images/onboarding_3.jpg',
-        badgeText: isRu ? 'Доставка за 1 день' : '1 kunda yetkazish',
+        badgeText: isRu ? 'YUK VA POSILKALAR' : 'YUK VA POSILKALAR',
       ),
     ];
 
     return Scaffold(
-      backgroundColor:
-          isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // 1. Main PageView with Top Image & Bottom Content
+          // 1. PageView with Parallax Swipe Drift & Breathing Animation
           PageView.builder(
             controller: _pageController,
             itemCount: slides.length,
             onPageChanged: (index) {
+              HapticFeedback.mediumImpact();
               setState(() => _currentPage = index);
               _startAutoSlideTimer();
             },
             itemBuilder: (context, index) {
               final slide = slides[index];
-              return _buildSlideItem(
-                slide: slide,
-                imageHeight: imageHeight,
-                isDark: isDark,
+              return AnimatedBuilder(
+                animation: _pageController,
+                builder: (context, _) {
+                  double pageOffset = 0.0;
+                  if (_pageController.position.haveDimensions) {
+                    pageOffset =
+                        (_pageController.page ?? _currentPage.toDouble()) -
+                            index;
+                  }
+                  return _buildSlideItem(
+                    slide: slide,
+                    imageHeight: imageHeight,
+                    isActive: index == _currentPage,
+                    pageOffset: pageOffset,
+                  );
+                },
               );
             },
           ),
 
-          // 2. Bottom Action Bar: Dots on the Left, Next / Get Started on the Right
+          // 2. Minimalist Bottom Action Bar: Dynamic Pill Indicators & Bold Glanceable Next Button
           Positioned(
             bottom: 0,
             left: 0,
@@ -163,58 +187,59 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Slide Indicator Dots
+                    // Dynamic Pill Indicators (7px -> 24px)
                     Row(
                       children: List.generate(slides.length, (index) {
                         final isActive = index == _currentPage;
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
+                          duration: const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
                           margin: const EdgeInsets.symmetric(horizontal: 3),
-                          height: 5,
+                          height: 6,
                           width: isActive ? 24 : 7,
                           decoration: BoxDecoration(
                             color: isActive
                                 ? AppColors.taxiYellow
-                                : (isDark ? Colors.white24 : AppColors.gray300),
+                                : AppColors.gray300,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
                       }),
                     ),
 
-                    // Right: Next / Get Started Action
-                    InkWell(
-                      onTap: () => _nextPageOrComplete(slides.length),
-                      borderRadius: BorderRadius.circular(12),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _currentPage == slides.length - 1
-                                  ? (isRu ? 'Начать' : 'Boshladik')
-                                  : (isRu ? 'Далее' : 'Keyingisi'),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 15,
-                                color: isDark
-                                    ? AppColors.taxiYellow
-                                    : AppColors.charcoalBlack,
+                    // Right: Primary Glanceable Action Button
+                    Material(
+                      color: AppColors.taxiYellow,
+                      borderRadius: BorderRadius.circular(14),
+                      elevation: 0,
+                      child: InkWell(
+                        onTap: () => _nextPageOrComplete(slides.length),
+                        borderRadius: BorderRadius.circular(14),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _currentPage == slides.length - 1
+                                    ? (isRu ? 'Boshladik' : 'Boshladik')
+                                    : (isRu ? 'Keyingisi' : 'Keyingisi'),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 15,
+                                  color: AppColors.charcoalBlack,
+                                  letterSpacing: 0.2,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              _currentPage == slides.length - 1
-                                  ? Icons.arrow_forward_rounded
-                                  : Icons.chevron_right_rounded,
-                              size: 19,
-                              color: isDark
-                                  ? AppColors.taxiYellow
-                                  : AppColors.charcoalBlack,
-                            ),
-                          ],
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 18,
+                                color: AppColors.charcoalBlack,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -231,57 +256,96 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Widget _buildSlideItem({
     required _SlideData slide,
     required double imageHeight,
-    required bool isDark,
+    required bool isActive,
+    required double pageOffset,
   }) {
     return Column(
       children: [
-        // Top Portion: Full-Bleed Image (takes ~56% of screen height)
-        SizedBox(
+        // Top Portion: Hero Image with 32px rounded bottom curve & Parallax Drift
+        Container(
           height: imageHeight,
           width: double.infinity,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                slide.imagePath,
-                cacheWidth: 800,
-                filterQuality: FilterQuality.medium,
-                fit: BoxFit.cover,
-              ),
-
-              // Gradient fade at bottom of image for seamless blend
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 50,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        (isDark ? const Color(0xFF14141B) : Colors.white)
-                            .withValues(alpha: 0.7),
-                      ],
-                    ),
-                  ),
-                ),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(32),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(32),
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Parallax Swipe Drift (-55px relative) + Cinematic Breathing
+                Transform.translate(
+                  offset: Offset(-pageOffset * 55.0, 0),
+                  child: _CinematicBreathingImage(
+                    imagePath: slide.imagePath,
+                    isActive: isActive,
+                  ),
+                ),
+
+                // Gradient fade at bottom of image for seamless atmospheric blend
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 75,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withValues(alpha: 0.70),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Taxi Yellow accent edge line along bottom curve
+                Positioned(
+                  bottom: 0,
+                  left: 32,
+                  right: 32,
+                  height: 2.5,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          AppColors.taxiYellow.withValues(alpha: 0.8),
+                          AppColors.taxiYellow,
+                          AppColors.taxiYellow.withValues(alpha: 0.8),
+                          Colors.transparent,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
 
-        // Bottom Portion: Text Content Container
+        // Bottom Portion: Clean Glanceable Content Container
         Expanded(
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg, AppSpacing.md, AppSpacing.lg, 80),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF14141B) : Colors.white,
-            ),
+                AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 88),
+            color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -291,10 +355,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.taxiYellow.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.taxiYellow.withValues(alpha: 0.20),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: AppColors.taxiYellowDark.withValues(alpha: 0.4),
+                      color: AppColors.taxiYellowDark.withValues(alpha: 0.35),
                       width: 1,
                     ),
                   ),
@@ -302,34 +366,35 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     slide.badgeText,
                     style: const TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
                       color: AppColors.charcoalBlack,
-                      letterSpacing: 0.3,
+                      letterSpacing: 0.6,
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 12),
 
-                // Catchy / Poetic Title
+                // Bold Driver Title
                 Text(
                   slide.title,
-                  style: AppTypography.displayMedium.copyWith(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 21,
-                    height: 1.28,
-                    color: isDark ? Colors.white : AppColors.charcoalBlack,
+                    fontSize: 22,
+                    height: 1.25,
+                    color: AppColors.charcoalBlack,
+                    letterSpacing: -0.3,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
 
-                // Concise Description
+                // Driver Description
                 Text(
                   slide.description,
-                  style: TextStyle(
-                    color: isDark ? Colors.white60 : AppColors.textSecondary,
-                    fontSize: 13,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
                   ),
@@ -357,4 +422,85 @@ class _SlideData {
   final String description;
   final String imagePath;
   final String badgeText;
+}
+
+/// Cinematic Breathing / Slow Zoom widget.
+/// Smoothly scales between 1.08 and 1.16 over 5.5 seconds using Curves.easeInOutSine,
+/// providing seamless +8% scale breathing and headroom for the 55px parallax swipe drift.
+class _CinematicBreathingImage extends StatefulWidget {
+  const _CinematicBreathingImage({
+    required this.imagePath,
+    required this.isActive,
+  });
+
+  final String imagePath;
+  final bool isActive;
+
+  @override
+  State<_CinematicBreathingImage> createState() =>
+      _CinematicBreathingImageState();
+}
+
+class _CinematicBreathingImageState extends State<_CinematicBreathingImage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 5500),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.08, end: 1.16).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOutSine,
+      ),
+    );
+
+    if (widget.isActive) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _CinematicBreathingImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive != oldWidget.isActive) {
+      if (widget.isActive) {
+        _controller.forward(from: 0.0);
+        _controller.repeat(reverse: true);
+      } else {
+        _controller.reset();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
+        );
+      },
+      child: Image.asset(
+        widget.imagePath,
+        cacheWidth: 900,
+        filterQuality: FilterQuality.medium,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
 }

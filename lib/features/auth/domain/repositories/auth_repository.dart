@@ -4,6 +4,13 @@ import '../entities/driver_user_entity.dart';
 abstract class AuthRepository {
   Future<OtpSessionEntity> sendOtp(String phone);
 
+  Future<DriverAuthEntity> loginWithPassword({
+    required String phone,
+    required String password,
+  });
+
+  Future<void> setPassword({required String newPassword});
+
   Future<DriverAuthEntity> verifyOtp({
     required String phone,
     required String sessionId,
@@ -19,4 +26,6 @@ abstract class AuthRepository {
   Future<String?> getSavedAccessToken();
 
   Future<String?> getSavedDriverId();
+
+  Future<String?> getSavedVerificationStatus();
 }

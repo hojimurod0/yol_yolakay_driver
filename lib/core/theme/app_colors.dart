@@ -37,10 +37,12 @@ abstract class AppColors {
   // Status & Feedback
   static const Color success = Color(0xFF22C55E); // Green
   static const Color successLight = Color(0xFFDCFCE7);
+  static const Color successDarkBg = Color(0xFF064E3B);
   static const Color warning = Color(0xFFF59E0B); // Amber
   static const Color warningLight = Color(0xFFFEF3C7);
   static const Color error = Color(0xFFEF4444); // Red
   static const Color errorLight = Color(0xFFFEE2E2);
+  static const Color errorDarkBg = Color(0xFF2E1717);
   static const Color info = Color(0xFF3B82F6); // Blue
   static const Color infoLight = Color(0xFFEFF6FF);
 
@@ -60,26 +62,26 @@ abstract class AppColors {
       Color(0xFFF8F9FA); // Clean Soft Light Gray
   static const Color surfaceLight = Color(0xFFFFFFFF); // Pure White
   static const Color surfaceSubtleLight = Color(0xFFF3F4F6);
-  static const Color glassSurfaceLight = Color(0xF2FFFFFF); // 95% opacity white
-  static const Color glassBorderLight = Color(0x1A000000); // 10% black border
-  static const Color borderLight = Color(0xFFE5E7EB); // Border
+  static const Color glassSurfaceLight = Color(0xF5FFFFFF); // 96% opacity white
+  static const Color glassBorderLight = Color(0x14000000); // 8% black border
+  static const Color borderLight = Color(0xFFE5E7EB); // 1px Subtle Border
   static const Color borderLightHover = Color(0xFFD1D5DB);
-  static const Color textPrimaryLight = Color(0xFF111827); // Deep Charcoal
-  static const Color textSecondaryLight = Color(0xFF6B7280); // Muted Gray
-  static const Color textTertiaryLight = Color(0xFF9CA3AF); // Light Gray
+  static const Color textPrimaryLight = Color(0xFF111111); // Clean Primary Text
+  static const Color textSecondaryLight = Color(0xFF6B7280); // Secondary Text
+  static const Color textTertiaryLight = Color(0xFF9CA3AF); // Muted Gray
 
-  // Dark Theme Surfaces & Neutrals (Comfortable Slate-Charcoal, NEVER pitch #000000)
+  // Dark Theme Surfaces & Neutrals (Comfortable Slate-Charcoal, not pitch black)
   static const Color backgroundDark =
       Color(0xFF121316); // Eye-friendly Slate Charcoal
   static const Color surfaceDark = Color(0xFF1A1C22); // Card surface
   static const Color surfaceSubtleDark =
-      Color(0xFF24262E); // Elevated inputs & chips
+      Color(0xFF202228); // Secondary surface & elevated inputs
   static const Color glassSurfaceDark = Color(0xEE1A1C22);
-  static const Color glassBorderDark = Color(0x22FFFFFF);
-  static const Color borderDark = Color(0xFF2D3039); // Subtle soft border
+  static const Color glassBorderDark = Color(0x1FFFFFFF);
+  static const Color borderDark = Color(0xFF282A30); // Clean 1px dark border
   static const Color borderDarkHover = Color(0xFF3B3E4A);
   static const Color textPrimaryDark =
-      Color(0xFFF3F4F6); // Soft Light Gray (not harsh #FFFFFF)
+      Color(0xFFF8F9FA); // Soft Light Gray (not harsh #FFFFFF)
   static const Color textSecondaryDark = Color(0xFF9CA3AF); // Muted Silver
   static const Color textTertiaryDark = Color(0xFF6B7280);
 
@@ -95,11 +97,11 @@ abstract class AppColors {
 
   // Common UI Aliases & Convenience Colors
   static const Color cardBorder = Color(0xFFE5E7EB);
-  static const Color cardBorderDark = Color(0xFF2D3039);
+  static const Color cardBorderDark = Color(0xFF282A30);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textTertiary = Color(0xFF9CA3AF);
   static const Color darkSurface = Color(0xFF1A1C22);
-  static const Color darkCard = Color(0xFF24262E);
+  static const Color darkCard = Color(0xFF202228);
   static const Color gray50 = Color(0xFFF9FAFB);
   static const Color gray100 = Color(0xFFF3F4F6);
   static const Color gray200 = Color(0xFFE5E7EB);
@@ -113,7 +115,7 @@ abstract class AppColors {
   static const Color yandexYellow = Color(0xFFFFC107);
   static const Color yandexBlack = Color(0xFF111111);
   static const Color yandexDarkSurface = Color(0xFF1A1C22);
-  static const Color yandexDarkCard = Color(0xFF24262E);
+  static const Color yandexDarkCard = Color(0xFF202228);
   static const Color yandexGreen = Color(0xFF22C55E);
   static const Color yandexRed = Color(0xFFEF4444);
 
@@ -121,7 +123,7 @@ abstract class AppColors {
   static final List<BoxShadow> subtleCardShadow = [
     BoxShadow(
       color: Colors.black.withValues(alpha: 0.04),
-      blurRadius: 10,
+      blurRadius: 8,
       offset: const Offset(0, 2),
     ),
   ];

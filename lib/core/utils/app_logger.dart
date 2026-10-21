@@ -18,6 +18,7 @@ enum LogModule {
   booking,
   performance,
   system,
+  websocket,
 }
 
 /// Centralized, production-safe application logger.

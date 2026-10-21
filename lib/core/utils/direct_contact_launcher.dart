@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/app_snackbar.dart';
 
 /// Safely handles direct driver interactions (Calls, Telegram, SMS, Share).
 class DirectContactLauncher {
@@ -22,11 +23,9 @@ class DirectContactLauncher {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Qo\'ng\'iroq qilib bo\'lmadi: $phoneNumber'),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppSnackBar.showError(
+          context,
+          'Qo\'ng\'iroq qilib bo\'lmadi: $phoneNumber',
         );
       }
       return false;
@@ -49,11 +48,9 @@ class DirectContactLauncher {
       return await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Telegram ochilmadi: $url'),
-            backgroundColor: Colors.orangeAccent,
-          ),
+        AppSnackBar.showError(
+          context,
+          'Telegram ochilmadi: $url',
         );
       }
       return false;
@@ -78,11 +75,9 @@ class DirectContactLauncher {
       return await launchUrl(uri);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('SMS dasturi ochilmadi: $phoneNumber'),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppSnackBar.showError(
+          context,
+          'SMS dasturi ochilmadi: $phoneNumber',
         );
       }
       return false;

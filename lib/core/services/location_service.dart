@@ -81,7 +81,7 @@ class LocationService {
         distanceFilter: distanceFilter,
         intervalDuration: interval,
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-          notificationTitle: "Yo'l-Yo'lakay Haydovchi",
+          notificationTitle: "Yol-Yolakay",
           notificationText: 'Marshrut va taksi radari faol',
           enableWakeLock: true,
         ),
@@ -163,12 +163,12 @@ class LocationService {
 
   /// Stops managed location tracking when driver goes offline, closes shift, or logs out.
   void stopLocationTracking() {
-    if (_trackingSubscription != null) {
+    if (_trackingSubscription != null || _isTracking) {
       _trackingSubscription?.cancel();
       _trackingSubscription = null;
+      _isTracking = false;
+      AppLogger.info('Location tracking stopped.', module: LogModule.system);
     }
-    _isTracking = false;
-    AppLogger.info('Location tracking stopped.', module: LogModule.system);
   }
 
   double distanceBetween(

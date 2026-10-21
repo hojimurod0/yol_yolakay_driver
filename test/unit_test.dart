@@ -212,18 +212,18 @@ void main() {
         'maps NetworkException to user-friendly messages in all supported locales',
         () {
       final uzErr =
-          AppErrorHandler.parse(NetworkException(), languageCode: 'uz');
+          AppErrorHandler.parse(const NetworkException(), languageCode: 'uz');
       expect(uzErr.isNetworkError, isTrue);
       expect(uzErr.title, 'Tarmoq xatoligi');
       expect(uzErr.message, contains('Server'));
 
       final ruErr =
-          AppErrorHandler.parse(NetworkException(), languageCode: 'ru');
+          AppErrorHandler.parse(const NetworkException(), languageCode: 'ru');
       expect(ruErr.isNetworkError, isTrue);
       expect(ruErr.title, 'Ошибка сети');
 
       final enErr =
-          AppErrorHandler.parse(NetworkException(), languageCode: 'en');
+          AppErrorHandler.parse(const NetworkException(), languageCode: 'en');
       expect(enErr.isNetworkError, isTrue);
       expect(enErr.title, 'Network Error');
     });
@@ -231,7 +231,7 @@ void main() {
     test(
         'maps AuthException to friendly session message without technical jargon',
         () {
-      final authErr = AppErrorHandler.parse(AuthException('token invalid'),
+      final authErr = AppErrorHandler.parse(const AuthException('token invalid'),
           languageCode: 'uz');
       expect(authErr.isAuthError, isTrue);
       expect(authErr.title, 'Kirish xatosi');
@@ -240,7 +240,7 @@ void main() {
 
     test('maps ApiException with message directly', () {
       final apiErr = AppErrorHandler.parse(
-          ApiException(message: 'Haydovchi topilmadi', statusCode: 404),
+          const ApiException(message: 'Haydovchi topilmadi', statusCode: 404),
           languageCode: 'uz');
       expect(apiErr.title, 'So\'rov xatoligi');
       expect(apiErr.message, 'Haydovchi topilmadi');

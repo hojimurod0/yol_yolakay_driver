@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_responsive.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
@@ -105,29 +107,18 @@ class _DriverWalletPageState extends State<DriverWalletPage>
           } else if (state.paymentVerificationStatus ==
               PaymentVerificationStatus.verified) {
             _pendingPaymentInvoiceId = null;
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'To\'lov muvaffaqiyatli qabul qilindi va balans yangilandi!'),
-                backgroundColor: AppColors.success,
-              ),
+            AppSnackBar.showSuccess(
+              context,
+              'To\'lov muvaffaqiyatli qabul qilindi va balans yangilandi!',
             );
           } else if (state.paymentVerificationStatus ==
               PaymentVerificationStatus.failed) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'To\'lov hali tasdiqlanmadi. Qayta urinib ko\'ring yoki biroz kuting.'),
-                backgroundColor: AppColors.warning,
-              ),
+            AppSnackBar.showInfo(
+              context,
+              'To\'lov hali tasdiqlanmadi. Qayta urinib ko\'ring yoki biroz kuting.',
             );
           } else if (state.depositError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.depositError!),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            AppSnackBar.showError(context, state.depositError!);
           }
         },
         builder: (context, state) {
@@ -192,24 +183,34 @@ class _DriverWalletPageState extends State<DriverWalletPage>
                   .add(const LoadWalletDataEvent(refresh: true));
             },
             color: AppColors.primary,
-            child: ListView(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                _buildBalanceCard(context, state, isDark),
-                const SizedBox(height: 16),
-                _buildEarningsSection(context, state, isDark),
-                const SizedBox(height: 24),
-                _buildTransactionsSection(context, state, isDark),
-                if (state.isLoadingMore) ...[
-                  const SizedBox(height: 16),
-                  const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: AppResponsive.maxContentWidth,
+                ),
+                child: ListView(
+                  controller: _scrollController,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppResponsive.horizontalPadding(context),
+                    vertical: 16,
                   ),
-                ],
-                const SizedBox(height: 32),
-              ],
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    _buildBalanceCard(context, state, isDark),
+                    const SizedBox(height: 16),
+                    _buildEarningsSection(context, state, isDark),
+                    const SizedBox(height: 24),
+                    _buildTransactionsSection(context, state, isDark),
+                    if (state.isLoadingMore) ...[
+                      const SizedBox(height: 16),
+                      const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ],
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
             ),
           );
         },
@@ -229,7 +230,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -262,7 +263,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.15),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Row(
@@ -284,16 +285,21 @@ class _DriverWalletPageState extends State<DriverWalletPage>
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            '${_formatAmount(balance)} so\'m',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
-              color: isLow
-                  ? AppColors.warning
-                  : (isDark
-                      ? AppColors.textPrimaryDark
-                      : AppColors.textPrimaryLight),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '${_formatAmount(balance)} so\'m',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+                color: isLow
+                    ? AppColors.warning
+                    : (isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimaryLight),
+              ),
             ),
           ),
           if (isLow) ...[
@@ -301,9 +307,9 @@ class _DriverWalletPageState extends State<DriverWalletPage>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.1),
+                color: AppColors.warning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
@@ -363,7 +369,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -412,41 +418,56 @@ class _DriverWalletPageState extends State<DriverWalletPage>
           ),
           const SizedBox(height: 20),
           if (earnings != null) ...[
-            GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.8,
+            Column(
               children: [
-                _buildStatTile(
-                  title: 'Jami daromad',
-                  value: '${_formatAmount(earnings.totalEarnings)} so\'m',
-                  icon: Icons.monetization_on_outlined,
-                  color: AppColors.success,
-                  isDark: isDark,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatTile(
+                        title: 'Jami daromad',
+                        value: '${_formatAmount(earnings.totalEarnings)} so\'m',
+                        icon: Icons.monetization_on_outlined,
+                        color: AppColors.success,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatTile(
+                        title: 'Safarlar soni',
+                        value: '${earnings.totalTrips} ta',
+                        icon: Icons.local_taxi_outlined,
+                        color: AppColors.info,
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
                 ),
-                _buildStatTile(
-                  title: 'Safarlar soni',
-                  value: '${earnings.totalTrips} ta',
-                  icon: Icons.local_taxi_outlined,
-                  color: AppColors.info,
-                  isDark: isDark,
-                ),
-                _buildStatTile(
-                  title: 'Masofa',
-                  value: '${earnings.totalDistanceKm.toStringAsFixed(1)} km',
-                  icon: Icons.route_outlined,
-                  color: AppColors.warning,
-                  isDark: isDark,
-                ),
-                _buildStatTile(
-                  title: 'Onlayn vaqt',
-                  value: '${earnings.totalOnlineHours.toStringAsFixed(1)} soat',
-                  icon: Icons.timer_outlined,
-                  color: Colors.purple,
-                  isDark: isDark,
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatTile(
+                        title: 'Masofa',
+                        value:
+                            '${earnings.totalDistanceKm.toStringAsFixed(1)} km',
+                        icon: Icons.route_outlined,
+                        color: AppColors.warning,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildStatTile(
+                        title: 'Onlayn vaqt',
+                        value:
+                            '${earnings.totalOnlineHours.toStringAsFixed(1)} soat',
+                        icon: Icons.timer_outlined,
+                        color: Colors.purple,
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -551,17 +572,19 @@ class _DriverWalletPageState extends State<DriverWalletPage>
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: isDark
-                  ? AppColors.textPrimaryDark
-                  : AppColors.textPrimaryLight,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimaryLight,
+              ),
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -667,7 +690,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
         ),
         const SizedBox(height: 12),
         if (transactions.isEmpty) ...[
-          EmptyStateWidget(
+          const EmptyStateWidget(
             icon: Icons.receipt_long_outlined,
             title: 'Hozircha tranzaksiyalar yo\'q',
             description:
@@ -698,27 +721,27 @@ class _DriverWalletPageState extends State<DriverWalletPage>
       case TransactionType.deposit:
         icon = Icons.arrow_downward_rounded;
         iconColor = AppColors.success;
-        iconBg = AppColors.success.withOpacity(0.15);
+        iconBg = AppColors.success.withValues(alpha: 0.15);
         break;
       case TransactionType.commission:
         icon = Icons.arrow_upward_rounded;
         iconColor = AppColors.error;
-        iconBg = AppColors.error.withOpacity(0.15);
+        iconBg = AppColors.error.withValues(alpha: 0.15);
         break;
       case TransactionType.bonus:
         icon = Icons.stars_rounded;
         iconColor = Colors.purple;
-        iconBg = Colors.purple.withOpacity(0.15);
+        iconBg = Colors.purple.withValues(alpha: 0.15);
         break;
       case TransactionType.cashback:
         icon = Icons.redeem_rounded;
         iconColor = AppColors.info;
-        iconBg = AppColors.info.withOpacity(0.15);
+        iconBg = AppColors.info.withValues(alpha: 0.15);
         break;
       default:
         icon = Icons.sync_alt_rounded;
         iconColor = Colors.grey;
-        iconBg = Colors.grey.withOpacity(0.15);
+        iconBg = Colors.grey.withValues(alpha: 0.15);
     }
 
     final dateStr =
@@ -822,7 +845,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.4),
+                        color: Colors.grey.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -977,7 +1000,7 @@ class _DriverWalletPageState extends State<DriverWalletPage>
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withOpacity(0.15)
+                ? AppColors.primary.withValues(alpha: 0.15)
                 : (isDark
                     ? AppColors.surfaceSubtleDark
                     : AppColors.surfaceSubtleLight),
@@ -1020,18 +1043,16 @@ class _DriverWalletPageState extends State<DriverWalletPage>
       try {
         await launchUrl(uri, mode: LaunchMode.platformDefault);
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('To\'lov havolasini ochishda xatolik: $e'),
-              backgroundColor: AppColors.error,
-            ),
+        if (context.mounted) {
+          AppSnackBar.showError(
+            context,
+            'To\'lov havolasini ochishda xatolik: $e',
           );
         }
       }
     }
 
-    if (mounted) {
+    if (context.mounted) {
       _showPaymentStatusSheet(context, invoice);
     }
   }

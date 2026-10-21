@@ -5,6 +5,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 
+/// Floating minimalist dock bottom navigation bar for Driver App.
+/// Matches Yo'l-Yo'lakay Passenger App navigation standards.
 class DriverMainShellPage extends StatelessWidget {
   const DriverMainShellPage({
     super.key,
@@ -29,25 +31,28 @@ class DriverMainShellPage extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: RepaintBoundary(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.md, 0, AppSpacing.md, AppSpacing.xs),
-            child: Container(
-              height: 64,
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: Container(
+            height: 68.0,
               decoration: BoxDecoration(
-                color: isDark ? AppColors.surfaceDark : Colors.white,
-                borderRadius: AppRadius.borderLg,
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                borderRadius: AppRadius.borderXl,
                 border: Border.all(
-                  color:
-                      isDark ? AppColors.cardBorderDark : AppColors.cardBorder,
+                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                  width: 1.0,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                    color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -95,9 +100,9 @@ class DriverMainShellPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
+
 
   Widget _buildNavItem({
     required BuildContext context,
@@ -111,37 +116,44 @@ class DriverMainShellPage extends StatelessWidget {
     final isSelected = index == currentIndex;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withOpacity(0.18)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
+    const selectedColor = AppColors.taxiYellow;
+    final unselectedColor =
+        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final textColor = isSelected
+        ? (isDark ? Colors.white : AppColors.textPrimaryLight)
+        : unselectedColor;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadius.borderXl,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isSelected ? selectedIcon : icon,
-              size: 20,
-              color: isSelected
-                  ? (isDark ? AppColors.primary : AppColors.charcoalBlack)
-                  : (isDark ? Colors.white60 : AppColors.textSecondary),
+            AnimatedScale(
+              scale: isSelected ? 1.08 : 1.0,
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeInOut,
+              child: Icon(
+                isSelected ? selectedIcon : icon,
+                size: isSelected ? 24.0 : 22.0,
+                color: isSelected ? selectedColor : unselectedColor,
+              ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected
-                    ? (isDark ? AppColors.primary : AppColors.charcoalBlack)
-                    : (isDark ? Colors.white60 : AppColors.textSecondary),
+                fontSize: 12.0,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                color: textColor,
+                height: 1.15,
+                letterSpacing: -0.2,
               ),
             ),
           ],

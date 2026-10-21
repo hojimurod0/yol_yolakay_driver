@@ -3,16 +3,23 @@ import '../../domain/entities/verification_entities.dart';
 
 part 'verification_models.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 class CityModel extends CityEntity {
   const CityModel({
     @JsonKey(name: 'id') required super.id,
     @JsonKey(name: 'name') required super.name,
     @JsonKey(name: 'region') required super.region,
+    @JsonKey(name: 'latitude') super.latitude,
+    @JsonKey(name: 'longitude') super.longitude,
   });
 
-  factory CityModel.fromJson(Map<String, dynamic> json) =>
-      _$CityModelFromJson(json);
+  factory CityModel.fromJson(Map<String, dynamic> json) => CityModel(
+        id: (json['id'] ?? json['_id'] ?? '').toString(),
+        name: (json['name'] ?? json['name_uz'] ?? json['nameUz'] ?? '').toString(),
+        region: (json['region'] ?? '').toString(),
+        latitude: (json['lat'] ?? json['latitude'] as num?)?.toDouble(),
+        longitude: (json['lng'] ?? json['longitude'] as num?)?.toDouble(),
+      );
 
   Map<String, dynamic> toJson() => _$CityModelToJson(this);
 }

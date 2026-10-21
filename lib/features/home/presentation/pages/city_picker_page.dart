@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../../core/providers/core_providers.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/localization/locale_cubit.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_snackbar.dart';
+import '../../data/repositories/mock_city_repository.dart';
 import '../../domain/entities/city_entity.dart';
+import '../../domain/repositories/city_repository.dart';
 import '../providers/city_picker_provider.dart';
 
 enum CityPickerViewMode { map, list }
 
-class CityPickerPage extends ConsumerStatefulWidget {
+class CityPickerPage extends StatefulWidget {
   const CityPickerPage({
     super.key,
     required this.title,
@@ -26,11 +30,12 @@ class CityPickerPage extends ConsumerStatefulWidget {
   final CityPickerViewMode initialMode;
 
   @override
-  ConsumerState<CityPickerPage> createState() => _CityPickerPageState();
+  State<CityPickerPage> createState() => _CityPickerPageState();
 }
 
-class _CityPickerPageState extends ConsumerState<CityPickerPage> {
+class _CityPickerPageState extends State<CityPickerPage> {
   final TextEditingController _searchController = TextEditingController();
+  late final CityPickerCubit _cityPickerCubit;
   GoogleMapController? _mapController;
   CityEntity? _selectedCity;
   MapType _mapType = MapType.normal;
@@ -48,9 +53,14 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
   @override
   void initState() {
     super.initState();
+    final cityRepo = sl.isRegistered<CityRepository>()
+        ? sl<CityRepository>()
+        : MockCityRepository();
+    _cityPickerCubit = CityPickerCubit(cityRepo);
+
     // Auto-detect current GPS location when opening picker
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cities = ref.read(cityPickerNotifierProvider).allCities;
+      final cities = _cityPickerCubit.state.allCities;
       if (cities.isNotEmpty) {
         _handleRealGpsDetect(cities, silent: true);
       }
@@ -61,6 +71,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
   void dispose() {
     _searchController.dispose();
     _mapController?.dispose();
+    _cityPickerCubit.close();
     super.dispose();
   }
 
@@ -148,11 +159,9 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
       );
       if (!serviceEnabled) {
         if (!silent && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('GPS xizmati o\'chiq. Iltimos, GPS ni yoqing.'),
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.showError(
+            context,
+            'GPS xizmati o\'chiq. Iltimos, GPS ni yoqing.',
           );
         }
         return;
@@ -172,16 +181,9 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
 
       if (permission == LocationPermission.deniedForever) {
         if (mounted && !silent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  const Text('GPS ruxsati berilmagan. Sozlamalardan yoqing.'),
-              action: SnackBarAction(
-                label: 'Sozlamalar',
-                onPressed: () => Geolocator.openAppSettings(),
-              ),
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.showInfo(
+            context,
+            'GPS ruxsati berilmagan. Sozlamalardan yoqing.',
           );
         }
         return;
@@ -189,11 +191,9 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
 
       if (permission == LocationPermission.denied) {
         if (mounted && !silent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('GPS joylashuv ruxsati berilmadi'),
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.showError(
+            context,
+            'GPS joylashuv ruxsati berilmadi',
           );
         }
         return;
@@ -229,16 +229,11 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
               13.5,
             ),
           );
-          if (!silent) {
-            final locale = ref.read(localeNotifierProvider).languageCode;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: const Color(0xFF10B981),
-                behavior: SnackBarBehavior.floating,
-                content: Text(
-                    'Joylashuv aniqlandi: ${nearest.localizedName(locale)}'),
-                duration: const Duration(seconds: 2),
-              ),
+          if (!silent && mounted) {
+            final locale = context.read<LocaleCubit>().state.languageCode;
+            AppSnackBar.showSuccess(
+              context,
+              'Joylashuv aniqlandi: ${nearest.localizedName(locale)}',
             );
           }
         }
@@ -293,15 +288,17 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final locale = ref.watch(localeNotifierProvider);
-    final localeCode = locale.languageCode;
-    final isRu = localeCode == 'ru';
-    final cityState = ref.watch(cityPickerNotifierProvider);
+    return BlocBuilder<CityPickerCubit, CityPickerState>(
+      bloc: _cityPickerCubit,
+      builder: (context, cityState) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final locale = context.watch<LocaleCubit>().state;
+        final localeCode = locale.languageCode;
+        final isRu = localeCode == 'ru';
 
-    final displayCities = _getFilteredCities(cityState.allCities);
+        final displayCities = _getFilteredCities(cityState.allCities);
 
-    return Scaffold(
+        return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF101014) : const Color(0xFFF7F6FB),
       body: Stack(
@@ -342,7 +339,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1E1E26).withValues(alpha: 0.92)
+                            ? AppColors.surfaceDark.withValues(alpha: 0.92)
                             : Colors.white.withValues(alpha: 0.95),
                         shape: BoxShape.circle,
                         boxShadow: [
@@ -377,7 +374,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF1E1E26).withValues(alpha: 0.92)
+                          ? AppColors.surfaceDark.withValues(alpha: 0.92)
                           : Colors.white.withValues(alpha: 0.95),
                       borderRadius: AppRadius.borderPill,
                       boxShadow: [
@@ -420,7 +417,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF1E1E26).withValues(alpha: 0.92)
+                            ? AppColors.surfaceDark.withValues(alpha: 0.92)
                             : Colors.white.withValues(alpha: 0.95),
                         shape: BoxShape.circle,
                         boxShadow: [
@@ -443,7 +440,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
                               ? Icons.layers_rounded
                               : Icons.map_rounded,
                           color: isDark
-                              ? const Color(0xFFFCE000)
+                              ? AppColors.taxiYellow
                               : AppColors.primary,
                           size: 20,
                         ),
@@ -461,7 +458,7 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
             bottom: MediaQuery.of(context).size.height * 0.44 + 14,
             child: Material(
               color: isDark
-                  ? const Color(0xFF1E1E26).withValues(alpha: 0.92)
+                  ? AppColors.surfaceDark.withValues(alpha: 0.92)
                   : Colors.white.withValues(alpha: 0.95),
               shape: const CircleBorder(),
               elevation: 6,
@@ -826,6 +823,8 @@ class _CityPickerPageState extends ConsumerState<CityPickerPage> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 

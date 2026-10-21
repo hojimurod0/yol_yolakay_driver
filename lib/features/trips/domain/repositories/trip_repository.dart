@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/mock_trip_repository.dart';
 import '../entities/trip_entity.dart';
 
 /// Repository contract for trips history, real-time tracking, and post-trip ratings.
@@ -17,6 +15,3 @@ abstract class TripRepository {
     List<String>? tags,
   });
 }
-
-final tripRepositoryProvider =
-    Provider<TripRepository>((ref) => MockTripRepository());

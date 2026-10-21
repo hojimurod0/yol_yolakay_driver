@@ -60,12 +60,16 @@ class UzbekLicensePlateInput extends StatefulWidget {
     required this.onChanged,
     this.isDark = false,
     this.isRu = false,
+    this.errorText,
+    this.label,
   });
 
   final String initialValue;
   final ValueChanged<String> onChanged;
   final bool isDark;
   final bool isRu;
+  final String? errorText;
+  final String? label;
 
   @override
   State<UzbekLicensePlateInput> createState() => _UzbekLicensePlateInputState();
@@ -85,6 +89,11 @@ class _UzbekLicensePlateInputState extends State<UzbekLicensePlateInput> {
 
   void _parseInitialValue(String raw) {
     final clean = raw.trim().toUpperCase();
+    if (clean.isEmpty) {
+      _selectedRegion = '01';
+      _numberController = TextEditingController(text: '');
+      return;
+    }
     final match = RegExp(r'^(\d{2})\s*(.*)$').firstMatch(clean);
     if (match != null) {
       _selectedRegion = match.group(1) ?? '01';
@@ -98,12 +107,29 @@ class _UzbekLicensePlateInputState extends State<UzbekLicensePlateInput> {
     } else {
       _selectedRegion = '01';
       _numberController =
-          TextEditingController(text: clean.isNotEmpty ? clean : 'A 777 AA');
+          TextEditingController(text: clean);
     }
   }
 
   void _handleNumberChange() {
-    final numText = _numberController.text.trim().toUpperCase();
+    String numText = _numberController.text.trim().toUpperCase();
+    final regionMatch = RegExp(r'^(\d{2})\s*(.*)$').firstMatch(numText);
+    if (regionMatch != null) {
+      final potentialRegion = regionMatch.group(1)!;
+      final isKnownRegion =
+          kUzbekistanRegions.any((r) => r.code == potentialRegion);
+      if (isKnownRegion) {
+        _selectedRegion = potentialRegion;
+        final remaining = regionMatch.group(2) ?? '';
+        _numberController.removeListener(_handleNumberChange);
+        _numberController.value = TextEditingValue(
+          text: remaining,
+          selection: TextSelection.collapsed(offset: remaining.length),
+        );
+        _numberController.addListener(_handleNumberChange);
+        numText = remaining;
+      }
+    }
     final fullPlate = '$_selectedRegion $numText'.trim();
     widget.onChanged(fullPlate);
     setState(() {});
@@ -298,16 +324,33 @@ class _UzbekLicensePlateInputState extends State<UzbekLicensePlateInput> {
 
   @override
   Widget build(BuildContext context) {
+    final hasError = widget.errorText != null && widget.errorText!.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (widget.label != null && widget.label!.isNotEmpty) ...[
+          Text(
+            widget.label!,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: widget.isDark ? Colors.white70 : AppColors.charcoalBlack,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+
         // Realistic Uzbekistan License Plate Box
         Container(
           height: 60,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF1E293B), width: 2.2),
+            border: Border.all(
+              color: hasError ? AppColors.error : const Color(0xFF1E293B),
+              width: 2.2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.12),
@@ -457,6 +500,21 @@ class _UzbekLicensePlateInputState extends State<UzbekLicensePlateInput> {
 
         const SizedBox(height: 8),
 
+        // Shablon eslatmasi
+        Padding(
+          padding: const EdgeInsets.only(top: 6, bottom: 4),
+          child: Text(
+            'Shablon: 01 A 777 AA (jismoniy) yoki 01 777 AAA (yuridik/taksi)',
+            style: TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+              color: widget.isDark
+                  ? const Color(0xFF8E93A2)
+                  : AppColors.textSecondary,
+            ),
+          ),
+        ),
+
         // Quick Region Selector Chips
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -475,6 +533,26 @@ class _UzbekLicensePlateInputState extends State<UzbekLicensePlateInput> {
             ],
           ),
         ),
+        if (hasError) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  color: AppColors.error, size: 14),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  widget.errorText!,
+                  style: const TextStyle(
+                    color: AppColors.error,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -533,10 +611,51 @@ class _UzPlateTextFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final uppercase = newValue.text.toUpperCase();
-    return newValue.copyWith(
-      text: uppercase,
-      selection: TextSelection.collapsed(offset: uppercase.length),
+    var raw =
+        newValue.text.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+    if (raw.isEmpty) {
+      return newValue.copyWith(
+        text: '',
+        selection: const TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    // Agar foydalanuvchi viloyat kodi bilan kiritgan bo'lsa (masalan 01A777AA yoki 01777AAA)
+    if (raw.length >= 3 &&
+        RegExp(r'^\d{2}').hasMatch(raw) &&
+        kUzbekistanRegions.any((r) => r.code == raw.substring(0, 2))) {
+      raw = raw.substring(2);
+    }
+
+    final StringBuffer buffer = StringBuffer();
+    if (RegExp(r'^[A-Z]').hasMatch(raw)) {
+      // Jismoniy shaxs formati: 1 ta harf + 3 ta raqam + 2 ta harf (A 777 AA)
+      buffer.write(raw.substring(0, 1));
+      if (raw.length > 1) {
+        buffer.write(' ');
+        final digitsEnd = raw.length > 4 ? 4 : raw.length;
+        buffer.write(raw.substring(1, digitsEnd));
+      }
+      if (raw.length > 4) {
+        buffer.write(' ');
+        final lettersEnd = raw.length > 6 ? 6 : raw.length;
+        buffer.write(raw.substring(4, lettersEnd));
+      }
+    } else {
+      // Yuridik shaxs / taksi formati: 3 ta raqam + 3 ta harf (777 AAA)
+      final digitsEnd = raw.length > 3 ? 3 : raw.length;
+      buffer.write(raw.substring(0, digitsEnd));
+      if (raw.length > 3) {
+        buffer.write(' ');
+        final lettersEnd = raw.length > 6 ? 6 : raw.length;
+        buffer.write(raw.substring(3, lettersEnd));
+      }
+    }
+
+    final formatted = buffer.toString();
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

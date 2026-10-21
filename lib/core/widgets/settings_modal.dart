@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../localization/app_localizations_helper.dart';
-import '../providers/core_providers.dart';
+import '../localization/locale_cubit.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../theme/theme_cubit.dart';
 
 /// Opens dedicated Language Selection Modal Bottom Sheet.
 Future<void> showLanguageModal(BuildContext context) {
@@ -32,14 +33,14 @@ Future<void> showThemeModal(BuildContext context) {
   );
 }
 
-class _LanguageModalContent extends ConsumerWidget {
+class _LanguageModalContent extends StatelessWidget {
   const _LanguageModalContent();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = context.l10n;
-    final currentLocale = ref.watch(localeNotifierProvider);
+    final currentLocale = context.watch<LocaleCubit>().state;
 
     return Container(
       decoration: BoxDecoration(
@@ -140,7 +141,7 @@ class _LanguageModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref.read(localeNotifierProvider.notifier).setLocale('uz');
+                    context.read<LocaleCubit>().changeLanguage('uz');
                     Navigator.pop(context);
                   },
                 ),
@@ -157,7 +158,7 @@ class _LanguageModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref.read(localeNotifierProvider.notifier).setLocale('ru');
+                    context.read<LocaleCubit>().changeLanguage('ru');
                     Navigator.pop(context);
                   },
                 ),
@@ -174,7 +175,7 @@ class _LanguageModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref.read(localeNotifierProvider.notifier).setLocale('en');
+                    context.read<LocaleCubit>().changeLanguage('en');
                     Navigator.pop(context);
                   },
                 ),
@@ -187,14 +188,14 @@ class _LanguageModalContent extends ConsumerWidget {
   }
 }
 
-class _ThemeModalContent extends ConsumerWidget {
+class _ThemeModalContent extends StatelessWidget {
   const _ThemeModalContent();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = context.l10n;
-    final currentTheme = ref.watch(themeNotifierProvider);
+    final currentTheme = context.watch<ThemeCubit>().state;
 
     return Container(
       decoration: BoxDecoration(
@@ -296,9 +297,7 @@ class _ThemeModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref
-                        .read(themeNotifierProvider.notifier)
-                        .setThemeMode(ThemeMode.light);
+                    context.read<ThemeCubit>().setThemeMode(ThemeMode.light);
                     Navigator.pop(context);
                   },
                 ),
@@ -316,9 +315,7 @@ class _ThemeModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref
-                        .read(themeNotifierProvider.notifier)
-                        .setThemeMode(ThemeMode.dark);
+                    context.read<ThemeCubit>().setThemeMode(ThemeMode.dark);
                     Navigator.pop(context);
                   },
                 ),
@@ -336,9 +333,7 @@ class _ThemeModalContent extends ConsumerWidget {
                   isDark: isDark,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref
-                        .read(themeNotifierProvider.notifier)
-                        .setThemeMode(ThemeMode.system);
+                    context.read<ThemeCubit>().setThemeMode(ThemeMode.system);
                     Navigator.pop(context);
                   },
                 ),

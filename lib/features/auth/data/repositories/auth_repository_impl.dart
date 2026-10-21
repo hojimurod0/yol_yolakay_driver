@@ -19,6 +19,31 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<DriverAuthEntity> loginWithPassword({
+    required String phone,
+    required String password,
+  }) async {
+    final authResult = await _remoteDataSource.loginWithPassword(
+      phone: phone,
+      password: password,
+    );
+
+    await _secureStorage.saveTokens(
+      accessToken: authResult.tokens.accessToken,
+      refreshToken: authResult.tokens.refreshToken,
+      driverId: authResult.driver.id,
+      verificationStatus: authResult.verificationStatus,
+    );
+
+    return authResult;
+  }
+
+  @override
+  Future<void> setPassword({required String newPassword}) {
+    return _remoteDataSource.setPassword(newPassword);
+  }
+
+  @override
   Future<DriverAuthEntity> verifyOtp({
     required String phone,
     required String sessionId,
@@ -30,11 +55,12 @@ class AuthRepositoryImpl implements AuthRepository {
       code: code,
     );
 
-    // Save tokens securely
+    // Save tokens and verification status securely
     await _secureStorage.saveTokens(
       accessToken: authResult.tokens.accessToken,
       refreshToken: authResult.tokens.refreshToken,
       driverId: authResult.driver.id,
+      verificationStatus: authResult.verificationStatus,
     );
 
     return authResult;
@@ -70,4 +96,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<String?> getSavedDriverId() => _secureStorage.getDriverId();
+
+  @override
+  Future<String?> getSavedVerificationStatus() =>
+      _secureStorage.getVerificationStatus();
 }

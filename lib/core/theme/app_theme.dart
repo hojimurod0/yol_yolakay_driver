@@ -65,7 +65,7 @@ abstract class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: const Color(0xFF04111C),
           elevation: 0,
-          minimumSize: const Size.fromHeight(AppDimensions.buttonHeightLg),
+          minimumSize: const Size(64, AppDimensions.buttonHeightLg),
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
           textStyle:
               AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
@@ -75,7 +75,7 @@ abstract class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryDark,
-          minimumSize: const Size.fromHeight(AppDimensions.buttonHeightLg),
+          minimumSize: const Size(64, AppDimensions.buttonHeightLg),
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
           side: const BorderSide(color: AppColors.primary, width: 1.5),
           textStyle:
@@ -145,7 +145,7 @@ abstract class AppTheme {
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
       primary: AppColors.primary,
-      onPrimary: AppColors.white,
+      onPrimary: AppColors.charcoalBlack,
       primaryContainer: AppColors.primaryDark,
       onPrimaryContainer: AppColors.primaryLight,
       secondary: AppColors.secondary,
@@ -197,7 +197,7 @@ abstract class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: const Color(0xFF04111C),
           elevation: 0,
-          minimumSize: const Size.fromHeight(AppDimensions.buttonHeightLg),
+          minimumSize: const Size(64, AppDimensions.buttonHeightLg),
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
           textStyle:
               AppTypography.titleMedium.copyWith(fontWeight: FontWeight.w800),
@@ -207,7 +207,7 @@ abstract class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size.fromHeight(AppDimensions.buttonHeightLg),
+          minimumSize: const Size(64, AppDimensions.buttonHeightLg),
           shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderMd),
           side: const BorderSide(color: AppColors.primary, width: 1.5),
           textStyle:

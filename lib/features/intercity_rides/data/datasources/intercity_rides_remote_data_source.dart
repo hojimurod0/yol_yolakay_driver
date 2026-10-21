@@ -30,6 +30,16 @@ abstract class IntercityRidesRemoteDataSource {
     required String bookingId,
     required String reason,
   });
+
+  Future<void> updateRide({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  });
+
+  Future<void> deleteRide({
+    required String rideId,
+    String? reason,
+  });
 }
 
 class IntercityRidesRemoteDataSourceImpl
@@ -57,9 +67,9 @@ class IntercityRidesRemoteDataSourceImpl
       ),
     );
     return response.data ??
-        PaginatedResponse(
-          items: const [],
-          pagination: const PaginationModel(
+        const PaginatedResponse(
+          items: [],
+          pagination: PaginationModel(
               page: 1, limit: 15, totalItems: 0, totalPages: 1),
         );
   }
@@ -70,8 +80,18 @@ class IntercityRidesRemoteDataSourceImpl
       ApiEndpoints.rides,
       idempotencyKey: 'ride-create-${DateTime.now().millisecondsSinceEpoch}',
       data: rideData,
+      fromData: (data) {
+        if (data is Map<String, dynamic>) {
+          return data['id']?.toString() ??
+              data['ride_id']?.toString() ??
+              data['_id']?.toString() ??
+              'created';
+        }
+        if (data != null) return data.toString();
+        return 'created';
+      },
     );
-    return response.data?['ride_id']?.toString() ?? '';
+    return response.data ?? 'created';
   }
 
   @override
@@ -133,5 +153,45 @@ class IntercityRidesRemoteDataSourceImpl
           'booking-cancel-$bookingId-${DateTime.now().millisecondsSinceEpoch}',
       data: {'reason': reason},
     );
+  }
+
+  @override
+  Future<void> updateRide({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  }) async {
+    try {
+      await _apiClient.put(
+        ApiEndpoints.rideDetails(rideId),
+        idempotencyKey:
+            'ride-update-$rideId-${DateTime.now().millisecondsSinceEpoch}',
+        data: rideData,
+      );
+    } catch (_) {
+      await _apiClient.patch(
+        ApiEndpoints.rideDetails(rideId),
+        idempotencyKey:
+            'ride-update-patch-$rideId-${DateTime.now().millisecondsSinceEpoch}',
+        data: rideData,
+      );
+    }
+  }
+
+  @override
+  Future<void> deleteRide({
+    required String rideId,
+    String? reason,
+  }) async {
+    try {
+      await _apiClient.delete(
+        ApiEndpoints.rideDetails(rideId),
+      );
+    } catch (_) {
+      await updateRideStatus(
+        rideId: rideId,
+        status: 'cancelled',
+        cancelReason: reason ?? 'Haydovchi tomonidan bekor qilindi',
+      );
+    }
   }
 }

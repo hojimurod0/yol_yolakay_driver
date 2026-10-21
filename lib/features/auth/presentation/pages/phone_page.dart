@@ -7,11 +7,12 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 
-/// Clean Driver Phone Login Screen.
+/// Clean Driver Phone Login Screen conforming to Passenger App standards.
 class PhonePage extends StatefulWidget {
   const PhonePage({super.key});
 
@@ -23,6 +24,18 @@ class _PhonePageState extends State<PhonePage> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorText;
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.addListener(() {
+      final hasNow = _phoneController.text.isNotEmpty;
+      if (hasNow != _hasText) {
+        setState(() => _hasText = hasNow);
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -45,6 +58,80 @@ class _PhonePageState extends State<PhonePage> {
     context.read<AuthBloc>().add(SendOtpEvent(fullPhone));
   }
 
+  void _showTermsModal(BuildContext context, bool isRu) {
+    HapticFeedback.selectionClick();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: ListView(
+                controller: scrollController,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.black12,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    isRu
+                        ? 'Условия сервиса и Политика конфиденциальности'
+                        : 'Xizmat ko‘rsatish shartlari va Maxfiylik siyosati',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : AppColors.charcoalBlack,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    isRu
+                        ? '1. Сервис Yo‘l-Yo‘lakay предоставляет платформу для пассажиров и профессиональных водителей.\n\n'
+                            '2. Ваши персональные данные (номер телефона, локация, данные автомобиля) защищены и используются исключительно для обеспечения поездок и безопасности.\n\n'
+                            '3. Продолжая использование, вы подтверждаете достоверность предоставляемых сведений и соглашаетесь с правилами сервиса.'
+                        : '1. Yo‘l-Yo‘lakay xizmati haydovchilar va yo‘lovchilar uchun yagona ishonchli platformani taqdim etadi.\n\n'
+                            '2. Shaxsiy ma’lumotlaringiz (telefon raqami, GPS joylashuvi, avtomobil ma’lumotlari) xavfsiz himoyalangan bo‘lib, faqat buyurtmalarni bajarish va xavfsizlik maqsadida foydalaniladi.\n\n'
+                            '3. Tizimdan foydalanish orqali barcha qoidalarga va xavfsizlik talablariga rozilik bildirasiz.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.5,
+                      color: isDark ? Colors.white70 : AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  AppButton(
+                    text: isRu ? 'Понятно' : 'Tushundim',
+                    onPressed: () => Navigator.pop(context),
+                    variant: AppButtonVariant.taxi,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -59,13 +146,7 @@ class _PhonePageState extends State<PhonePage> {
             'session': state.session,
           });
         } else if (state is AuthErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          AppSnackBar.showError(context, state.message);
         }
       },
       builder: (context, state) {
@@ -82,8 +163,8 @@ class _PhonePageState extends State<PhonePage> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -117,7 +198,7 @@ class _PhonePageState extends State<PhonePage> {
                           children: [
                             const SizedBox(height: 20),
 
-                            // Glowing Circular YY App Logo
+                            // App Logo
                             const AppLogo(size: 84, showGlow: true),
 
                             const SizedBox(height: 24),
@@ -156,98 +237,133 @@ class _PhonePageState extends State<PhonePage> {
 
                             const SizedBox(height: 36),
 
-                            // Phone Input with +998 Prefix
-                            Container(
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF1E1E26)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: _errorText != null
-                                      ? AppColors.error
-                                      : (isDark
-                                          ? const Color(0xFF2E2E3C)
-                                          : const Color(0xFFE2E4E8)),
-                                  width: 1.4,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black
-                                        .withOpacity(isDark ? 0.2 : 0.04),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 4),
-                              child: Row(
-                                children: [
-                                  // Prefix Flag & Code
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 8),
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? const Color(0xFF282834)
-                                          : const Color(0xFFF3F4F6),
-                                      borderRadius: BorderRadius.circular(10),
+                            // Phone Input with Floating Label and Clear Button
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4, bottom: 6),
+                                  child: Text(
+                                    isRu ? 'Номер телефона' : 'Telefon raqam',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark ? AppColors.taxiYellow : AppColors.primaryDark,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        const Text('🇺🇿',
-                                            style: TextStyle(fontSize: 18)),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          '+998',
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppColors.surfaceDark
+                                        : AppColors.surfaceLight,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: _errorText != null
+                                          ? AppColors.error
+                                          : (isDark
+                                              ? AppColors.borderDark
+                                              : AppColors.borderLight),
+                                      width: 1.0,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                            alpha: isDark ? 0.2 : 0.04),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 4),
+                                  child: Row(
+                                    children: [
+                                      // Prefix Code +998
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: isDark
+                                              ? const Color(0xFF282834)
+                                              : const Color(0xFFF3F4F6),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const Text('🇺🇿',
+                                                style: TextStyle(fontSize: 18)),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              '+998',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 15,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : AppColors.charcoalBlack,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+
+                                      // Digits Field
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _phoneController,
+                                          keyboardType: TextInputType.phone,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                            LengthLimitingTextInputFormatter(9),
+                                            _UzbekPhoneFormatter(),
+                                          ],
                                           style: TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontSize: 15,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1.2,
                                             color: isDark
                                                 ? Colors.white
                                                 : AppColors.charcoalBlack,
                                           ),
+                                          decoration: InputDecoration(
+                                            hintText: '90 123 45 67',
+                                            hintStyle: TextStyle(
+                                              color: isDark
+                                                  ? Colors.white24
+                                                  : Colors.black26,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 1.2,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                          onSubmitted: (_) => _handleSendOtp(),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
+                                      ),
 
-                                  // Digits Field
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _phoneController,
-                                      keyboardType: TextInputType.phone,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(9),
-                                        _UzbekPhoneFormatter(),
-                                      ],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 1.2,
-                                        color: isDark
-                                            ? Colors.white
-                                            : AppColors.charcoalBlack,
-                                      ),
-                                      decoration: InputDecoration(
-                                        hintText: '90 123 45 67',
-                                        hintStyle: TextStyle(
-                                          color: isDark
-                                              ? Colors.white24
-                                              : Colors.black26,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 1.2,
+                                      // Clear button when entered
+                                      if (_hasText)
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.cancel_rounded,
+                                            size: 18,
+                                            color: isDark
+                                                ? Colors.white38
+                                                : Colors.black26,
+                                          ),
+                                          onPressed: () {
+                                            _phoneController.clear();
+                                            setState(() => _errorText = null);
+                                          },
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
                                         ),
-                                        border: InputBorder.none,
-                                      ),
-                                      onSubmitted: (_) => _handleSendOtp(),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
 
                             if (_errorText != null) ...[
@@ -284,18 +400,22 @@ class _PhonePageState extends State<PhonePage> {
 
                             const SizedBox(height: 16),
 
-                            // Terms disclaimer
-                            Text(
-                              isRu
-                                  ? 'Продолжая, вы соглашаетесь с условиями сервиса'
-                                  : 'Davom etish orqali foydalanish shartlariga rozilik bildirasiz',
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                color: isDark
-                                    ? Colors.white38
-                                    : AppColors.textTertiary,
+                            // Terms disclaimer with clickable BottomSheet
+                            GestureDetector(
+                              onTap: () => _showTermsModal(context, isRu),
+                              child: Text(
+                                isRu
+                                    ? 'Продолжая, вы соглашаетесь с условиями сервиса'
+                                    : 'Davom etish orqali foydalanish shartlariga rozilik bildirasiz',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  decoration: TextDecoration.underline,
+                                  color: isDark
+                                      ? Colors.white54
+                                      : AppColors.textSecondary,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
 
                             const SizedBox(height: 20),

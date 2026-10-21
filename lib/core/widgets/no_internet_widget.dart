@@ -32,7 +32,6 @@ class NoInternetWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Elegant Network Disruption Illustration Badge
             Container(
               width: 96,
               height: 96,
@@ -48,7 +47,7 @@ class NoInternetWidget extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+                    color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -63,8 +62,6 @@ class NoInternetWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-
-            // Title
             Text(
               title ?? "Internet aloqasi yo'q",
               style: AppTypography.titleLarge.copyWith(
@@ -76,8 +73,6 @@ class NoInternetWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
-
-            // Description
             Text(
               message ??
                   "Iltimos, internetingiz ulanganligini tekshiring va qayta urinib ko'ring",
@@ -91,8 +86,6 @@ class NoInternetWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xxl),
-
-            // Retry Button
             SizedBox(
               width: 220,
               child: AppButton(

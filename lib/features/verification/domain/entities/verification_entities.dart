@@ -5,14 +5,18 @@ class CityEntity extends Equatable {
     required this.id,
     required this.name,
     required this.region,
+    this.latitude,
+    this.longitude,
   });
 
   final String id;
   final String name;
   final String region;
+  final double? latitude;
+  final double? longitude;
 
   @override
-  List<Object?> get props => [id, name, region];
+  List<Object?> get props => [id, name, region, latitude, longitude];
 }
 
 class DriverApplicationResponseEntity extends Equatable {

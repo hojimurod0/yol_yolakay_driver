@@ -68,7 +68,8 @@ class IntercityRideEntity extends Equatable {
   final String? comment;
   final List<RidePassengerEntity> passengers;
 
-  bool get isActive => status == 'active';
+  bool get isActive => status == 'active' || status == 'started';
+  bool get isStarted => status == 'started';
   bool get isCompleted => status == 'completed';
   bool get isCancelled => status == 'cancelled';
 

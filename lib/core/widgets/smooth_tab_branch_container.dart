@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 /// Lazily instantiates branches only when navigated to for the first time, preventing
 /// heavy widgets (like Google Maps or background streams) from overloading system memory and GPU on cold start.
 /// Once loaded, branches remain mounted in [IndexedStack] for 0ms tab switching.
-class SmoothTabBranchContainer extends StatelessWidget {
+class SmoothTabBranchContainer extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
   final List<Widget> children;
 
@@ -16,10 +16,35 @@ class SmoothTabBranchContainer extends StatelessWidget {
   });
 
   @override
+  State<SmoothTabBranchContainer> createState() =>
+      _SmoothTabBranchContainerState();
+}
+
+class _SmoothTabBranchContainerState extends State<SmoothTabBranchContainer> {
+  final Set<int> _activatedIndices = <int>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _activatedIndices.add(widget.navigationShell.currentIndex);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final currentIndex = widget.navigationShell.currentIndex;
+    _activatedIndices.add(currentIndex);
+
     return IndexedStack(
-      index: navigationShell.currentIndex,
-      children: children,
+      index: currentIndex,
+      children: List.generate(
+        widget.children.length,
+        (index) {
+          if (_activatedIndices.contains(index)) {
+            return widget.children[index];
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }

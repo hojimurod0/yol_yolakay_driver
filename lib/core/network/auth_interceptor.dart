@@ -4,21 +4,24 @@ import '../config/app_config.dart';
 import '../constants/api_endpoints.dart';
 import '../storage/secure_storage_service.dart';
 import '../utils/app_logger.dart';
+import 'token_refresh_coordinator.dart';
 
 /// Production-grade Dio interceptor managing Bearer token injection,
-/// race-condition-free concurrent token refresh, and safe retry execution.
+/// single-flight token refresh with TokenRefreshCoordinator, and safe request retry.
 class AuthInterceptor extends Interceptor {
   AuthInterceptor(
     this._secureStorage, {
     this.onSessionExpired,
-  });
+    TokenRefreshCoordinator? coordinator,
+  }) : _coordinator = coordinator ??
+            TokenRefreshCoordinator(
+              secureStorage: _secureStorage,
+              onSessionExpired: onSessionExpired,
+            );
 
   final SecureStorageService _secureStorage;
-  final VoidCallback? onSessionExpired;
-
-  bool _isRefreshing = false;
-  bool _hasNotifiedExpiration = false;
-  final List<Completer<String?>> _refreshQueue = [];
+  final void Function()? onSessionExpired;
+  final TokenRefreshCoordinator _coordinator;
 
   @override
   Future<void> onRequest(
@@ -44,75 +47,29 @@ class AuthInterceptor extends Interceptor {
     final path = err.requestOptions.path;
     final isAuthEndpoint = path.contains(ApiEndpoints.refreshToken) ||
         path.contains(ApiEndpoints.verifyOtp) ||
-        path.contains(ApiEndpoints.sendOtp);
+        path.contains(ApiEndpoints.sendOtp) ||
+        path.contains(ApiEndpoints.login);
 
-    // Only intercept 401 on non-authentication endpoints to prevent infinite refresh loops
-    if (err.response?.statusCode == 401 && !isAuthEndpoint) {
+    final hadAuthHeader = err.requestOptions.headers.containsKey('Authorization') &&
+        (err.requestOptions.headers['Authorization'] as String?)?.isNotEmpty == true;
+
+    // Only intercept 401 on authenticated, non-auth requests to prevent infinite loops and false session expiration
+    if (err.response?.statusCode == 401 && !isAuthEndpoint && hadAuthHeader) {
       AppLogger.warning(
-        '401 Unauthorized received on $path. Attempting token refresh...',
+        '401 Unauthorized received on $path. Triggering single-flight token refresh...',
         module: LogModule.api,
       );
 
-      // Check if token was already refreshed by another concurrent request
-      final currentStoredToken = await _secureStorage.getAccessToken();
-      final requestAuth =
-          err.requestOptions.headers['Authorization']?.toString();
-      final requestToken = requestAuth?.replaceFirst('Bearer ', '').trim();
-
-      String? newAccessToken;
-      if (currentStoredToken != null &&
-          currentStoredToken.isNotEmpty &&
-          requestToken != null &&
-          requestToken != currentStoredToken) {
-        // Token was already refreshed concurrently, retry immediately with new token
-        AppLogger.info(
-          'Token already refreshed concurrently. Retrying with latest token.',
-          module: LogModule.api,
-        );
-        newAccessToken = currentStoredToken;
-      } else {
-        newAccessToken = await _performTokenRefresh();
-      }
+      final newAccessToken = await _coordinator.refreshToken();
 
       if (newAccessToken != null && newAccessToken.isNotEmpty) {
-        _hasNotifiedExpiration = false;
-        final retryOptions = err.requestOptions;
-        retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
-
-        // Clone FormData if present to allow stream re-read
-        dynamic retryData = retryOptions.data;
-        if (retryData is FormData) {
-          try {
-            retryData = retryData.clone();
-            retryOptions.data = retryData;
-          } catch (_) {}
-        }
-
         try {
-          final client = Dio(BaseOptions(
-            baseUrl: AppConfig.activeBaseUrl,
-            connectTimeout:
-                const Duration(milliseconds: AppConfig.connectTimeout),
-            receiveTimeout:
-                const Duration(milliseconds: AppConfig.receiveTimeout),
-            sendTimeout: const Duration(milliseconds: AppConfig.sendTimeout),
-          ));
-          final retryResponse = await client.fetch(retryOptions);
-          return handler.resolve(retryResponse);
+          final response = await _replayRequest(err.requestOptions, newAccessToken);
+          return handler.resolve(response);
         } catch (e) {
           return handler.next(err);
         }
       } else {
-        // Refresh token failed -> notify session expiration once
-        if (!_hasNotifiedExpiration) {
-          _hasNotifiedExpiration = true;
-          AppLogger.error(
-            'Refresh token failed. Session fully expired, clearing tokens.',
-            module: LogModule.api,
-          );
-          await _secureStorage.clearTokens();
-          onSessionExpired?.call();
-        }
         return handler.next(err);
       }
     }
@@ -120,81 +77,30 @@ class AuthInterceptor extends Interceptor {
     handler.next(err);
   }
 
-  /// Thread-safe queued token refresh mutex.
-  Future<String?> _performTokenRefresh() async {
-    if (_isRefreshing) {
-      final completer = Completer<String?>();
-      _refreshQueue.add(completer);
-      return completer.future;
+  /// Replays a failed request with the new access token.
+  Future<Response<dynamic>> _replayRequest(
+    RequestOptions requestOptions,
+    String newAccessToken,
+  ) async {
+    final retryOptions = requestOptions;
+    retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+
+    // Clone FormData if present to allow stream re-read
+    dynamic retryData = retryOptions.data;
+    if (retryData is FormData) {
+      try {
+        retryData = retryData.clone();
+        retryOptions.data = retryData;
+      } catch (_) {}
     }
 
-    _isRefreshing = true;
+    final client = Dio(BaseOptions(
+      baseUrl: AppConfig.activeBaseUrl,
+      connectTimeout: const Duration(milliseconds: AppConfig.connectTimeout),
+      receiveTimeout: const Duration(milliseconds: AppConfig.receiveTimeout),
+      sendTimeout: const Duration(milliseconds: AppConfig.sendTimeout),
+    ));
 
-    try {
-      final refreshToken = await _secureStorage.getRefreshToken();
-      if (refreshToken == null || refreshToken.isEmpty) {
-        _drainQueue(null);
-        return null;
-      }
-
-      // Standalone clean Dio instance without interceptors to prevent circular loops
-      final refreshClient = Dio(BaseOptions(
-        baseUrl: AppConfig.activeBaseUrl,
-        connectTimeout: const Duration(milliseconds: AppConfig.connectTimeout),
-        receiveTimeout: const Duration(milliseconds: AppConfig.receiveTimeout),
-        sendTimeout: const Duration(milliseconds: AppConfig.sendTimeout),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
-
-      final response = await refreshClient.post(
-        ApiEndpoints.refreshToken,
-        data: {'refresh_token': refreshToken},
-      );
-
-      if (response.statusCode == 200 && response.data != null) {
-        final data = response.data['data'];
-        final tokens = data?['tokens'];
-        if (tokens != null) {
-          final String newAccessToken =
-              tokens['access_token']?.toString() ?? '';
-          final String newRefreshToken =
-              tokens['refresh_token']?.toString() ?? '';
-
-          if (newAccessToken.isNotEmpty) {
-            await _secureStorage.saveTokenPair(
-              accessToken: newAccessToken,
-              refreshToken:
-                  newRefreshToken.isNotEmpty ? newRefreshToken : refreshToken,
-            );
-            _drainQueue(newAccessToken);
-            return newAccessToken;
-          }
-        }
-      }
-
-      _drainQueue(null);
-      return null;
-    } catch (e) {
-      AppLogger.error('Failed refreshing token: $e',
-          module: LogModule.api, error: e);
-      _drainQueue(null);
-      return null;
-    } finally {
-      _isRefreshing = false;
-    }
-  }
-
-  void _drainQueue(String? newToken) {
-    for (final completer in _refreshQueue) {
-      if (!completer.isCompleted) {
-        completer.complete(newToken);
-      }
-    }
-    _refreshQueue.clear();
+    return client.fetch(retryOptions);
   }
 }
-
-typedef VoidCallback = void Function();

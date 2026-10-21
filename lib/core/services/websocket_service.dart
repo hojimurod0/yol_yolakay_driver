@@ -167,6 +167,16 @@ class WebSocketService {
     );
   }
 
+  /// Broadcast a newly created intercity ride to listeners and user apps in real time.
+  void broadcastRideCreated(Map<String, dynamic> rideData) {
+    if (!_isConnected) return;
+    _sendPusherEvent(
+      'client-RIDE_CREATED',
+      rideData,
+      channel: ApiEndpoints.intercityRidesChannel,
+    );
+  }
+
   Future<void> _handleMessage(dynamic rawMessage) async {
     try {
       final parsed = jsonDecode(rawMessage.toString()) as Map<String, dynamic>;

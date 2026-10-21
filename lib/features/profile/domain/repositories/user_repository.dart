@@ -1,7 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:yol_yolakay_driver/features/auth/domain/entities/user_entity.dart';
 import 'package:yol_yolakay_driver/features/profile/domain/entities/saved_place_entity.dart';
-import '../../data/repositories/mock_user_repository.dart';
 
 /// Repository contract for passenger profile and address bookmarks.
 abstract class UserRepository {
@@ -15,6 +13,3 @@ abstract class UserRepository {
   Future<void> addSavedPlace(SavedPlaceEntity place);
   Future<void> deleteSavedPlace(String id);
 }
-
-final userRepositoryProvider =
-    Provider<UserRepository>((ref) => MockUserRepository());

@@ -63,4 +63,26 @@ class IntercityRidesRepositoryImpl implements IntercityRidesRepository {
       reason: reason,
     );
   }
+
+  @override
+  Future<void> updateRide({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  }) {
+    return _remoteDataSource.updateRide(
+      rideId: rideId,
+      rideData: rideData,
+    );
+  }
+
+  @override
+  Future<void> deleteRide({
+    required String rideId,
+    String? reason,
+  }) {
+    return _remoteDataSource.deleteRide(
+      rideId: rideId,
+      reason: reason,
+    );
+  }
 }

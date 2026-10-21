@@ -28,4 +28,14 @@ abstract class IntercityRidesRepository {
     required String bookingId,
     required String reason,
   });
+
+  Future<void> updateRide({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  });
+
+  Future<void> deleteRide({
+    required String rideId,
+    String? reason,
+  });
 }

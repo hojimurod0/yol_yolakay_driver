@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- By default, enforce strict TLS for all traffic in production -->
-    <base-config cleartextTrafficPermitted="false">
+    <!-- Allow cleartext traffic for development and remote server http://45.151.122.12:4007 -->
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>
@@ -19,5 +19,6 @@
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">45.151.122.12</domain>
     </domain-config>
 </network-security-config>

@@ -90,3 +90,30 @@ class BookingUpdateReceivedEvent extends IntercityRidesEvent {
   List<Object?> get props => [data];
 }
 
+class UpdateRideEvent extends IntercityRidesEvent {
+  const UpdateRideEvent({
+    required this.rideId,
+    required this.rideData,
+  });
+
+  final String rideId;
+  final Map<String, dynamic> rideData;
+
+  @override
+  List<Object?> get props => [rideId, rideData];
+}
+
+class DeleteRideEvent extends IntercityRidesEvent {
+  const DeleteRideEvent({
+    required this.rideId,
+    this.reason,
+  });
+
+  final String rideId;
+  final String? reason;
+
+  @override
+  List<Object?> get props => [rideId, reason];
+}
+
+

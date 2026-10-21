@@ -21,7 +21,8 @@ class FakeApiClient extends Fake implements ApiClient {
     String? idempotencyKey,
     T Function(dynamic dataJson)? fromData,
   }) async {
-    lastRegisteredToken = (data as Map<String, dynamic>?)?['token'] as String?;
+    final map = data as Map<String, dynamic>?;
+    lastRegisteredToken = (map?['fcm_token'] ?? map?['token']) as String?;
     return ApiResponse<T>(
       success: true,
       message: 'OK',

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../firebase_options.dart';
 import '../constants/api_endpoints.dart';
 import '../network/api_client.dart';
+import '../storage/secure_storage_service.dart';
 import '../utils/app_logger.dart';
 import 'local_notification_service.dart';
 import 'notification_payload.dart';
@@ -31,13 +32,17 @@ class PushNotificationService {
   PushNotificationService({
     required ApiClient apiClient,
     LocalNotificationService? localNotificationService,
+    SecureStorageService? secureStorage,
   })  : _apiClient = apiClient,
-        _localNotificationService = localNotificationService;
+        _localNotificationService = localNotificationService,
+        _secureStorage = secureStorage;
 
   final ApiClient _apiClient;
   final LocalNotificationService? _localNotificationService;
+  final SecureStorageService? _secureStorage;
 
   String? _registeredPushToken;
+  String? _pendingPushToken;
   StreamSubscription<String>? _tokenRefreshSubscription;
   StreamSubscription<NotificationPayload>? _localTapSubscription;
 
@@ -166,8 +171,26 @@ class PushNotificationService {
   }
 
   /// Registers the device push token with the backend API (/driver/fcm-token).
+  /// If the driver is not authenticated yet, the token is cached and will be
+  /// automatically synchronized once the session is active.
   Future<bool> registerDevicePushToken(String token) async {
-    if (token.isEmpty || token == _registeredPushToken) return true;
+    if (token.isEmpty) return false;
+    _pendingPushToken = token;
+
+    if (token == _registeredPushToken) return true;
+
+    // Guard: Only register with backend if authenticated
+    final storage = _secureStorage;
+    if (storage != null) {
+      final accessToken = await storage.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) {
+        AppLogger.info(
+          'PushNotificationService: User not authenticated yet. FCM token cached for registration upon login.',
+          module: LogModule.system,
+        );
+        return false;
+      }
+    }
 
     final platform = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
         ? 'ios'
@@ -177,8 +200,8 @@ class PushNotificationService {
       final response = await _apiClient.post(
         ApiEndpoints.fcmToken,
         data: {
-          'token': token,
-          'platform': platform,
+          'fcm_token': token,
+          'device_platform': platform,
         },
       );
 
@@ -197,13 +220,22 @@ class PushNotificationService {
     }
   }
 
+  /// Synchronizes any pending cached push token once the user logs in.
+  Future<bool> syncPendingTokenAfterLogin() async {
+    final pending = _pendingPushToken;
+    if (pending != null && pending.isNotEmpty) {
+      return registerDevicePushToken(pending);
+    }
+    return false;
+  }
+
   /// Unregisters the push token on user logout.
   Future<void> unregisterTokenOnLogout() async {
     if (_registeredPushToken == null) return;
     try {
       await _apiClient.delete(
         ApiEndpoints.fcmToken,
-        data: {'token': _registeredPushToken},
+        data: {'fcm_token': _registeredPushToken},
       );
       _registeredPushToken = null;
       AppLogger.info('Push token unregistered on logout.',

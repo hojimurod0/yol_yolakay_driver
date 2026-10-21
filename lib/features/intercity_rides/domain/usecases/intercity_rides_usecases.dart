@@ -69,3 +69,25 @@ class CancelBookingUseCase {
   Future<void> call({required String bookingId, required String reason}) =>
       _repository.cancelBooking(bookingId: bookingId, reason: reason);
 }
+
+class UpdateRideUseCase {
+  const UpdateRideUseCase(this._repository);
+  final IntercityRidesRepository _repository;
+
+  Future<void> call({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  }) =>
+      _repository.updateRide(rideId: rideId, rideData: rideData);
+}
+
+class DeleteRideUseCase {
+  const DeleteRideUseCase(this._repository);
+  final IntercityRidesRepository _repository;
+
+  Future<void> call({
+    required String rideId,
+    String? reason,
+  }) =>
+      _repository.deleteRide(rideId: rideId, reason: reason);
+}

@@ -2425,13 +2425,13 @@ abstract class AppLocalizations {
   /// No description provided for @verificationUnderReviewTitle.
   ///
   /// In uz, this message translates to:
-  /// **'Verifikatsiya tekshirilmoqda'**
+  /// **'Admin tekshiruvida (12 soat)'**
   String get verificationUnderReviewTitle;
 
   /// No description provided for @verificationUnderReviewSubtitle.
   ///
   /// In uz, this message translates to:
-  /// **'Hujjatlaringiz moderatorlar tomonidan ko\'rib chiqilmoqda (24 soatgacha).'**
+  /// **'Hujjatlaringiz adminga yuborildi va 12 soat ichida tekshiriladi. Hozircha sinov rejimida ilovadan to\'liq foydalanishingiz mumkin.'**
   String get verificationUnderReviewSubtitle;
 
   /// No description provided for @verificationRejectedTitle.

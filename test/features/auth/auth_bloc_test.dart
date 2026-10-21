@@ -19,6 +19,36 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<DriverAuthEntity> loginWithPassword({
+    required String phone,
+    required String password,
+  }) async {
+    loggedIn = true;
+    return const DriverAuthEntity(
+      isRegistered: true,
+      verificationStatus: 'approved',
+      tokens: DriverTokensEntity(
+        accessToken: 'access-token-123',
+        refreshToken: 'refresh-token-123',
+        expiresIn: 3600,
+      ),
+      driver: DriverUserEntity(
+        id: 'driver-1',
+        phone: '+998901234567',
+        firstName: 'Rustam',
+        lastName: 'Karimov',
+        rating: 4.9,
+        totalTrips: 150,
+        balance: 100000,
+        isOnline: false,
+      ),
+    );
+  }
+
+  @override
+  Future<void> setPassword({required String newPassword}) async {}
+
+  @override
   Future<DriverAuthEntity> verifyOtp({
     required String phone,
     required String sessionId,
@@ -69,6 +99,10 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<String?> getSavedDriverId() async => loggedIn ? 'driver-1' : null;
+
+  @override
+  Future<String?> getSavedVerificationStatus() async =>
+      loggedIn ? 'approved' : null;
 }
 
 void main() {

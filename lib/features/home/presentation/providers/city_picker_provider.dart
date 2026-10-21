@@ -1,5 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/core_providers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/city_entity.dart';
 import '../../domain/repositories/city_repository.dart';
 
@@ -35,35 +34,39 @@ class CityPickerState {
   }
 }
 
-class CityPickerNotifier extends StateNotifier<CityPickerState> {
-  CityPickerNotifier(this._cityRepository) : super(const CityPickerState()) {
+class CityPickerCubit extends Cubit<CityPickerState> {
+  CityPickerCubit(this._cityRepository) : super(const CityPickerState()) {
     loadCities();
   }
 
   final CityRepository _cityRepository;
 
   Future<void> loadCities() async {
-    state = state.copyWith(isLoading: true);
-    final results = await Future.wait([
-      _cityRepository.getCities(),
-      _cityRepository.getPopularCities(),
-    ]);
+    emit(state.copyWith(isLoading: true));
+    try {
+      final results = await Future.wait([
+        _cityRepository.getCities(),
+        _cityRepository.getPopularCities(),
+      ]);
 
-    final all = results[0];
-    final popular = results[1];
+      final all = results[0];
+      final popular = results[1];
 
-    state = state.copyWith(
-      allCities: all,
-      filteredCities: all,
-      popularCities: popular,
-      isLoading: false,
-    );
+      emit(state.copyWith(
+        allCities: all,
+        filteredCities: all,
+        popularCities: popular,
+        isLoading: false,
+      ));
+    } catch (_) {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 
   void search(String query) {
-    state = state.copyWith(searchQuery: query);
+    emit(state.copyWith(searchQuery: query));
     if (query.trim().isEmpty) {
-      state = state.copyWith(filteredCities: state.allCities);
+      emit(state.copyWith(filteredCities: state.allCities));
       return;
     }
 
@@ -75,19 +78,8 @@ class CityPickerNotifier extends StateNotifier<CityPickerState> {
           c.region.toLowerCase().contains(q);
     }).toList();
 
-    state = state.copyWith(filteredCities: filtered);
+    emit(state.copyWith(filteredCities: filtered));
   }
 
   void setSearchQuery(String query) => search(query);
 }
-
-final cityPickerNotifierProvider =
-    StateNotifierProvider<CityPickerNotifier, CityPickerState>((ref) {
-  final repo = ref.watch(cityRepositoryProvider);
-  return CityPickerNotifier(repo);
-});
-
-final popularCitiesProvider = FutureProvider<List<CityEntity>>((ref) {
-  final repo = ref.watch(cityRepositoryProvider);
-  return repo.getPopularCities();
-});

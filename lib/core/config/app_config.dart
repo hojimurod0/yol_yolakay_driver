@@ -10,29 +10,32 @@ enum AppEnvironment {
 /// Centralized, environment-aware application configuration.
 abstract class AppConfig {
   /// App metadata
-  static const String appName = "Yo'l-Yo'lakay Haydovchi";
+  static const String appName = "Yol-Yolakay";
   static const String appVersion = '1.0.0';
   static const int buildNumber = 1;
 
   /// Environment detection from compile-time flags (`--dart-define=ENV=dev`)
   static const String _envString =
-      String.fromEnvironment('ENV', defaultValue: 'prod');
+      String.fromEnvironment('ENV', defaultValue: 'dev');
 
   static AppEnvironment get environment {
     return switch (_envString.toLowerCase()) {
-      'dev' => AppEnvironment.dev,
       'staging' => AppEnvironment.staging,
-      _ => AppEnvironment.prod,
+      'prod' => AppEnvironment.prod,
+      _ => AppEnvironment.dev,
     };
   }
 
   /// Zero-mock enforcement: Always connect to real backend
   static const bool isMockMode = false;
 
+  /// Server metadata
+  static const String serverUrl = ApiEndpoints.serverUrl;
+  static const String swaggerUrl = ApiEndpoints.swaggerUrl;
+
   /// API Base URLs
   static const String prodBaseUrl = ApiEndpoints.prodBaseUrl;
-  static const String stagingBaseUrl =
-      'https://staging-api.yol-yolakay.uz/api/v1';
+  static const String stagingBaseUrl = ApiEndpoints.devBaseUrl;
   static const String devBaseUrl = ApiEndpoints.devBaseUrl;
 
   /// Active Base URL according to environment
@@ -47,8 +50,8 @@ abstract class AppConfig {
   /// Active WebSocket URL according to environment
   static String get activeWebSocketUrl {
     return switch (environment) {
-      AppEnvironment.dev => 'ws://10.0.2.2:8000/ws',
-      AppEnvironment.staging => 'wss://staging-api.yol-yolakay.uz/ws',
+      AppEnvironment.dev => ApiEndpoints.webSocketUrl,
+      AppEnvironment.staging => ApiEndpoints.webSocketUrl,
       AppEnvironment.prod => ApiEndpoints.webSocketUrl,
     };
   }

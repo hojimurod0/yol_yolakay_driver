@@ -141,8 +141,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  const SizedBox(height: 100),
+                children: const [
+                  SizedBox(height: 100),
                   EmptyStateWidget(
                     icon: Icons.notifications_none_rounded,
                     title: 'Hozircha yangi xabarlar yo\'q',
@@ -201,22 +201,22 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'new_booking_request':
         icon = Icons.event_seat_rounded;
         iconColor = AppColors.primary;
-        iconBg = AppColors.primary.withOpacity(0.15);
+        iconBg = AppColors.primary.withValues(alpha: 0.15);
         break;
       case 'order_status':
         icon = Icons.local_taxi_rounded;
         iconColor = AppColors.info;
-        iconBg = AppColors.info.withOpacity(0.15);
+        iconBg = AppColors.info.withValues(alpha: 0.15);
         break;
       case 'warning':
         icon = Icons.warning_amber_rounded;
         iconColor = AppColors.warning;
-        iconBg = AppColors.warning.withOpacity(0.15);
+        iconBg = AppColors.warning.withValues(alpha: 0.15);
         break;
       default:
         icon = Icons.notifications_active_outlined;
         iconColor = Colors.purple;
-        iconBg = Colors.purple.withOpacity(0.15);
+        iconBg = Colors.purple.withValues(alpha: 0.15);
     }
 
     final dateStr =
@@ -237,13 +237,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
           border: Border.all(
             color: notif.isRead
                 ? (isDark ? AppColors.borderDark : AppColors.borderLight)
-                : AppColors.primary.withOpacity(0.5),
+                : AppColors.primary.withValues(alpha: 0.5),
             width: notif.isRead ? 1 : 1.5,
           ),
           boxShadow: [
             if (!notif.isRead)
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),

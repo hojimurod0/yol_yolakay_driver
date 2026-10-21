@@ -21,22 +21,25 @@ class IntercityRidesLoaded extends IntercityRidesState {
     required this.rides,
     required this.status,
     required this.pagination,
+    this.isOfflineCached = false,
   });
 
   final List<IntercityRideEntity> rides;
   final String status;
   final PaginationModel pagination;
+  final bool isOfflineCached;
 
   @override
-  List<Object?> get props => [rides, status, pagination];
+  List<Object?> get props => [rides, status, pagination, isOfflineCached];
 }
 
 class IntercityRideDetailsLoaded extends IntercityRidesState {
-  const IntercityRideDetailsLoaded(this.ride);
+  const IntercityRideDetailsLoaded(this.ride, {this.isOfflineCached = false});
   final IntercityRideEntity ride;
+  final bool isOfflineCached;
 
   @override
-  List<Object?> get props => [ride];
+  List<Object?> get props => [ride, isOfflineCached];
 }
 
 class CreatingRideState extends IntercityRidesState {
@@ -45,6 +48,26 @@ class CreatingRideState extends IntercityRidesState {
 
 class RideCreatedSuccessState extends IntercityRidesState {
   const RideCreatedSuccessState(this.rideId);
+  final String rideId;
+
+  @override
+  List<Object?> get props => [rideId];
+}
+
+class UpdatingRideState extends IntercityRidesState {
+  const UpdatingRideState();
+}
+
+class RideUpdatedSuccessState extends IntercityRidesState {
+  const RideUpdatedSuccessState(this.rideId);
+  final String rideId;
+
+  @override
+  List<Object?> get props => [rideId];
+}
+
+class RideDeletedSuccessState extends IntercityRidesState {
+  const RideDeletedSuccessState(this.rideId);
   final String rideId;
 
   @override

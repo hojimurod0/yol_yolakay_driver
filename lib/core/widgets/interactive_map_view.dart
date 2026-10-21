@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../localization/app_localizations_helper.dart';
-import '../providers/core_providers.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_shadows.dart';
@@ -10,7 +8,7 @@ import '../theme/app_typography.dart';
 import '../../features/home/domain/entities/city_entity.dart';
 
 /// High-fidelity, interactive Google & Satellite Map view for all of Uzbekistan.
-class InteractiveMapView extends ConsumerStatefulWidget {
+class InteractiveMapView extends StatefulWidget {
   const InteractiveMapView({
     super.key,
     required this.cities,
@@ -33,10 +31,10 @@ class InteractiveMapView extends ConsumerStatefulWidget {
   final double? height;
 
   @override
-  ConsumerState<InteractiveMapView> createState() => _InteractiveMapViewState();
+  State<InteractiveMapView> createState() => _InteractiveMapViewState();
 }
 
-class _InteractiveMapViewState extends ConsumerState<InteractiveMapView>
+class _InteractiveMapViewState extends State<InteractiveMapView>
     with SingleTickerProviderStateMixin {
   late TransformationController _transformController;
   late AnimationController _pulseController;
@@ -131,7 +129,7 @@ class _InteractiveMapViewState extends ConsumerState<InteractiveMapView>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = context.l10n;
-    final locale = ref.watch(localeNotifierProvider);
+    final locale = Localizations.localeOf(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {

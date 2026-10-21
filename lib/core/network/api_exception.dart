@@ -28,12 +28,22 @@ class ApiException implements Exception {
 
   /// Extracts user-friendly error message from API response or DioException.
   factory ApiException.fromDioError(DioException error) {
+    if (error.type == DioExceptionType.sendTimeout) {
+      return ApiTimeoutException(
+        'Fayllarni yuklash vaqti tugadi. Internet aloqasi sekin bo\'lishi mumkin, iltimos qaytadan urinib ko\'ring.',
+      );
+    }
+    if (error.type == DioExceptionType.receiveTimeout) {
+      return ApiTimeoutException(
+        'Server javob berish vaqti tugadi. Iltimos, qaytadan urinib ko\'ring.',
+      );
+    }
+
     if (error.type == DioExceptionType.connectionTimeout ||
-        error.type == DioExceptionType.receiveTimeout ||
-        error.type == DioExceptionType.sendTimeout ||
         error.type == DioExceptionType.connectionError) {
       return NetworkException(
-          'Internet aloqasi yo\'q yoki server javob bermayapti');
+        'Internet aloqasi yo\'q yoki server bilan bog\'lanib bo\'lmadi',
+      );
     }
 
     final response = error.response;
@@ -68,6 +78,34 @@ class ApiException implements Exception {
           }
         });
       }
+    }
+
+    // Sanitize technical messages like DioException, MulterError, ValidationPipe, etc.
+    final lowerMsg = message.toLowerCase();
+    if (lowerMsg.contains('dioexception') ||
+        lowerMsg.contains('multererror') ||
+        lowerMsg.contains('validationpipe') ||
+        lowerMsg.contains('unexpected field') ||
+        lowerMsg.contains('socketexception')) {
+      if (statusCode == 413 ||
+          lowerMsg.contains('file too large') ||
+          lowerMsg.contains('limit_file_size')) {
+        message =
+            'Yuklangan fayl hajmi juda katta (maksimal 8 MB). Iltimos, kichikroq hajmda yuklang.';
+      } else if (statusCode == 422 || statusCode == 400) {
+        message =
+            'Kiritilgan ma\'lumotlar yoki yuklangan fayllar talablarga mos kelmadi.';
+      } else {
+        message =
+            'Server bilan ma\'lumot almashishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.';
+      }
+    } else if (statusCode == 413) {
+      message = 'Yuklangan fayl hajmi juda katta (maksimal 8 MB).';
+    } else if (statusCode == 409) {
+      message = 'Ushbu ma\'lumotlar yoki ariza allaqachon topshirilgan.';
+    } else if (statusCode != null && statusCode >= 500) {
+      message =
+          'Serverda vaqtinchalik nosozlik yuz berdi. Birozdan so\'ng qayta urinib ko\'ring.';
     }
 
     // Specific typed subclasses
@@ -105,11 +143,9 @@ class AuthException extends ApiException {
 /// Thrown when an unapproved driver attempts restricted actions.
 class DriverNotApprovedException extends ApiException {
   DriverNotApprovedException({
-    String message = 'Haydovchi arizasi hali tasdiqlanmagan',
-    int? statusCode = 403,
+    super.message = 'Haydovchi arizasi hali tasdiqlanmagan',
+    super.statusCode = 403,
   }) : super(
-            message: message,
-            statusCode: statusCode,
             errorCode: 'DRIVER_NOT_APPROVED');
 }
 
@@ -118,4 +154,10 @@ class InsufficientBalanceException extends ApiException {
   InsufficientBalanceException(
       [String message = 'Hamyoningizda mablag\' yetarli emas'])
       : super(message: message, errorCode: 'INSUFFICIENT_BALANCE');
+}
+
+/// Thrown when an API or upload request times out.
+class ApiTimeoutException extends ApiException {
+  ApiTimeoutException([String message = 'Server bilan aloqa vaqti tugadi'])
+      : super(message: message, errorCode: 'TIMEOUT');
 }

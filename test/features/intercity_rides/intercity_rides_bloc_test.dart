@@ -79,6 +79,18 @@ class FakeIntercityRidesRepository implements IntercityRidesRepository {
     required String bookingId,
     required String reason,
   }) async {}
+
+  @override
+  Future<void> updateRide({
+    required String rideId,
+    required Map<String, dynamic> rideData,
+  }) async {}
+
+  @override
+  Future<void> deleteRide({
+    required String rideId,
+    String? reason,
+  }) async {}
 }
 
 void main() {
@@ -122,7 +134,7 @@ void main() {
 
     test('CreateRideEvent emits [CreatingRideState, RideCreatedSuccessState]',
         () async {
-      bloc.add(CreateRideEvent({
+      bloc.add(const CreateRideEvent({
         'from_city': 'Toshkent',
         'to_city': 'Buxoro',
         'price_per_seat': 100000,

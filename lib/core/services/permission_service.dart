@@ -75,7 +75,9 @@ class PermissionService {
         normalizedStatus == 'suspended') {
       return CannotGoOnlineReason.accountBlocked;
     }
-    if (normalizedStatus != 'approved') {
+    // Interim driver access: allow drivers whose application has been submitted
+    // and is under admin review ('under_review') or 'approved' to operate.
+    if (normalizedStatus != 'approved' && normalizedStatus != 'under_review') {
       return CannotGoOnlineReason.verificationRequired;
     }
 

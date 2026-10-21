@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../bloc/reviews_bloc.dart';
 import '../bloc/reviews_event.dart';
 import '../bloc/reviews_state.dart';
@@ -40,19 +41,9 @@ class _RatePassengerDialogState extends State<RatePassengerDialog> {
       listener: (context, state) {
         if (state.ratingSubmittedSuccess) {
           Navigator.of(context).pop(true);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Yo\'lovchi muvaffaqiyatli baholandi'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          AppSnackBar.showSuccess(context, 'Yo\'lovchi muvaffaqiyatli baholandi');
         } else if (state.ratingError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.ratingError!),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppSnackBar.showError(context, state.ratingError!);
         }
       },
       builder: (context, state) {

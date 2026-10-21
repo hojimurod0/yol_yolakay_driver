@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../domain/entities/driver_review_entity.dart';
 import '../bloc/reviews_bloc.dart';
 import '../bloc/reviews_event.dart';
@@ -61,7 +62,7 @@ class _DriverReviewsPageState extends State<DriverReviewsPage> {
       body: BlocBuilder<ReviewsBloc, ReviewsState>(
         builder: (context, state) {
           if (state.status == ReviewsStatus.loading && state.summary == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const DriverReviewsShimmer();
           }
 
           if (state.status == ReviewsStatus.error && state.summary == null) {
@@ -135,7 +136,7 @@ class _DriverReviewsPageState extends State<DriverReviewsPage> {
                 ),
                 const SizedBox(height: 12),
                 if (state.reviews.isEmpty) ...[
-                  EmptyStateWidget(
+                  const EmptyStateWidget(
                     icon: Icons.rate_review_outlined,
                     title: 'Hozircha sharhlar yo\'q',
                     description:
@@ -179,7 +180,7 @@ class _DriverReviewsPageState extends State<DriverReviewsPage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -369,7 +370,7 @@ class _DriverReviewsPageState extends State<DriverReviewsPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.12),
+                    color: AppColors.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(

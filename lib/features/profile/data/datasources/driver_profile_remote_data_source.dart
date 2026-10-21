@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../../../../core/network/api_client.dart';
@@ -31,8 +32,9 @@ class DriverProfileRemoteDataSourceImpl
   @override
   Future<String> uploadAvatar(File file) async {
     final fileName = file.path.split(Platform.pathSeparator).last;
+    // OpenAPI UploadAvatarRequest requires binary field named 'file' (max 5120 KB)
     final formData = FormData.fromMap({
-      'avatar': await MultipartFile.fromFile(
+      'file': await MultipartFile.fromFile(
         file.path,
         filename: fileName,
       ),
@@ -41,6 +43,11 @@ class DriverProfileRemoteDataSourceImpl
     final response = await _apiClient.post<Map<String, dynamic>>(
       ApiEndpoints.uploadAvatar,
       data: formData,
+      options: Options(
+        contentType: 'multipart/form-data',
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
+      ),
     );
 
     if (response.data != null && response.data!['avatar_url'] != null) {
@@ -52,9 +59,15 @@ class DriverProfileRemoteDataSourceImpl
 
   @override
   Future<void> updateFcmToken(String token) async {
+    final platform = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+        ? 'ios'
+        : 'android';
     await _apiClient.post(
       ApiEndpoints.fcmToken,
-      data: {'token': token},
+      data: {
+        'fcm_token': token,
+        'device_platform': platform,
+      },
     );
   }
 }

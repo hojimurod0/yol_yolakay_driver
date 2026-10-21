@@ -27,7 +27,19 @@ class UzbekLicensePlate extends StatelessWidget {
     if (match != null) {
       final region = match.group(1) ?? '01';
       final rest = match.group(2) ?? '';
-      return (region: region, number: rest.isNotEmpty ? rest : '001 AAA');
+      String formattedNumber = rest;
+      if (!formattedNumber.contains(' ') && formattedNumber.isNotEmpty) {
+        if (RegExp(r'^[A-Z]').hasMatch(formattedNumber) &&
+            formattedNumber.length >= 6) {
+          formattedNumber =
+              '${formattedNumber.substring(0, 1)} ${formattedNumber.substring(1, 4)} ${formattedNumber.substring(4)}';
+        } else if (RegExp(r'^\d').hasMatch(formattedNumber) &&
+            formattedNumber.length >= 6) {
+          formattedNumber =
+              '${formattedNumber.substring(0, 3)} ${formattedNumber.substring(3)}';
+        }
+      }
+      return (region: region, number: formattedNumber.isNotEmpty ? formattedNumber : '001 AAA');
     }
 
     return (region: '01', number: cleaned);

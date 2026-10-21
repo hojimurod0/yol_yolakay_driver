@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../domain/entities/driver_user_entity.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -36,8 +37,9 @@ class _OtpPageState extends State<OtpPage> {
   void initState() {
     super.initState();
     _currentSessionId = widget.session.sessionId;
-    _secondsRemaining =
-        widget.session.resendInterval > 0 ? widget.session.resendInterval : 60;
+    _secondsRemaining = widget.session.resendInterval > 0
+        ? widget.session.resendInterval
+        : 59;
     _startTimer();
   }
 
@@ -61,7 +63,7 @@ class _OtpPageState extends State<OtpPage> {
 
   void _handleVerify() {
     final code = _otpController.text.trim();
-    if (code.length < 4) return;
+    if (code.length != 6) return;
 
     HapticFeedback.mediumImpact();
     context.read<AuthBloc>().add(
@@ -76,7 +78,7 @@ class _OtpPageState extends State<OtpPage> {
   void _handleResend() {
     if (_secondsRemaining > 0) return;
     HapticFeedback.selectionClick();
-    setState(() => _secondsRemaining = 60);
+    setState(() => _secondsRemaining = 59);
     _startTimer();
     context.read<AuthBloc>().add(ResendOtpEvent(widget.phone));
   }
@@ -92,32 +94,26 @@ class _OtpPageState extends State<OtpPage> {
         if (state is OtpSentState) {
           setState(() {
             _currentSessionId = state.session.sessionId;
-            _secondsRemaining = state.session.resendInterval;
+            _secondsRemaining = state.session.resendInterval > 0
+                ? state.session.resendInterval
+                : 59;
           });
           _startTimer();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                  isRu ? 'Код отправлен повторно' : 'SMS kod qayta yuborildi'),
-              backgroundColor: AppColors.success,
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppSnackBar.showSuccess(
+            context,
+            isRu ? 'Код отправлен повторно' : 'SMS kod qayta yuborildi',
           );
         } else if (state is AuthenticatedState) {
           final auth = state.auth;
-          if (auth.isPendingOrRejected || auth.isUnderReview) {
-            context.go('/verification');
-          } else {
-            context.go('/driver/home');
-          }
+          final nextRoute = (auth.verificationStatus == 'pending_submission')
+              ? '/verification'
+              : '/driver/home';
+
+          context.go('/set-password', extra: {
+            'nextRoute': nextRoute,
+          });
         } else if (state is AuthErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          AppSnackBar.showError(context, state.message);
         }
       },
       builder: (context, state) {
@@ -134,8 +130,8 @@ class _OtpPageState extends State<OtpPage> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -184,21 +180,22 @@ class _OtpPageState extends State<OtpPage> {
 
                   const SizedBox(height: 40),
 
-                  // OTP Input Field
+                  // 6-digit Monospace OTP Input Field
                   Container(
-                    width: 260,
+                    width: 280,
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E1E26) : Colors.white,
+                      color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isDark
-                            ? const Color(0xFF323242)
-                            : const Color(0xFFE2E4E8),
-                        width: 1.5,
+                            ? AppColors.borderDark
+                            : AppColors.borderLight,
+                        width: 1.0,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                          color: Colors.black
+                              .withValues(alpha: isDark ? 0.2 : 0.04),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -209,28 +206,30 @@ class _OtpPageState extends State<OtpPage> {
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       autofocus: true,
-                      maxLength: 5,
+                      maxLength: 6,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       style: TextStyle(
-                        fontSize: 32,
+                        fontFamily: 'monospace',
+                        fontSize: 28,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 14,
+                        letterSpacing: 16,
                         color: isDark
                             ? AppColors.taxiYellow
                             : AppColors.charcoalBlack,
                       ),
                       decoration: const InputDecoration(
                         counterText: '',
-                        hintText: '•••••',
+                        hintText: '••••••',
                         hintStyle: TextStyle(
+                          fontFamily: 'monospace',
                           color: Colors.black26,
-                          letterSpacing: 14,
+                          letterSpacing: 16,
                         ),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       onChanged: (val) {
-                        if (val.length == 5) {
+                        if (val.length == 6) {
                           _handleVerify();
                         }
                       },

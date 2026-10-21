@@ -1266,11 +1266,11 @@ class AppLocalizationsUz extends AppLocalizations {
       'Barcha xizmatlardan cheklovlarsiz foydalanishingiz mumkin.';
 
   @override
-  String get verificationUnderReviewTitle => 'Verifikatsiya tekshirilmoqda';
+  String get verificationUnderReviewTitle => 'Admin tekshiruvida (12 soat)';
 
   @override
   String get verificationUnderReviewSubtitle =>
-      'Hujjatlaringiz moderatorlar tomonidan ko\'rib chiqilmoqda (24 soatgacha).';
+      'Hujjatlaringiz adminga yuborildi va 12 soat ichida tekshiriladi. Hozircha sinov rejimida ilovadan to\'liq foydalanishingiz mumkin.';
 
   @override
   String get verificationRejectedTitle => 'Arizangiz rad etilgan';

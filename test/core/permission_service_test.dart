@@ -122,11 +122,11 @@ void main() {
     });
 
     test(
-        'validateCanGoOnline returns verificationRequired when status is not approved',
+        'validateCanGoOnline returns verificationRequired when status is pending_submission',
         () async {
       final reasonPending = await service.validateCanGoOnline(
         isAuthenticated: true,
-        verificationStatus: 'under_review',
+        verificationStatus: 'pending_submission',
       );
       expect(reasonPending, equals(CannotGoOnlineReason.verificationRequired));
     });

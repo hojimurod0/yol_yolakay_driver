@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/no_internet_widget.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
 import '../../domain/entities/support_entities.dart';
 import '../bloc/support_bloc.dart';
 import '../bloc/support_event.dart';
@@ -45,25 +47,17 @@ class _SupportPageState extends State<SupportPage> {
       body: BlocConsumer<SupportBloc, SupportState>(
         listener: (context, state) {
           if (state.ticketSubmittedSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'Murojaatingiz muvaffaqiyatli qabul qilindi. Tez orada javob beramiz.'),
-                backgroundColor: AppColors.success,
-              ),
+            AppSnackBar.showSuccess(
+              context,
+              'Murojaatingiz muvaffaqiyatli qabul qilindi. Tez orada javob beramiz.',
             );
           } else if (state.ticketError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.ticketError!),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            AppSnackBar.showError(context, state.ticketError!);
           }
         },
         builder: (context, state) {
           if (state.status == SupportStatus.loading && state.faqs.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const SupportFaqShimmer();
           }
 
           if (state.status == SupportStatus.error && state.faqs.isEmpty) {
@@ -143,7 +137,7 @@ class _SupportPageState extends State<SupportPage> {
                 ),
                 const SizedBox(height: 12),
                 if (state.faqs.isEmpty) ...[
-                  EmptyStateWidget(
+                  const EmptyStateWidget(
                     icon: Icons.help_outline_rounded,
                     title: 'Savollar mavjud emas',
                     description:
@@ -238,7 +232,7 @@ class _SupportPageState extends State<SupportPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.12),
+              color: iconColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: iconColor, size: 20),
@@ -329,9 +323,9 @@ class _SupportPageState extends State<SupportPage> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.12),
+        color: AppColors.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -408,7 +402,7 @@ class _SupportPageState extends State<SupportPage> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.4),
+                    color: Colors.grey.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -480,9 +474,7 @@ class _SupportPageState extends State<SupportPage> {
                     final ord = orderIdCtrl.text.trim();
 
                     if (sub.isEmpty || msg.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Mavzu va matn majburiy')),
-                      );
+                      AppSnackBar.showError(context, 'Mavzu va matn majburiy');
                       return;
                     }
 

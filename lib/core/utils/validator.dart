@@ -3,8 +3,9 @@ abstract class AppValidator {
   static bool isValidUzPhone(String phone) {
     final cleaned = phone.replaceAll(RegExp(r'\D'), '');
     if (cleaned.length == 9) return true; // e.g. 901234567
-    if (cleaned.length == 12 && cleaned.startsWith('998'))
+    if (cleaned.length == 12 && cleaned.startsWith('998')) {
       return true; // e.g. 998901234567
+    }
     return false;
   }
 
@@ -17,8 +18,9 @@ abstract class AppValidator {
   }
 
   static bool isValidEmail(String? email) {
-    if (email == null || email.trim().isEmpty)
+    if (email == null || email.trim().isEmpty) {
       return true; // Email is optional in profile
+    }
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email.trim());
   }

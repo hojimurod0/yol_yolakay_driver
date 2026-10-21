@@ -4,6 +4,11 @@ import '../models/driver_auth_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<OtpSessionModel> sendOtp(String phone);
+  Future<DriverAuthModel> loginWithPassword({
+    required String phone,
+    required String password,
+  });
+  Future<void> setPassword(String newPassword);
   Future<DriverAuthModel> verifyOtp({
     required String phone,
     required String sessionId,
@@ -27,6 +32,31 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           OtpSessionModel.fromJson(data as Map<String, dynamic>),
     );
     return response.data!;
+  }
+
+  @override
+  Future<DriverAuthModel> loginWithPassword({
+    required String phone,
+    required String password,
+  }) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.login,
+      data: {
+        'phone': phone,
+        'password': password,
+      },
+      fromData: (data) =>
+          DriverAuthModel.fromJson(data as Map<String, dynamic>),
+    );
+    return response.data!;
+  }
+
+  @override
+  Future<void> setPassword(String newPassword) async {
+    await _apiClient.post(
+      ApiEndpoints.setPassword,
+      data: {'password': newPassword},
+    );
   }
 
   @override

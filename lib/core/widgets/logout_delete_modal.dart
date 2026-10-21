@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/core_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../di/injection.dart';
+import '../localization/locale_cubit.dart';
+import '../storage/secure_storage_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_radius.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/driver/presentation/providers/driver_provider.dart';
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_event.dart';
 
 /// Displays the modern Account Management modal with distinct "Log Out" and "Delete Account" actions.
 Future<void> showLogoutDeleteAccountModal(
-  BuildContext context,
-  WidgetRef ref,
-) {
+  BuildContext context, [
+  dynamic unusedRef,
+]) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  final locale = ref.read(localeNotifierProvider).languageCode;
+  final locale = context.read<LocaleCubit>().state.languageCode;
   final isRu = locale == 'ru';
 
   return showModalBottomSheet<void>(
@@ -26,7 +29,6 @@ Future<void> showLogoutDeleteAccountModal(
       return _LogoutDeleteBottomSheet(
         isDark: isDark,
         isRu: isRu,
-        ref: ref,
       );
     },
   );
@@ -36,12 +38,10 @@ class _LogoutDeleteBottomSheet extends StatefulWidget {
   const _LogoutDeleteBottomSheet({
     required this.isDark,
     required this.isRu,
-    required this.ref,
   });
 
   final bool isDark;
   final bool isRu;
-  final WidgetRef ref;
 
   @override
   State<_LogoutDeleteBottomSheet> createState() =>
@@ -56,14 +56,14 @@ class _LogoutDeleteBottomSheetState extends State<_LogoutDeleteBottomSheet> {
     setState(() => _isLoading = true);
 
     try {
-      final prefs = widget.ref.read(sharedPreferencesProvider);
+      final prefs = sl<SharedPreferences>();
       await prefs.remove('user_role');
       await prefs.remove('auth_token');
+      await sl<SecureStorageService>().clearTokens();
 
-      await widget.ref.read(authNotifierProvider.notifier).logout();
-      widget.ref
-          .read(driverNotifierProvider.notifier)
-          .switchRole(AppUserRole.passenger);
+      if (mounted) {
+        context.read<AuthBloc>().add(const LogoutEvent());
+      }
 
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
@@ -185,13 +185,13 @@ class _LogoutDeleteBottomSheetState extends State<_LogoutDeleteBottomSheet> {
     setState(() => _isLoading = true);
 
     try {
-      final prefs = widget.ref.read(sharedPreferencesProvider);
+      final prefs = sl<SharedPreferences>();
       await prefs.clear();
+      await sl<SecureStorageService>().clearTokens();
 
-      await widget.ref.read(authNotifierProvider.notifier).deleteAccount();
-      widget.ref
-          .read(driverNotifierProvider.notifier)
-          .switchRole(AppUserRole.passenger);
+      if (mounted) {
+        context.read<AuthBloc>().add(const LogoutEvent());
+      }
 
       if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context);
@@ -299,29 +299,6 @@ class _LogoutDeleteBottomSheetState extends State<_LogoutDeleteBottomSheet> {
           ),
 
           const SizedBox(height: AppSpacing.md),
-
-          // Cancel Button
-          SizedBox(
-            width: double.infinity,
-            child: TextButton(
-              onPressed: _isLoading ? null : () => Navigator.pop(context),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: AppRadius.borderMd),
-              ),
-              child: Text(
-                widget.isRu ? 'Отмена' : 'Bekor qilish',
-                style: TextStyle(
-                  color: widget.isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.textSecondaryLight,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -335,9 +312,9 @@ class _ActionCard extends StatelessWidget {
     required this.iconColor,
     required this.title,
     required this.subtitle,
+    required this.isLoading,
     required this.onTap,
     required this.isDestructive,
-    this.isLoading = false,
   });
 
   final bool isDark;
@@ -345,31 +322,33 @@ class _ActionCard extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String subtitle;
+  final bool isLoading;
   final VoidCallback onTap;
   final bool isDestructive;
-  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isDestructive
-        ? AppColors.error.withValues(alpha: isDark ? 0.35 : 0.25)
-        : (isDark ? AppColors.borderDark : AppColors.borderLight);
-
-    final bgColor = isDestructive
-        ? (isDark ? const Color(0xFF221517) : const Color(0xFFFEF2F2))
-        : (isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceLight);
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: isLoading ? null : onTap,
         borderRadius: AppRadius.borderLg,
         child: Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: bgColor,
+            color: isDark
+                ? (isDestructive
+                    ? AppColors.error.withValues(alpha: 0.08)
+                    : AppColors.surfaceSubtleDark)
+                : (isDestructive
+                    ? const Color(0xFFFEF2F2)
+                    : const Color(0xFFF9FAFB)),
             borderRadius: AppRadius.borderLg,
-            border: Border.all(color: borderColor, width: 1),
+            border: Border.all(
+              color: isDestructive
+                  ? AppColors.error.withValues(alpha: isDark ? 0.25 : 0.2)
+                  : (isDark ? AppColors.borderDark : AppColors.borderLight),
+            ),
           ),
           child: Row(
             children: [
@@ -389,14 +368,12 @@ class _ActionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: AppTypography.titleSmall.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: AppTypography.titleMedium.copyWith(
+                        fontWeight: FontWeight.w700,
                         fontSize: 14.5,
                         color: isDestructive
                             ? AppColors.error
-                            : (isDark
-                                ? Colors.white
-                                : AppColors.textPrimaryLight),
+                            : (isDark ? Colors.white : AppColors.textPrimaryLight),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -406,7 +383,7 @@ class _ActionCard extends StatelessWidget {
                         color: isDark
                             ? AppColors.textSecondaryDark
                             : AppColors.textSecondaryLight,
-                        fontSize: 11.5,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -415,11 +392,9 @@ class _ActionCard extends StatelessWidget {
               const SizedBox(width: 8),
               Icon(
                 Icons.chevron_right_rounded,
-                color: isDestructive
-                    ? AppColors.error.withValues(alpha: 0.7)
-                    : (isDark
-                        ? AppColors.textTertiaryDark
-                        : AppColors.textTertiaryLight),
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondaryLight,
                 size: 20,
               ),
             ],

@@ -4,13 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_responsive.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_text_sizes.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/external_navigation_launcher.dart';
 import '../../../../core/utils/status_localization_mapper.dart';
 import '../../../../core/widgets/app_avatar_initials.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_status_chip.dart';
 import '../../../../core/widgets/empty_state_widget.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
@@ -35,6 +39,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
   }
 
   Future<void> _callPassenger(String phone) async {
+    HapticFeedback.lightImpact();
     final uri = Uri.parse('tel:$phone');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
@@ -45,6 +50,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
+    final hPad = AppResponsive.horizontalPadding(context);
 
     return Scaffold(
       backgroundColor:
@@ -60,7 +66,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.taxiYellow.withOpacity(0.2),
+                color: AppColors.taxiYellow.withValues(alpha: 0.2),
               ),
               child: const Icon(Icons.radar_rounded,
                   size: 20, color: AppColors.taxiYellowDark),
@@ -70,7 +76,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
               l10n.radarOrdersTitle,
               style: AppTypography.titleMedium.copyWith(
                 fontWeight: FontWeight.w800,
-                fontSize: 17,
+                fontSize: AppTextSizes.lg,
                 color: isDark ? Colors.white : AppColors.charcoalBlack,
               ),
             ),
@@ -89,7 +95,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
-            color: isDark ? const Color(0xFF2C2C38) : const Color(0xFFE5E7EB),
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
             height: 1,
           ),
         ),
@@ -100,33 +106,48 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
             if (state is OrderCompletedState) {
               _showCompletedDialog(context, state.result, l10n);
             } else if (state is TaxiRadarErrorState) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: AppColors.error,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
+              AppSnackBar.showError(context, state.message);
             }
           },
           builder: (context, state) {
             if (state is ActiveOrderLoadedState) {
-              return _buildActiveOrderView(
-                  context, state.activeOrder, isDark, l10n);
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AppResponsive.maxContentWidth,
+                  ),
+                  child: _buildActiveOrderView(
+                      context, state.activeOrder, isDark, l10n),
+                ),
+              );
             }
 
             if (state is TaxiRadarLoading) {
-              return ListView.builder(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                itemCount: 3,
-                itemBuilder: (_, __) => const RadarOrderCardShimmer(),
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AppResponsive.maxContentWidth,
+                  ),
+                  child: ListView.builder(
+                    padding: EdgeInsets.fromLTRB(hPad, 14, hPad, 120),
+                    itemCount: 3,
+                    itemBuilder: (_, __) => const RadarOrderCardShimmer(),
+                  ),
+                ),
               );
             }
 
             if (state is RadarOrdersLoadedState) {
               if (state.activeOrder != null) {
-                return _buildActiveOrderView(
-                    context, state.activeOrder!, isDark, l10n);
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: AppResponsive.maxContentWidth,
+                    ),
+                    child: _buildActiveOrderView(
+                        context, state.activeOrder!, isDark, l10n),
+                  ),
+                );
               }
 
               final offers = state.offers;
@@ -142,7 +163,8 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                     physics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics()),
                     children: [
-                      const SizedBox(height: 60),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.15),
                       EmptyStateWidget(
                         title: l10n.noRadarOrdersTitle,
                         description: l10n.noRadarOrdersDesc,
@@ -153,43 +175,60 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                 );
               }
 
-              return RefreshIndicator(
-                color: AppColors.taxiYellowDark,
-                onRefresh: () async {
-                  context
-                      .read<TaxiRadarBloc>()
-                      .add(const FetchRadarOrdersEvent());
-                },
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics()),
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 120),
-                  itemCount: offers.length,
-                  itemBuilder: (ctx, index) {
-                    final offer = offers[index];
-                    return _RadarOfferCard(
-                      key: ValueKey(offer.orderId),
-                      offer: offer,
-                      onAccept: () {
-                        context
-                            .read<TaxiRadarBloc>()
-                            .add(AcceptOrderEvent(offer.orderId));
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AppResponsive.maxContentWidth,
+                  ),
+                  child: RefreshIndicator(
+                    color: AppColors.taxiYellowDark,
+                    onRefresh: () async {
+                      context
+                          .read<TaxiRadarBloc>()
+                          .add(const FetchRadarOrdersEvent());
+                    },
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics()),
+                      padding: EdgeInsets.fromLTRB(hPad, 14, hPad, 120),
+                      itemCount: offers.length,
+                      itemBuilder: (ctx, index) {
+                        final offer = offers[index];
+                        return _RadarOfferCard(
+                          key: ValueKey(offer.orderId),
+                          offer: offer,
+                          onAccept: () {
+                            context
+                                .read<TaxiRadarBloc>()
+                                .add(AcceptOrderEvent(offer.orderId));
+                          },
+                          onDecline: () {
+                            context
+                                .read<TaxiRadarBloc>()
+                                .add(DeclineOrderEvent(offer.orderId));
+                          },
+                        );
                       },
-                      onDecline: () {
-                        context
-                            .read<TaxiRadarBloc>()
-                            .add(DeclineOrderEvent(offer.orderId));
-                      },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               );
             }
 
-            return const Center(
-                child:
-                    CircularProgressIndicator(color: AppColors.taxiYellowDark));
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: AppResponsive.maxContentWidth,
+                ),
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(hPad, 14, hPad, 120),
+                  children: const [
+                    AppSkeletonDriverTripCard(),
+                    AppSkeletonDriverTripCard(),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -203,6 +242,9 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
     AppLocalizations l10n,
   ) {
     final currentLocale = Localizations.localeOf(context).languageCode;
+    final cardBg = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final borderCol = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -221,11 +263,16 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E26) : Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: isDark ? const Color(0xFF2E2E3C) : const Color(0xFFE2E4E8),
-            ),
+            color: cardBg,
+            borderRadius: AppRadius.borderLg,
+            border: Border.all(color: borderCol, width: 1.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             children: [
@@ -241,10 +288,11 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                         Text(
                           order.passenger.name,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: AppTextSizes.lg,
                             fontWeight: FontWeight.w800,
-                            color:
-                                isDark ? Colors.white : AppColors.charcoalBlack,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.charcoalBlack,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -256,100 +304,66 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                             Text(
                               order.passenger.rating.toStringAsFixed(1),
                               style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 12),
+                                  fontWeight: FontWeight.w700, fontSize: 13),
                             ),
                           ],
                         ),
                       ],
                     ),
                   ),
-                  IconButton.filled(
-                    onPressed: () {
-                      final isToDestination = order.isInProgress;
-                      final targetLat = isToDestination
-                          ? order.destination.lat
-                          : order.pickup.lat;
-                      final targetLng = isToDestination
-                          ? order.destination.lng
-                          : order.pickup.lng;
-                      final targetTitle = isToDestination
-                          ? order.destination.address
-                          : order.pickup.address;
-                      ExternalNavigationLauncher.showNavigationChooser(
-                        context,
-                        lat: targetLat,
-                        lng: targetLng,
-                        destinationTitle: targetTitle,
-                      );
-                    },
-                    icon: const Icon(Icons.navigation_rounded),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFFFC3F1D),
-                      foregroundColor: Colors.white,
-                    ),
-                    tooltip: 'Navigatsiya',
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
+                  IconButton(
                     onPressed: () => _callPassenger(order.passenger.phone),
-                    icon: const Icon(Icons.phone_rounded),
+                    icon: const Icon(Icons.call_rounded,
+                        color: AppColors.success, size: 24),
                     style: IconButton.styleFrom(
-                      backgroundColor: AppColors.success,
-                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          AppColors.success.withValues(alpha: 0.15),
+                      padding: const EdgeInsets.all(10),
                     ),
-                    tooltip: 'Qo\'ng\'iroq qilish',
                   ),
                 ],
               ),
-              const Divider(height: 24),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 16),
 
-              // Route details
+              // Route representation
               _buildRouteRow(
                   order.pickup.address, order.destination.address, isDark),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: () {
-                  final isToDestination = order.isInProgress;
-                  final targetLat = isToDestination
-                      ? order.destination.lat
-                      : order.pickup.lat;
-                  final targetLng = isToDestination
-                      ? order.destination.lng
-                      : order.pickup.lng;
-                  final targetTitle = isToDestination
-                      ? 'Yetkazish: ${order.destination.address}'
-                      : 'Olish manzili: ${order.pickup.address}';
-                  ExternalNavigationLauncher.showNavigationChooser(
-                    context,
-                    lat: targetLat,
-                    lng: targetLng,
-                    destinationTitle: targetTitle,
-                  );
-                },
-                icon: const Icon(Icons.near_me_rounded, size: 18),
-                label: Text(
-                  order.isInProgress
-                      ? 'Yetkazish manziliga navigatsiya'
-                      : 'Mijoz oldiga navigatsiya',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(42),
-                  foregroundColor:
-                      isDark ? AppColors.taxiYellow : AppColors.charcoalBlack,
-                  side: BorderSide(
-                    color: isDark
-                        ? AppColors.taxiYellow.withOpacity(0.5)
-                        : const Color(0xFFD1D5DB),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 16),
+
+              // Navigation button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    ExternalNavigationLauncher.showNavigationChooser(
+                      context,
+                      lat: order.isAssigned
+                          ? order.pickup.lat
+                          : order.destination.lat,
+                      lng: order.isAssigned
+                          ? order.pickup.lng
+                          : order.destination.lng,
+                      destinationTitle: order.isAssigned
+                          ? order.pickup.address
+                          : order.destination.address,
+                    );
+                  },
+                  icon: const Icon(Icons.navigation_outlined, size: 18),
+                  label: const Text('Xaritada ochish'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.taxiYellowDark,
+                    side: const BorderSide(color: AppColors.taxiYellowDark),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
               ),
-              const Divider(height: 24),
+              const SizedBox(height: 14),
 
-              // Fare
+              // Fare Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -358,7 +372,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                   Text(
                     AppCurrencyFormatter.format(order.price),
                     style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: AppTextSizes.xl,
                         fontWeight: FontWeight.w900,
                         color: AppColors.taxiYellowDark),
                   ),
@@ -419,7 +433,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
               style: const TextStyle(
                   color: AppColors.error, fontWeight: FontWeight.w700)),
           style: OutlinedButton.styleFrom(
-            side: BorderSide(color: AppColors.error.withOpacity(0.5)),
+            side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -441,7 +455,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                 pickup,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 13.5,
+                  fontSize: AppTextSizes.compact,
                   color: isDark ? Colors.white : AppColors.charcoalBlack,
                 ),
               ),
@@ -459,7 +473,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
                 destination,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
-                  fontSize: 13.5,
+                  fontSize: AppTextSizes.compact,
                   color: isDark ? Colors.white : AppColors.charcoalBlack,
                 ),
               ),
@@ -477,7 +491,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
         title: Text(l10n.completeRideModalTitle,
             style: const TextStyle(fontWeight: FontWeight.w800)),
         content: Column(
@@ -521,7 +535,10 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
   }
 
   void _showCancelDialog(
-      BuildContext context, String orderId, AppLocalizations l10n) {
+    BuildContext context,
+    String orderId,
+    AppLocalizations l10n,
+  ) {
     String selectedReason = l10n.cancelReasonPassengerNoShow;
     final reasons = [
       l10n.cancelReasonPassengerNoShow,
@@ -534,19 +551,20 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setModalState) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
           title: Text(l10n.cancelOrderAction,
-              style:
-                  const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w800, fontSize: AppTextSizes.lg)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: reasons.map((r) {
               return RadioListTile<String>(
                 title: Text(r, style: const TextStyle(fontSize: 13)),
                 value: r,
+                // ignore: deprecated_member_use
                 groupValue: selectedReason,
                 activeColor: AppColors.error,
+                // ignore: deprecated_member_use
                 onChanged: (val) {
                   if (val != null) setModalState(() => selectedReason = val);
                 },
@@ -579,7 +597,7 @@ class _DriverRadarPageState extends State<DriverRadarPage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderLg),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -658,7 +676,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_secondsLeft > 1) {
-        setState(() => _secondsLeft--);
+        if (mounted) setState(() => _secondsLeft--);
       } else {
         t.cancel();
         widget.onDecline();
@@ -680,20 +698,23 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
     final progress =
         _secondsLeft / (offer.timeoutSeconds > 0 ? offer.timeoutSeconds : 25);
 
+    final cardBg = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final borderCol = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E26) : Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        color: cardBg,
+        borderRadius: AppRadius.borderLg,
         border: Border.all(
-          color: isDark ? const Color(0xFF2E2E3C) : const Color(0xFFE2E4E8),
-          width: 1.4,
+          color: borderCol,
+          width: 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -701,7 +722,8 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
         children: [
           // Timeout progress bar
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(16)),
             child: LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0),
               backgroundColor: isDark ? Colors.white10 : Colors.black12,
@@ -726,13 +748,13 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppColors.taxiYellow.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.taxiYellow.withValues(alpha: 0.2),
+                            borderRadius: AppRadius.borderSm,
                           ),
                           child: Text(
                             offer.tier.toUpperCase(),
                             style: const TextStyle(
-                              fontSize: 11,
+                              fontSize: AppTextSizes.xs,
                               fontWeight: FontWeight.w900,
                               color: AppColors.charcoalBlack,
                             ),
@@ -742,7 +764,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                         Text(
                           "~${offer.distanceToPickupKm} km",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: AppTextSizes.sm,
                             fontWeight: FontWeight.w600,
                             color: isDark
                                 ? Colors.white60
@@ -754,7 +776,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                     Text(
                       AppCurrencyFormatter.format(offer.estimatedPrice),
                       style: const TextStyle(
-                        fontSize: 17,
+                        fontSize: AppTextSizes.lg,
                         fontWeight: FontWeight.w900,
                         color: AppColors.taxiYellowDark,
                       ),
@@ -773,7 +795,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                       child: Text(
                         offer.pickup.address,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: AppTextSizes.compact,
                           fontWeight: FontWeight.w700,
                           color:
                               isDark ? Colors.white : AppColors.charcoalBlack,
@@ -796,7 +818,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                       child: Text(
                         offer.destination.address,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: AppTextSizes.compact,
                           fontWeight: FontWeight.w700,
                           color:
                               isDark ? Colors.white : AppColors.charcoalBlack,
@@ -826,7 +848,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                                   ? Colors.white24
                                   : AppColors.borderLight),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(14)),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: Text(l10n.declineOrder,
@@ -851,7 +873,7 @@ class _RadarOfferCardState extends State<_RadarOfferCard> {
                           foregroundColor: AppColors.charcoalBlack,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(14)),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
