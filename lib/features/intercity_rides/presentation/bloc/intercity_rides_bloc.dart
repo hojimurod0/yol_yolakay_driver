@@ -128,10 +128,6 @@ class IntercityRidesBloc
     try {
       final rideId = await _createRideUseCase(event.rideData);
       _cachedActiveRides.clear();
-      _webSocketService?.broadcastRideCreated({
-        'ride_id': rideId,
-        ...event.rideData,
-      });
       emit(RideCreatedSuccessState(rideId));
     } on ApiException catch (e) {
       emit(IntercityRidesError(e.message));

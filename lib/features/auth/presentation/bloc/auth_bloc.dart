@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/services/push_notification_service.dart';
+import '../../../../core/services/websocket_service.dart';
 import '../../../../core/utils/bloc_transformers.dart';
 import '../../domain/usecases/auth_usecases.dart';
 import 'auth_event.dart';
@@ -46,7 +47,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (isAuthenticated) {
       // In authenticated state, actual profile / driver will be fetched by HomeBloc / ProfileBloc
       emit(const AuthInitial());
-      _syncPushToken();
+      _onAuthenticated();
     } else {
       emit(const UnauthenticatedState());
     }
@@ -85,7 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
       emit(AuthenticatedState(authResult));
-      _syncPushToken();
+      _onAuthenticated();
     } on ApiException catch (e) {
       emit(AuthErrorState(
         message: e.message,
@@ -147,7 +148,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         code: event.code,
       );
       emit(AuthenticatedState(authResult));
-      _syncPushToken();
+      _onAuthenticated();
     } on ApiException catch (e) {
       emit(AuthErrorState(
         message: e.message,
@@ -167,13 +168,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await _logoutUseCase(fcmToken: event.fcmToken);
     } catch (_) {}
+    if (sl.isRegistered<WebSocketService>()) {
+      sl<WebSocketService>().disconnect();
+    }
     emit(const UnauthenticatedState());
   }
 
-  void _syncPushToken() {
+  void _onAuthenticated() {
     try {
       if (sl.isRegistered<PushNotificationService>()) {
         sl<PushNotificationService>().syncPendingTokenAfterLogin();
+      }
+    } catch (_) {}
+    try {
+      if (sl.isRegistered<WebSocketService>()) {
+        sl<WebSocketService>().connect();
       }
     } catch (_) {}
   }

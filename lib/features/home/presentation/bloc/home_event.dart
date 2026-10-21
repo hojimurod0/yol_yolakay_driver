@@ -23,14 +23,16 @@ class UpdateDriverLocationEvent extends HomeEvent {
     required this.lat,
     required this.lng,
     this.bearing,
-    this.speed,
+    this.speedKmh,
   });
 
   final double lat;
   final double lng;
   final double? bearing;
-  final double? speed;
+
+  /// Speed in km/h (Geolocator reports m/s; convert before creating the event).
+  final double? speedKmh;
 
   @override
-  List<Object?> get props => [lat, lng, bearing, speed];
+  List<Object?> get props => [lat, lng, bearing, speedKmh];
 }

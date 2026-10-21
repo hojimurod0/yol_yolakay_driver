@@ -1,43 +1,62 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math' as math;
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter/foundation.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../config/app_config.dart';
-import '../constants/api_endpoints.dart';
-import '../network/api_client.dart';
+import '../storage/secure_storage_service.dart';
 import '../utils/app_logger.dart';
 
-/// Production-grade Real-time WebSocket Service.
-/// Supports Laravel Reverb / Pusher protocol, exponential backoff with jitter,
-/// network-aware auto-reconnection, channel re-subscription, and message deduplication.
+/// Socket.IO event names exchanged with the NestJS driver gateway.
+/// Each incoming event is registered under both naming styles
+/// (`UPPER_SNAKE` from BACKEND_TZ_DRIVER.md and `colon:case`) until the
+/// backend contract is frozen.
+abstract class DriverSocketEvents {
+  // Driver ➔ Server
+  static const String driverLocationUpdate = 'DRIVER_LOCATION_UPDATE';
+  static const String joinTaxiOrder = 'join_taxi_order';
+  static const String leaveTaxiOrder = 'leave_taxi_order';
+
+  // Server ➔ Driver
+  static const List<String> taxiOffer = [
+    'NEW_TAXI_ORDER_OFFER',
+    'taxi:order:offer',
+  ];
+  static const List<String> bookingUpdate = [
+    'BOOKING_UPDATE',
+    'booking:update',
+  ];
+  static const List<String> orderCancelled = [
+    'ORDER_CANCELLED_BY_PASSENGER',
+    'taxi:order:cancelled',
+  ];
+  static const List<String> orderStatusChanged = [
+    'ORDER_STATUS_CHANGED',
+    'taxi:status:changed',
+  ];
+  static const List<String> walletDeposited = [
+    'WALLET_DEPOSITED',
+    'wallet:deposited',
+  ];
+}
+
+/// Real-time Socket.IO client for the driver gateway (`wss://<host>/ws`, namespace `/`).
+/// Authenticates with the current access token on every (re)connect, re-joins
+/// the active taxi order room after reconnects, and deduplicates server events.
 class WebSocketService {
   WebSocketService({
-    required ApiClient apiClient,
+    required SecureStorageService secureStorage,
     String? wsUrl,
-  })  : _apiClient = apiClient,
-        _wsUrl = wsUrl ?? AppConfig.activeWebSocketUrl {
-    _initConnectivityListener();
-  }
+  })  : _secureStorage = secureStorage,
+        _wsUrl = wsUrl ?? AppConfig.activeWebSocketUrl;
 
-  final ApiClient _apiClient;
+  final SecureStorageService _secureStorage;
   final String _wsUrl;
 
-  WebSocketChannel? _channel;
-  StreamSubscription? _subscription;
-  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
-
-  String? _socketId;
-  String? _currentDriverId;
+  io.Socket? _socket;
   String? _activeTaxiOrderId;
-  bool _isConnected = false;
-  bool _isExplicitlyDisconnected = false;
-  Timer? _reconnectTimer;
-  int _reconnectAttempts = 0;
-  static const int _maxBackoffSeconds = 30;
-
-  // Active channel subscription registry for seamless reconnects
-  final Set<String> _activeSubscribedChannels = {};
+  bool _isExplicitlyDisconnected = true;
+  Timer? _serverDisconnectRetryTimer;
+  int _serverDisconnectRetries = 0;
+  static const int _maxServerDisconnectRetries = 5;
 
   // Deduplication ring buffer for incoming real-time messages
   final List<String> _recentMessageSignatures = [];
@@ -65,195 +84,174 @@ class WebSocketService {
   Stream<Map<String, dynamic>> get onWalletDeposited =>
       _walletDepositedController.stream;
 
-  bool get isConnected => _isConnected;
+  bool get isConnected => _socket?.connected ?? false;
 
-  void _initConnectivityListener() {
-    try {
-      _connectivitySubscription =
-          Connectivity().onConnectivityChanged.listen((results) {
-        final hasConnection = results.any((r) => r != ConnectivityResult.none);
-        if (hasConnection &&
-            !_isConnected &&
-            !_isExplicitlyDisconnected &&
-            _currentDriverId != null) {
-          AppLogger.info(
-              'Internet restored. Triggering immediate WebSocket reconnect...',
-              module: LogModule.system);
-          _reconnectAttempts = 0;
-          _reconnectTimer?.cancel();
-          connect(_currentDriverId!);
-        }
-      });
-    } catch (e) {
-      AppLogger.warning(
-          'Could not attach connectivity listener to WebSocket: $e',
+  /// Opens the Socket.IO connection if an access token is stored.
+  /// [driverId] is kept for call-site compatibility; the server identifies
+  /// the driver from the JWT.
+  Future<void> connect([String? driverId]) async {
+    final token = await _secureStorage.getAccessToken();
+    if (token == null || token.isEmpty) {
+      AppLogger.debug('WebSocket connect skipped: no access token',
           module: LogModule.system);
+      return;
+    }
+
+    _isExplicitlyDisconnected = false;
+
+    final socket = _socket;
+    if (socket != null) {
+      if (!socket.connected && !socket.active) {
+        socket.connect();
+      }
+      return;
+    }
+
+    // The URL path is the Socket.IO engine path, not the namespace:
+    // `wss://host/ws` ➔ origin `wss://host`, path `/ws`, namespace `/`.
+    final uri = Uri.parse(_wsUrl);
+    final enginePath = uri.path.isEmpty || uri.path == '/' ? '/ws' : uri.path;
+    final origin = '${uri.scheme}://${uri.authority}';
+
+    _socket = io.io(
+      origin,
+      io.OptionBuilder()
+          .setPath(enginePath)
+          .setTransports(['websocket'])
+          .setAuthFn((callback) {
+            // Read the token on every handshake so reconnects use the refreshed one.
+            _secureStorage
+                .getAccessToken()
+                .then((t) => callback({'token': t ?? ''}))
+                .catchError((_) => callback({'token': ''}));
+          })
+          .enableForceNew()
+          .disableAutoConnect()
+          .enableReconnection()
+          .setReconnectionDelay(1500)
+          .setReconnectionDelayMax(30000)
+          .setRandomizationFactor(0.5)
+          .build(),
+    );
+
+    _registerHandlers(_socket!);
+    _socket!.connect();
+  }
+
+  void _registerHandlers(io.Socket socket) {
+    socket.onConnect((_) {
+      _serverDisconnectRetries = 0;
+      AppLogger.info('WebSocket connected. Socket ID: ${socket.id}',
+          module: LogModule.system);
+      final orderId = _activeTaxiOrderId;
+      if (orderId != null) {
+        socket.emit(DriverSocketEvents.joinTaxiOrder, {'order_id': orderId});
+      }
+    });
+
+    socket.onConnectError((err) {
+      AppLogger.warning('WebSocket connection error: $err',
+          module: LogModule.system);
+    });
+
+    socket.onDisconnect((reason) {
+      AppLogger.info('WebSocket disconnected: $reason',
+          module: LogModule.system);
+      // Socket.IO does not auto-reconnect after a server-side disconnect
+      // (e.g. rejected/expired token), so retry with backoff while the
+      // HTTP layer refreshes the token.
+      if (reason == 'io server disconnect' && !_isExplicitlyDisconnected) {
+        _scheduleServerDisconnectRetry();
+      }
+    });
+
+    void register(
+      List<String> eventNames,
+      StreamController<Map<String, dynamic>> controller,
+    ) {
+      for (final name in eventNames) {
+        socket.on(name, (raw) {
+          final data = _extractPayload(raw);
+          if (data == null || _isDuplicateMessage(name, data)) return;
+          if (!controller.isClosed) controller.add(data);
+        });
+      }
+    }
+
+    register(DriverSocketEvents.taxiOffer, _taxiOfferController);
+    register(DriverSocketEvents.bookingUpdate, _bookingUpdateController);
+    register(DriverSocketEvents.orderCancelled, _orderCancelledController);
+    register(
+        DriverSocketEvents.orderStatusChanged, _orderStatusChangedController);
+    register(DriverSocketEvents.walletDeposited, _walletDepositedController);
+
+    if (kDebugMode) {
+      // Surfaces event names the backend actually emits while the contract is unconfirmed.
+      socket.onAny((event, data) {
+        AppLogger.debug('WebSocket event: $event', module: LogModule.system);
+      });
     }
   }
 
-  Future<void> connect([String? driverId]) async {
-    if (driverId != null) {
-      _currentDriverId = driverId;
-    }
-    if (_currentDriverId == null) {
+  void _scheduleServerDisconnectRetry() {
+    if (_serverDisconnectRetries >= _maxServerDisconnectRetries) {
+      AppLogger.warning(
+          'WebSocket rejected by server $_serverDisconnectRetries times; waiting for next connect()',
+          module: LogModule.system);
       return;
     }
-    _isExplicitlyDisconnected = false;
-    _disconnectInternal();
+    final delay = Duration(seconds: 2 << _serverDisconnectRetries);
+    _serverDisconnectRetries++;
+    _serverDisconnectRetryTimer?.cancel();
+    _serverDisconnectRetryTimer = Timer(delay, () {
+      if (!_isExplicitlyDisconnected) connect();
+    });
+  }
 
-    try {
-      final uri = Uri.parse(
-          '$_wsUrl?appKey=yolyolakay&protocol=7&client=js&version=8.4.0-reverb');
-      _channel = WebSocketChannel.connect(uri);
-
-      _subscription = _channel!.stream.listen(
-        _handleMessage,
-        onError: (err) {
-          AppLogger.warning('WebSocket connection error: $err',
-              module: LogModule.system);
-          _scheduleReconnect();
-        },
-        onDone: () {
-          AppLogger.info('WebSocket connection closed.',
-              module: LogModule.system);
-          _scheduleReconnect();
-        },
-        cancelOnError: false,
-      );
-    } catch (e) {
-      AppLogger.warning('Failed to connect to WebSocket: $e',
-          module: LogModule.system);
-      _scheduleReconnect();
-    }
+  /// Socket.IO payloads arrive either bare or wrapped as `{event, data}`.
+  Map<String, dynamic>? _extractPayload(dynamic raw) {
+    if (raw is List && raw.isNotEmpty) raw = raw.first;
+    if (raw is! Map) return null;
+    final map = Map<String, dynamic>.from(raw);
+    final inner = map['data'];
+    if (inner is Map) return Map<String, dynamic>.from(inner);
+    return map;
   }
 
   Future<void> subscribeToOrder(String orderId) async {
     _activeTaxiOrderId = orderId;
-    final channelName = ApiEndpoints.taxiOrderChannel(orderId);
-    _activeSubscribedChannels.add(channelName);
-    if (_isConnected && _socketId != null) {
-      await _subscribeChannel(channelName);
+    if (isConnected) {
+      _socket!.emit(DriverSocketEvents.joinTaxiOrder, {'order_id': orderId});
     }
   }
 
-  void unsubscribeFromOrder(String orderId) {
-    final channelName = ApiEndpoints.taxiOrderChannel(orderId);
-    _activeSubscribedChannels.remove(channelName);
+  Future<void> unsubscribeFromOrder(String orderId) async {
     if (_activeTaxiOrderId == orderId) {
       _activeTaxiOrderId = null;
     }
-    _sendPusherEvent('pusher:unsubscribe', {'channel': channelName});
+    if (isConnected) {
+      _socket!.emit(DriverSocketEvents.leaveTaxiOrder, {'order_id': orderId});
+    }
   }
 
+  /// Sends GPS telemetry. [speedKmh] must already be converted from m/s.
   void sendLocationUpdate({
     required double lat,
     required double lng,
     double? bearing,
-    double? speed,
+    double? speedKmh,
+    double? accuracy,
   }) {
-    if (!_isConnected || _currentDriverId == null) return;
-
-    final channelName = ApiEndpoints.driverChannel(_currentDriverId!);
-    _sendPusherEvent(
-      'client-DRIVER_LOCATION_UPDATE',
-      {
-        'lat': lat,
-        'lng': lng,
-        'bearing': bearing,
-        'speed_kmh': speed,
-        'timestamp': DateTime.now().toUtc().toIso8601String(),
-      },
-      channel: channelName,
-    );
-  }
-
-  /// Broadcast a newly created intercity ride to listeners and user apps in real time.
-  void broadcastRideCreated(Map<String, dynamic> rideData) {
-    if (!_isConnected) return;
-    _sendPusherEvent(
-      'client-RIDE_CREATED',
-      rideData,
-      channel: ApiEndpoints.intercityRidesChannel,
-    );
-  }
-
-  Future<void> _handleMessage(dynamic rawMessage) async {
-    try {
-      final parsed = jsonDecode(rawMessage.toString()) as Map<String, dynamic>;
-      final event = parsed['event']?.toString() ?? '';
-      final dataStr = parsed['data'];
-      Map<String, dynamic> data = {};
-      if (dataStr is String) {
-        try {
-          data = jsonDecode(dataStr) as Map<String, dynamic>;
-        } catch (_) {}
-      } else if (dataStr is Map<String, dynamic>) {
-        data = dataStr;
-      }
-
-      switch (event) {
-        case 'pusher:connection_established':
-          _socketId = data['socket_id']?.toString();
-          _isConnected = true;
-          _reconnectAttempts = 0;
-          _reconnectTimer?.cancel();
-          AppLogger.info('WebSocket connected. Socket ID: $_socketId',
-              module: LogModule.system);
-
-          // Always ensure driver channel is in active registry
-          if (_currentDriverId != null) {
-            final driverChannel = ApiEndpoints.driverChannel(_currentDriverId!);
-            _activeSubscribedChannels.add(driverChannel);
-          }
-
-          // Automatically re-subscribe to all active channels
-          for (final channelName in _activeSubscribedChannels) {
-            await _subscribeChannel(channelName);
-          }
-          break;
-
-        case 'pusher:ping':
-          _sendPusherEvent('pusher:pong', {});
-          break;
-
-        case 'NEW_TAXI_ORDER_OFFER':
-        case 'TaxiOfferCreated':
-          if (_isDuplicateMessage(event, data)) return;
-          _taxiOfferController.add(data);
-          break;
-
-        case 'BOOKING_UPDATE':
-        case 'BookingCreated':
-        case 'BookingCancelledByPassenger':
-          if (_isDuplicateMessage(event, data)) return;
-          _bookingUpdateController.add(data);
-          break;
-
-        case 'ORDER_CANCELLED_BY_PASSENGER':
-        case 'OrderCancelled':
-          if (_isDuplicateMessage(event, data)) return;
-          _orderCancelledController.add(data);
-          break;
-
-        case 'ORDER_STATUS_CHANGED':
-        case 'TaxiOrderStatusChanged':
-          if (_isDuplicateMessage(event, data)) return;
-          _orderStatusChangedController.add(data);
-          break;
-
-        case 'WALLET_DEPOSITED':
-        case 'WalletDeposited':
-          if (_isDuplicateMessage(event, data)) return;
-          _walletDepositedController.add(data);
-          break;
-
-        default:
-          break;
-      }
-    } catch (e) {
-      AppLogger.warning('WebSocket message parse error: $e',
-          module: LogModule.system);
-    }
+    if (!isConnected) return;
+    _socket!.emit(DriverSocketEvents.driverLocationUpdate, {
+      'lat': lat,
+      'lng': lng,
+      'bearing': bearing,
+      'speed_kmh': speedKmh,
+      'accuracy': accuracy,
+      'is_online': true,
+      'active_trip_id': _activeTaxiOrderId,
+    });
   }
 
   /// Deduplicates server pushed events within a sliding window.
@@ -265,110 +263,33 @@ class WebSocketService {
         data['created_at']?.toString() ??
         '';
 
-    final signature = '$event:$messageId';
+    final status = data['status']?.toString() ?? '';
+    final signature = '$event:$messageId:$status';
     if (messageId.isNotEmpty && _recentMessageSignatures.contains(signature)) {
       AppLogger.debug('Dropped duplicate WebSocket event: $signature',
           module: LogModule.system);
       return true;
     }
 
-    if (signature.isNotEmpty) {
-      _recentMessageSignatures.add(signature);
-      if (_recentMessageSignatures.length > _maxRecentSignatures) {
-        _recentMessageSignatures.removeAt(0);
-      }
+    _recentMessageSignatures.add(signature);
+    if (_recentMessageSignatures.length > _maxRecentSignatures) {
+      _recentMessageSignatures.removeAt(0);
     }
     return false;
   }
 
-  Future<void> _subscribeChannel(String channelName) async {
-    if (_socketId == null) return;
-
-    try {
-      final authResponse = await _apiClient.post(
-        ApiEndpoints.broadcastAuth,
-        data: {
-          'socket_id': _socketId,
-          'channel_name': channelName,
-        },
-      );
-
-      final authSig = authResponse.data?['auth']?.toString();
-      if (authSig != null) {
-        _sendPusherEvent('pusher:subscribe', {
-          'channel': channelName,
-          'auth': authSig,
-        });
-        AppLogger.info('Subscribed to channel: $channelName',
-            module: LogModule.system);
-      }
-    } catch (e) {
-      AppLogger.warning('Channel authorization failed for $channelName: $e',
-          module: LogModule.system);
-    }
-  }
-
-  void _sendPusherEvent(String event, Map<String, dynamic> data,
-      {String? channel}) {
-    if (_channel == null) return;
-    try {
-      final payload = {
-        'event': event,
-        'data': data,
-        if (channel != null) 'channel': channel,
-      };
-      _channel!.sink.add(jsonEncode(payload));
-    } catch (e) {
-      AppLogger.warning('Failed to send WebSocket event $event: $e',
-          module: LogModule.system);
-    }
-  }
-
-  void _scheduleReconnect() {
-    _isConnected = false;
-    if (_isExplicitlyDisconnected || _currentDriverId == null) return;
-
-    _reconnectTimer?.cancel();
-
-    // Exponential backoff with jitter: min(1.5 * 1.8^attempts, 30s)
-    final backoffSec = (1.5 * math.pow(1.8, _reconnectAttempts))
-        .clamp(1.5, _maxBackoffSeconds.toDouble());
-    final jitter = (math.Random().nextDouble() * 0.5) - 0.25;
-    final totalDelay =
-        Duration(milliseconds: ((backoffSec + jitter) * 1000).round());
-
-    _reconnectAttempts++;
-    AppLogger.info(
-      'WebSocket reconnect scheduled in ${totalDelay.inSeconds}s (attempt: $_reconnectAttempts)',
-      module: LogModule.system,
-    );
-
-    _reconnectTimer = Timer(totalDelay, () {
-      if (_currentDriverId != null && !_isExplicitlyDisconnected) {
-        connect(_currentDriverId!);
-      }
-    });
-  }
-
-  void _disconnectInternal() {
-    _reconnectTimer?.cancel();
-    _subscription?.cancel();
-    _channel?.sink.close();
-    _isConnected = false;
-  }
-
   void disconnect() {
     _isExplicitlyDisconnected = true;
-    _currentDriverId = null;
+    _serverDisconnectRetryTimer?.cancel();
+    _serverDisconnectRetries = 0;
     _activeTaxiOrderId = null;
-    _activeSubscribedChannels.clear();
     _recentMessageSignatures.clear();
-    _disconnectInternal();
+    _socket?.dispose();
+    _socket = null;
   }
 
   void dispose() {
     disconnect();
-    _connectivitySubscription?.cancel();
     _taxiOfferController.close();
     _bookingUpdateController.close();
     _orderCancelledController.close();

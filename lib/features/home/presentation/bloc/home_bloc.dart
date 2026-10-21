@@ -49,16 +49,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // Synchronize tracking with initial online status
       if (dashboard.isOnline) {
-        _locationService.startLocationTracking(
-          onPositionChanged: (pos) {
-            add(UpdateDriverLocationEvent(
-              lat: pos.latitude,
-              lng: pos.longitude,
-              bearing: pos.heading,
-              speed: pos.speed,
-            ));
-          },
-        );
+        _startLocationTracking();
       } else {
         _locationService.stopLocationTracking();
       }
@@ -120,16 +111,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
 
       if (isOnline) {
-        _locationService.startLocationTracking(
-          onPositionChanged: (p) {
-            add(UpdateDriverLocationEvent(
-              lat: p.latitude,
-              lng: p.longitude,
-              bearing: p.heading,
-              speed: p.speed,
-            ));
-          },
-        );
+        _startLocationTracking();
       } else {
         _locationService.stopLocationTracking();
       }
@@ -152,6 +134,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
+  void _startLocationTracking() {
+    _locationService.startLocationTracking(
+      onPositionChanged: (pos) {
+        if (isClosed) return;
+        add(UpdateDriverLocationEvent(
+          lat: pos.latitude,
+          lng: pos.longitude,
+          bearing: pos.heading,
+          speedKmh: pos.speed >= 0 ? pos.speed * 3.6 : null,
+        ));
+      },
+    );
+  }
+
   Future<void> _onUpdateDriverLocation(
     UpdateDriverLocationEvent event,
     Emitter<HomeState> emit,
@@ -162,17 +158,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         lat: event.lat,
         lng: event.lng,
         bearing: event.bearing,
-        speed: event.speed,
+        speedKmh: event.speedKmh,
       );
     }
 
     // 2. HTTP Fallback / Periodic Persistence
-    // Only send HTTP POST if WebSocket is disconnected OR if 45+ seconds have elapsed since last HTTP sync
+    // Only send HTTP POST if WebSocket is disconnected OR if 15+ seconds have elapsed since last HTTP sync
     final now = DateTime.now();
     final shouldSendHttp = _webSocketService == null ||
         !_webSocketService!.isConnected ||
         _lastHttpLocationSyncTime == null ||
-        now.difference(_lastHttpLocationSyncTime!).inSeconds >= 45;
+        now.difference(_lastHttpLocationSyncTime!).inSeconds >= 15;
 
     if (shouldSendHttp) {
       _lastHttpLocationSyncTime = now;
@@ -181,7 +177,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           lat: event.lat,
           lng: event.lng,
           bearing: event.bearing,
-          speed: event.speed,
+          speed: event.speedKmh,
         );
       } catch (_) {}
     }

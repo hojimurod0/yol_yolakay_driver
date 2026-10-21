@@ -120,12 +120,5 @@ abstract class ApiEndpoints {
 
   // Module 11: System & Health
   static const String health = '/health';
-
-  // Module 12: WebSocket & Broadcasting Auth
-  static const String broadcastAuth = '/broadcasting/auth';
-  static String driverChannel(String driverId) => 'private-driver.$driverId';
-  static String taxiOrderChannel(String orderId) =>
-      'private-taxi-order.$orderId';
-  static const String intercityRidesChannel = 'public-intercity-rides';
 }
 

@@ -10,6 +10,7 @@ import '../../firebase_options.dart';
 import '../di/injection.dart';
 import '../router/driver_router.dart';
 import '../utils/app_logger.dart';
+import 'app_lifecycle_manager.dart';
 import 'push_notification_service.dart';
 
 /// Handles application bootstrap and deferred background initialization.
@@ -30,6 +31,9 @@ class AppInitializer {
 
     // Hook reactive router listeners (session expiration, push notification deep links)
     setupRouterListeners(driverRouter);
+
+    // Reconnect real-time socket when the app returns to foreground
+    sl<AppLifecycleManager>().initialize();
 
     // Trigger non-critical services asynchronously in background
     unawaited(initBackgroundServices());

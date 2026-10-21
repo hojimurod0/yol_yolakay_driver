@@ -130,7 +130,7 @@ Future<void> configureDependencies() async {
   );
 
   sl.registerLazySingleton<WebSocketService>(
-    () => WebSocketService(apiClient: sl<ApiClient>()),
+    () => WebSocketService(secureStorage: sl<SecureStorageService>()),
   );
 
   sl.registerLazySingleton<LocalNotificationService>(
