@@ -13,6 +13,11 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+// Resolved here: inside signingConfigs, rootProject.file() resolved
+// against android/app, so the keystore was missed and release APKs
+// were silently left unsigned.
+val releaseStoreFile: File? = keystoreProperties.getProperty("storeFile")
+    ?.let { path -> File(path).takeIf { it.isAbsolute } ?: rootProject.file(path) }
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
@@ -50,19 +55,11 @@ android {
 
     signingConfigs {
         create("release") {
-            val storeFilePath = keystoreProperties.getProperty("storeFile")
-            if (storeFilePath != null) {
-                val resolvedStoreFile = if (file(storeFilePath).isAbsolute) {
-                    file(storeFilePath)
-                } else {
-                    rootProject.file(storeFilePath)
-                }
-                if (resolvedStoreFile.exists()) {
-                    keyAlias = keystoreProperties.getProperty("keyAlias")
-                    keyPassword = keystoreProperties.getProperty("keyPassword")
-                    storeFile = resolvedStoreFile
-                    storePassword = keystoreProperties.getProperty("storePassword")
-                }
+            if (releaseStoreFile != null && releaseStoreFile.exists()) {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = keystoreProperties.getProperty("storePassword")
             }
         }
     }
