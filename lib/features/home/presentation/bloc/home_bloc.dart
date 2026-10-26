@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/network/api_exception.dart';
+import '../../../../core/services/driver_tracking_service.dart';
 import '../../../../core/services/location_service.dart';
 import '../../../../core/services/permission_service.dart';
-import '../../../../core/services/websocket_service.dart';
 import '../../../../core/utils/bloc_transformers.dart';
 import '../../domain/usecases/home_usecases.dart';
 import 'home_event.dart';
@@ -13,30 +13,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required GetHomeDashboardUseCase getHomeDashboardUseCase,
     required ToggleShiftUseCase toggleShiftUseCase,
-    required UpdateLocationUseCase updateLocationUseCase,
     required LocationService locationService,
-    WebSocketService? webSocketService,
+    required DriverTrackingService trackingService,
     PermissionService? permissionService,
   })  : _getHomeDashboardUseCase = getHomeDashboardUseCase,
         _toggleShiftUseCase = toggleShiftUseCase,
-        _updateLocationUseCase = updateLocationUseCase,
         _locationService = locationService,
-        _webSocketService = webSocketService,
+        _trackingService = trackingService,
         _permissionService = permissionService,
         super(const HomeInitial()) {
     on<LoadHomeDashboardEvent>(_onLoadHomeDashboard);
     on<ToggleShiftEvent>(_onToggleShift, transformer: droppableTransformer());
-    on<UpdateDriverLocationEvent>(_onUpdateDriverLocation);
   }
 
   final GetHomeDashboardUseCase _getHomeDashboardUseCase;
   final ToggleShiftUseCase _toggleShiftUseCase;
-  final UpdateLocationUseCase _updateLocationUseCase;
   final LocationService _locationService;
-  final WebSocketService? _webSocketService;
+  final DriverTrackingService _trackingService;
   final PermissionService? _permissionService;
-
-  DateTime? _lastHttpLocationSyncTime;
 
   Future<void> _onLoadHomeDashboard(
     LoadHomeDashboardEvent event,
@@ -49,9 +43,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // Synchronize tracking with initial online status
       if (dashboard.isOnline) {
-        _startLocationTracking();
+        await _trackingService.start();
       } else {
-        _locationService.stopLocationTracking();
+        _trackingService.stop();
       }
     } on NetworkException catch (e) {
       emit(HomeError(message: e.message, isNoInternet: true));
@@ -111,9 +105,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
 
       if (isOnline) {
-        _startLocationTracking();
+        await _trackingService.start();
       } else {
-        _locationService.stopLocationTracking();
+        _trackingService.stop();
       }
 
       if (currentState is HomeLoaded) {
@@ -131,55 +125,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (currentState is HomeLoaded) {
         emit(currentState);
       }
-    }
-  }
-
-  void _startLocationTracking() {
-    _locationService.startLocationTracking(
-      onPositionChanged: (pos) {
-        if (isClosed) return;
-        add(UpdateDriverLocationEvent(
-          lat: pos.latitude,
-          lng: pos.longitude,
-          bearing: pos.heading,
-          speedKmh: pos.speed >= 0 ? pos.speed * 3.6 : null,
-        ));
-      },
-    );
-  }
-
-  Future<void> _onUpdateDriverLocation(
-    UpdateDriverLocationEvent event,
-    Emitter<HomeState> emit,
-  ) async {
-    // 1. Primary real-time location stream over WebSocket (zero HTTP overhead)
-    if (_webSocketService != null && _webSocketService!.isConnected) {
-      _webSocketService!.sendLocationUpdate(
-        lat: event.lat,
-        lng: event.lng,
-        bearing: event.bearing,
-        speedKmh: event.speedKmh,
-      );
-    }
-
-    // 2. HTTP Fallback / Periodic Persistence
-    // Only send HTTP POST if WebSocket is disconnected OR if 15+ seconds have elapsed since last HTTP sync
-    final now = DateTime.now();
-    final shouldSendHttp = _webSocketService == null ||
-        !_webSocketService!.isConnected ||
-        _lastHttpLocationSyncTime == null ||
-        now.difference(_lastHttpLocationSyncTime!).inSeconds >= 15;
-
-    if (shouldSendHttp) {
-      _lastHttpLocationSyncTime = now;
-      try {
-        await _updateLocationUseCase(
-          lat: event.lat,
-          lng: event.lng,
-          bearing: event.bearing,
-          speed: event.speedKmh,
-        );
-      } catch (_) {}
     }
   }
 }

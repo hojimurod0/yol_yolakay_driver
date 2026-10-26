@@ -10,8 +10,23 @@ import 'package:yol_yolakay_driver/features/taxi_radar/presentation/bloc/taxi_ra
 import 'package:yol_yolakay_driver/features/taxi_radar/presentation/bloc/taxi_radar_event.dart';
 import 'package:yol_yolakay_driver/features/taxi_radar/presentation/bloc/taxi_radar_state.dart';
 
+TaxiOrderOfferEntity _offer(String id) => TaxiOrderOfferEntity(
+      orderId: id,
+      tier: 'standard',
+      estimatedPrice: 30000,
+      distanceToPickupKm: 2,
+      pickup: const LocationAddressEntity(address: 'A', lat: 41.3, lng: 69.2),
+      destination:
+          const LocationAddressEntity(address: 'B', lat: 41.2, lng: 69.1),
+      paymentType: 'cash',
+      createdAt: DateTime(2026, 9, 21, 14, 5),
+      timeoutSeconds: 30,
+    );
+
 class FakeTaxiRadarRepository implements TaxiRadarRepository {
   ActiveTaxiOrderEntity? activeOrder;
+  int radarCalls = 0;
+  bool serverKeepsDeclined = false;
   final List<TaxiOrderOfferEntity> offers = [
     TaxiOrderOfferEntity(
       orderId: 'order-1',
@@ -39,8 +54,10 @@ class FakeTaxiRadarRepository implements TaxiRadarRepository {
     required double lat,
     required double lng,
     double radiusKm = 5.0,
-  }) async =>
-      offers;
+  }) async {
+    radarCalls++;
+    return List.of(offers);
+  }
 
   @override
   Future<ActiveTaxiOrderEntity?> getActiveOrder() async => activeOrder;
@@ -80,6 +97,7 @@ class FakeTaxiRadarRepository implements TaxiRadarRepository {
 
   @override
   Future<void> declineOrder(String orderId) async {
+    if (serverKeepsDeclined) return;
     offers.removeWhere((o) => o.orderId == orderId);
   }
 
@@ -127,6 +145,11 @@ class FakeLocationService extends LocationService {
 }
 
 class FakeWebSocketService extends Fake implements WebSocketService {
+  bool connected = false;
+
+  @override
+  bool get isConnected => connected;
+
   final _taxiOfferController =
       StreamController<Map<String, dynamic>>.broadcast();
   final _orderStatusController =
@@ -151,12 +174,15 @@ void main() {
   late FakeLocationService fakeLocation;
   late FakeWebSocketService fakeWs;
   late TaxiRadarBloc radarBloc;
+  late DateTime now;
 
   setUp(() {
     fakeRepo = FakeTaxiRadarRepository();
     fakeLocation = FakeLocationService();
     fakeWs = FakeWebSocketService();
+    now = DateTime(2026, 10, 22, 12);
     radarBloc = TaxiRadarBloc(
+      clock: () => now,
       getRadarOrdersUseCase: GetRadarOrdersUseCase(fakeRepo),
       getActiveTaxiOrderUseCase: GetActiveTaxiOrderUseCase(fakeRepo),
       acceptTaxiOrderUseCase: AcceptTaxiOrderUseCase(fakeRepo),
@@ -223,6 +249,85 @@ void main() {
           predicate<OrderCompletedState>((s) => s.result.earnings == 31500),
         ]),
       );
+    });
+  });
+
+  group('TaxiRadarBloc polling fallback', () {
+    Future<void> loadRadar() async {
+      radarBloc.add(const FetchRadarOrdersEvent());
+      await radarBloc.stream.firstWhere((s) => s is RadarOrdersLoadedState);
+    }
+
+    test('socket down: a poll brings in offers that arrived on the server',
+        () async {
+      await loadRadar();
+      fakeRepo.offers.add(_offer('order-2'));
+
+      radarBloc.add(const RadarPollTickEvent());
+      final state = await radarBloc.stream.firstWhere((s) =>
+          s is RadarOrdersLoadedState && s.offers.length == 2)
+          as RadarOrdersLoadedState;
+
+      expect(state.offers.map((o) => o.orderId), contains('order-2'));
+    });
+
+    test('socket up: polls only after the safety-net interval', () async {
+      fakeWs.connected = true;
+      await loadRadar();
+      final callsAfterLoad = fakeRepo.radarCalls;
+
+      now = now.add(const Duration(seconds: 10));
+      radarBloc.add(const RadarPollTickEvent());
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(fakeRepo.radarCalls, callsAfterLoad);
+
+      now = now.add(const Duration(seconds: 25));
+      radarBloc.add(const RadarPollTickEvent());
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(fakeRepo.radarCalls, callsAfterLoad + 1);
+    });
+
+    test('a declined offer is not brought back by polling', () async {
+      fakeRepo.serverKeepsDeclined = true;
+      await loadRadar();
+      radarBloc.add(const DeclineOrderEvent('order-1'));
+      await radarBloc.stream.firstWhere(
+          (s) => s is RadarOrdersLoadedState && s.offers.isEmpty);
+      fakeRepo.offers.add(_offer('order-2'));
+
+      radarBloc.add(const RadarPollTickEvent());
+      final state = await radarBloc.stream.firstWhere((s) =>
+          s is RadarOrdersLoadedState && s.offers.isNotEmpty)
+          as RadarOrdersLoadedState;
+
+      expect(state.offers.map((o) => o.orderId), ['order-2']);
+    });
+
+    test('socket down: passenger cancellation is detected by polling',
+        () async {
+      radarBloc.add(const AcceptOrderEvent('order-1'));
+      await radarBloc.stream.firstWhere((s) => s is ActiveOrderLoadedState);
+      fakeRepo.activeOrder = null; // cancelled on the server
+
+      radarBloc.add(const RadarPollTickEvent());
+      final state = await radarBloc.stream
+          .firstWhere((s) => s is ActiveOrderLoadedState)
+          as ActiveOrderLoadedState;
+
+      expect(state.activeOrder.status, 'cancelled');
+    });
+
+    test('socket down: active order status changes are picked up', () async {
+      radarBloc.add(const AcceptOrderEvent('order-1'));
+      await radarBloc.stream.firstWhere((s) => s is ActiveOrderLoadedState);
+      fakeRepo.activeOrder = fakeRepo.activeOrder!.copyWith(status: 'arrived');
+
+      radarBloc.add(const RadarPollTickEvent());
+      final state = await radarBloc.stream
+          .firstWhere((s) => s is ActiveOrderLoadedState)
+          as ActiveOrderLoadedState;
+
+      expect(state.activeOrder.status, 'arrived');
     });
   });
 }

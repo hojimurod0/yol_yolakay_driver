@@ -616,5 +616,187 @@
   "accountBlockedTitle": "Hisob bloklangan",
   "accountBlockedMessage": "Hisobingiz ma'muriyat tomonidan to'xtatilgan yoki bloklangan. Qo'llab-quvvatlash xizmati bilan bog'laning.",
   "verificationRequiredTitle": "Verifikatsiya talab qilinadi",
-  "verificationRequiredMessage": "Buyurtmalarni qabul qilish uchun shaxsingiz va avtomobil hujjatlari tasdiqlanishi kerak."
+  "verificationRequiredMessage": "Buyurtmalarni qabul qilish uchun shaxsingiz va avtomobil hujjatlari tasdiqlanishi kerak.",
+  "appearance": "Ko'rinish",
+  "themeLightShort": "Yorug'",
+  "themeDarkShort": "Qorong'i",
+  "themeAuto": "Avto",
+  "themeLightHint": "kunduzgi",
+  "themeDarkHint": "tungi",
+  "themeAutoHint": "telefon bo'yicha",
+  "languageLatinScript": "lotin yozuvi",
+  "languageCyrillicScript": "kirill yozuvi",
+  "languageRussianHint": "rus tili",
+  "menuTitle": "Menyu",
+  "menuSettingsHint": "Til, ko'rinish",
+  "menuHelp": "Yordam",
+  "menuHelpHint": "Qo'llab-quvvatlash",
+  "menuLogout": "Chiqish",
+  "mapMyLocation": "Joylashuvimga qaytish",
+  "mapNotifications": "Bildirishnomalar",
+  "driverTodayEarnings": "Bugungi daromad",
+  "driverTodayPill": "Bugun: {amount}",
+  "@driverTodayPill": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "menuEarnings": "Daromad",
+  "menuEarningsHint": "Kun, hafta, oy",
+  "menuTripHistory": "Safarlar tarixi",
+  "menuProfileCar": "Profil va mashina",
+  "menuProfileCarHint": "Hujjatlar holati",
+  "driverLastRoute": "Oxirgi yo'nalish",
+  "driverOpenAgain": "Bugun ham ochish",
+  "driverOpenRoute": "Yo'nalish ochish",
+  "driverNoRouteYet": "Yo'nalish oching — yo'lovchilar sizni ko'radi va joy band qiladi",
+  "driverChangeTimePrice": "Vaqt yoki narxni o'zgartirish",
+  "driverOnline": "Liniyada",
+  "driverOffline": "Liniyadan tashqari",
+  "driverDocsPending": "Hujjatlaringiz tekshirilmoqda",
+  "driverDocsAction": "Holatni ko'rish",
+  "driverActiveTrip": "Sizda faol safar bor",
+  "statRating": "reyting",
+  "statTrips": "safar",
+  "statInApp": "ilovada",
+  "statMonths": "{count} oy",
+  "@statMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateToday": "Bugun",
+  "dateYesterday": "Kecha",
+  "histCompleted": "Yakunlandi",
+  "histCancelled": "Bekor qilindi",
+  "histActive": "Faol",
+  "histPassengers": "{count} yo'lovchi",
+  "@histPassengers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCar": "Mashina",
+  "profileDocuments": "Hujjatlar",
+  "docLicense": "Haydovchilik guvohnomasi",
+  "docVehicle": "Texnik pasport va mashina rasmlari",
+  "docApproved": "Tasdiqlangan",
+  "docPending": "Tekshirilmoqda",
+  "docRejected": "Qayta yuboring",
+  "carFourSeats": "4 o'rinli yengil mashina",
+  "profilePhone": "Telefon",
+  "dpOpenRoute": "Yo'nalish ochish",
+  "dpToCity": "Shaharga",
+  "dpToHome": "Uyga",
+  "dpDepartureTime": "Jo'nash vaqti",
+  "dpWhenFull": "To'lsa",
+  "dpPricePerSeat": "Narx · 1 o'rin (20–30 ming)",
+  "dpFourSeats": "Mashina har doim 4 o'rinli",
+  "dpFullCarTotal": "4 o'rin to'lsa: {amount}",
+  "@dpFullCarTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dpOpen": "Yo'nalishni ochish",
+  "dpNewRequest": "YANGI SO'ROV",
+  "dpPeople": "{count} kishi",
+  "@dpPeople": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dpToPassenger": "yo'lovchigacha",
+  "dpAccept": "Qabul qilish",
+  "dpSkip": "O'tkazib yuborish",
+  "dpPickupTitle": "Yo'lovchilarni olish",
+  "dpSeatsTaken": "{taken} / {total} o'rin band",
+  "@dpSeatsTaken": {
+    "placeholders": {
+      "taken": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "dpPickedUp": "olindi",
+  "dpSlidePickedUp": "Surib tasdiqlang: {name}ni oldim",
+  "@dpSlidePickedUp": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dpDepart": "Jo'nash",
+  "dpWaitMore": "Yana kutish",
+  "dpNoPassengersYet": "Hali yo'lovchi yo'q. Yangi so'rovlar shu yerda chiqadi.",
+  "dpOnTheWay": "Yo'ldasiz",
+  "dpCollected": "Yig'ildi",
+  "dpOpenNavigator": "Navigatorda ochish",
+  "dpSlideArrived": "Surib tasdiqlang: Yetib keldik",
+  "dpTripDone": "Safar yakunlandi",
+  "dpEarned": "Bu safar: {amount}",
+  "@dpEarned": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dpReturnTitle": "Qaytishni ochasizmi?",
+  "dpOpenReturn": "Qaytishni ochish",
+  "dpNotToday": "Bugun qaytmayman",
+  "dpActionFailed": "Amal bajarilmadi. Internetni tekshirib, qayta urinib ko'ring.",
+  "dpCall": "Qo'ng'iroq",
+  "dpPassenger": "Yo'lovchi",
+  "dpPickupPoint": "Olib ketish joyi",
+  "daBadge": "HAYDOVCHI",
+  "daPhoneTitle": "Haydovchi sifatida kirish",
+  "daPhoneBody": "Telefon raqamingizga SMS kod yuboramiz",
+  "daGetCode": "Kod olish",
+  "daTermsNote": "Davom etib, foydalanish shartlariga rozilik bildirasiz",
+  "daPhoneInvalid": "To'g'ri telefon raqam kiriting (masalan: 93 456 78 90)",
+  "daWithPassword": "Parol bilan kirish",
+  "daOtpTitle": "Kodni kiriting",
+  "daOtpSentTo": "{phone} raqamiga yuborildi",
+  "@daOtpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "daChange": "O'zgartirish",
+  "daResendIn": "Qayta yuborish: {time}",
+  "@daResendIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "daResend": "Kodni qayta yuborish",
+  "daOtpAuto": "Yangi raqam — hujjatlarga, ro'yxatdan o'tgan haydovchi — bosh ekranga",
+  "dpPendingBanner": "{count} ta yangi so'rov javob kutmoqda",
+  "@dpPendingBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dpPendingAction": "Ko'rish"
 }

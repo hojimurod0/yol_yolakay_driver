@@ -6,6 +6,7 @@ import '../network/api_client.dart';
 import '../network/network_cubit.dart';
 import '../network/network_info.dart';
 import '../services/analytics_service.dart';
+import '../services/driver_tracking_service.dart';
 import '../services/app_lifecycle_manager.dart';
 import '../services/feature_flag_service.dart';
 import '../services/force_update_service.dart';
@@ -219,12 +220,19 @@ Future<void> configureDependencies() async {
   sl.registerLazySingleton<GetHomeDashboardUseCase>(() => GetHomeDashboardUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton<ToggleShiftUseCase>(() => ToggleShiftUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton<UpdateLocationUseCase>(() => UpdateLocationUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton<DriverTrackingService>(
+    () => DriverTrackingService(
+      locationService: sl<LocationService>(),
+      updateLocationUseCase: sl<UpdateLocationUseCase>(),
+      webSocketService: sl<WebSocketService>(),
+    ),
+  );
   sl.registerFactory<HomeBloc>(
     () => HomeBloc(
       getHomeDashboardUseCase: sl<GetHomeDashboardUseCase>(),
       toggleShiftUseCase: sl<ToggleShiftUseCase>(),
-      updateLocationUseCase: sl<UpdateLocationUseCase>(),
       locationService: sl<LocationService>(),
+      trackingService: sl<DriverTrackingService>(),
     ),
   );
   sl.registerLazySingleton<CityRepository>(

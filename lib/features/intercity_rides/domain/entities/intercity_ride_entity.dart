@@ -9,6 +9,10 @@ class RidePassengerEntity extends Equatable {
     required this.passengerId,
     required this.passengerName,
     required this.passengerPhone,
+    this.pickupLat,
+    this.pickupLng,
+    this.pickupAddress,
+    this.answerBy,
   });
 
   final String bookingId;
@@ -19,8 +23,28 @@ class RidePassengerEntity extends Equatable {
   final String passengerName;
   final String passengerPhone;
 
+  /// Where the passenger asked to be picked up (door-to-door pilot).
+  final double? pickupLat;
+  final double? pickupLng;
+  final String? pickupAddress;
+
+  /// When a pending request expires on the server (`expires_at`, or two
+  /// minutes after `created_at`). Null when the server sends neither.
+  final DateTime? answerBy;
+
+  bool get isPending => status == 'pending';
+  bool get isPickedUp =>
+      status == 'picked_up' || status == 'active' || status == 'in_progress';
+  /// Closed without a ride: declined, cancelled, or expired unanswered.
+  bool get isRejectedOrCancelled =>
+      status == 'rejected' || status == 'cancelled' || status == 'expired';
+
   @override
   List<Object?> get props => [
+        answerBy,
+        pickupLat,
+        pickupLng,
+        pickupAddress,
         bookingId,
         seatsCount,
         totalPrice,

@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/config/app_config.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_radius.dart';
-import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/widgets/app_menu_drawer.dart';
+import '../../../../core/widgets/logout_delete_modal.dart';
+import '../../../home/presentation/bloc/home_bloc.dart';
+import '../../../home/presentation/bloc/home_state.dart';
+import '../../../profile/domain/entities/driver_profile_entity.dart';
+import '../../../profile/presentation/bloc/profile_bloc.dart';
+import '../../../profile/presentation/bloc/profile_event.dart';
 
-/// Floating minimalist dock bottom navigation bar for Driver App.
-/// Matches Yo'l-Yo'lakay Passenger App navigation standards.
+/// Opens the side menu from pages inside the shell (the map home's ☰ button).
+final driverShellScaffoldKey = GlobalKey<ScaffoldState>();
+
+/// Shell without a bottom bar: the map home is the hub, every other section
+/// opens from the ☰ side menu and its back arrow returns to the map.
 class DriverMainShellPage extends StatelessWidget {
   const DriverMainShellPage({
     super.key,
@@ -15,150 +27,229 @@ class DriverMainShellPage extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  void _onTabTapped(int index) {
-    HapticFeedback.selectionClick();
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
+  static const homeBranch = 0;
+  static const tripsBranch = 1;
+  static const walletBranch = 2;
+  static const profileBranch = 3;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currentIndex = navigationShell.currentIndex;
-
-    return Scaffold(
-      extendBody: true,
-      body: navigationShell,
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            0,
-            AppSpacing.md,
-            AppSpacing.sm,
-          ),
-          child: Container(
-            height: 68.0,
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                borderRadius: AppRadius.borderXl,
-                border: Border.all(
-                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                  width: 1.0,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(
-                    context: context,
-                    index: 0,
-                    currentIndex: currentIndex,
-                    icon: Icons.dashboard_outlined,
-                    selectedIcon: Icons.dashboard_rounded,
-                    label: 'Asosiy',
-                    onTap: () => _onTabTapped(0),
-                  ),
-                  _buildNavItem(
-                    context: context,
-                    index: 1,
-                    currentIndex: currentIndex,
-                    icon: Icons.alt_route_outlined,
-                    selectedIcon: Icons.alt_route_rounded,
-                    label: 'Qatnovlar',
-                    onTap: () => _onTabTapped(1),
-                  ),
-                  _buildNavItem(
-                    context: context,
-                    index: 2,
-                    currentIndex: currentIndex,
-                    icon: Icons.account_balance_wallet_outlined,
-                    selectedIcon: Icons.account_balance_wallet_rounded,
-                    label: 'Hamyon',
-                    onTap: () => _onTabTapped(2),
-                  ),
-                  _buildNavItem(
-                    context: context,
-                    index: 3,
-                    currentIndex: currentIndex,
-                    icon: Icons.person_outline_rounded,
-                    selectedIcon: Icons.person_rounded,
-                    label: 'Profil',
-                    onTap: () => _onTabTapped(3),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+    final onHome = navigationShell.currentIndex == homeBranch;
+    return PopScope(
+      canPop: onHome,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) navigationShell.goBranch(homeBranch);
+      },
+      child: Scaffold(
+        key: driverShellScaffoldKey,
+        drawer: _DriverMenuDrawer(navigationShell: navigationShell),
+        drawerEnableOpenDragGesture: onHome,
+        onDrawerChanged: (open) {
+          if (open) context.read<ProfileBloc>().add(const LoadProfileEvent());
+        },
+        body: navigationShell,
+      ),
+    );
   }
+}
 
+class _DriverMenuDrawer extends StatelessWidget {
+  const _DriverMenuDrawer({required this.navigationShell});
 
-  Widget _buildNavItem({
-    required BuildContext context,
-    required int index,
-    required int currentIndex,
-    required IconData icon,
-    required IconData selectedIcon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    final isSelected = index == currentIndex;
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final profile = context
+        .select<ProfileBloc, DriverProfileEntity?>((b) => b.state.profile);
+    final stats = context.select<HomeBloc, (int, int)?>((b) {
+      final s = b.state;
+      return s is HomeLoaded
+          ? (
+              s.dashboard.dailyStats.todayEarnings,
+              s.dashboard.dailyStats.todayTripsCount
+            )
+          : null;
+    });
 
-    const selectedColor = AppColors.taxiYellow;
-    final unselectedColor =
+    void close() => Navigator.of(context).pop();
+    void branch(int index) {
+      close();
+      HapticFeedback.lightImpact();
+      navigationShell.goBranch(index);
+    }
+
+    void push(String location) {
+      close();
+      HapticFeedback.lightImpact();
+      context.push(location);
+    }
+
+    final name = profile == null
+        ? l10n.menuProfileCar
+        : [profile.firstName, profile.lastName]
+            .where((s) => s.isNotEmpty)
+            .join(' ');
+    final car = profile?.vehicle;
+    final ink = isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+    final muted =
         isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
-    final textColor = isSelected
-        ? (isDark ? Colors.white : AppColors.textPrimaryLight)
-        : unselectedColor;
 
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: AppRadius.borderXl,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedScale(
-              scale: isSelected ? 1.08 : 1.0,
-              duration: const Duration(milliseconds: 160),
-              curve: Curves.easeInOut,
-              child: Icon(
-                isSelected ? selectedIcon : icon,
-                size: isSelected ? 24.0 : 22.0,
-                color: isSelected ? selectedColor : unselectedColor,
+    return AppMenuDrawer(
+      header: InkWell(
+        onTap: () => branch(DriverMainShellPage.profileBranch),
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 26,
+                backgroundColor: AppColors.primary,
+                backgroundImage: profile?.avatarUrl != null
+                    ? NetworkImage(profile!.avatarUrl!)
+                    : null,
+                child: profile?.avatarUrl == null
+                    ? Text(
+                        name.isNotEmpty
+                            ? name.characters.first.toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimaryLight,
+                        ),
+                      )
+                    : null,
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: textColor,
-                height: 1.15,
-                letterSpacing: -0.2,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: ink,
+                      ),
+                    ),
+                    if (profile != null)
+                      Text(
+                        [
+                          '★ ${profile.rating.toStringAsFixed(1)}',
+                          if (car != null) '${car.color} ${car.model}',
+                        ].join(' · '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 13, color: muted),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Icon(Icons.chevron_right_rounded,
+                  color: isDark
+                      ? AppColors.textTertiaryDark
+                      : AppColors.textTertiaryLight),
+            ],
+          ),
         ),
       ),
+      highlight: stats == null
+          ? null
+          : Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => branch(DriverMainShellPage.walletBranch),
+                borderRadius: BorderRadius.circular(18),
+                child: Ink(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.driverTodayEarnings,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
+                            Text(
+                              AppCurrencyFormatter.format(stats.$1),
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
+                            Text(
+                              l10n.tripsCountPlural(stats.$2),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textPrimaryLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right_rounded,
+                          color: AppColors.textPrimaryLight),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+      items: [
+        AppMenuItem(
+          icon: AppConfig.commissionEnabled
+              ? Icons.account_balance_wallet_outlined
+              : Icons.payments_outlined,
+          title: AppConfig.commissionEnabled ? 'Hamyon' : l10n.menuEarnings,
+          subtitle: l10n.menuEarningsHint,
+          onTap: () => branch(DriverMainShellPage.walletBranch),
+        ),
+        AppMenuItem(
+          icon: Icons.schedule_rounded,
+          title: l10n.menuTripHistory,
+          onTap: () => branch(DriverMainShellPage.tripsBranch),
+        ),
+        AppMenuItem(
+          icon: Icons.directions_car_outlined,
+          title: l10n.menuProfileCar,
+          subtitle: l10n.menuProfileCarHint,
+          onTap: () => branch(DriverMainShellPage.profileBranch),
+        ),
+        AppMenuItem(
+          icon: Icons.settings_outlined,
+          title: l10n.settings,
+          subtitle: l10n.menuSettingsHint,
+          onTap: () => push('/settings'),
+        ),
+        AppMenuItem(
+          icon: Icons.support_agent_rounded,
+          title: l10n.menuHelp,
+          subtitle: l10n.menuHelpHint,
+          onTap: () => push('/driver/support'),
+        ),
+      ],
+      logoutLabel: l10n.menuLogout,
+      onLogout: () {
+        close();
+        showLogoutDeleteAccountModal(context);
+      },
     );
   }
 }

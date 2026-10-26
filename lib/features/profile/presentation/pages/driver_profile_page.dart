@@ -15,13 +15,14 @@ import '../../../../core/widgets/app_loading.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/battery_optimization_guide_dialog.dart';
 import '../../../../core/widgets/logout_delete_modal.dart';
-import '../../../../core/widgets/settings_modal.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../../../core/widgets/uzbek_license_plate.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../domain/entities/driver_profile_entity.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
+import '../../../../core/widgets/app_menu_drawer.dart';
 
 class DriverProfilePage extends StatefulWidget {
   const DriverProfilePage({super.key});
@@ -71,6 +72,7 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
       backgroundColor:
           isDark ? AppColors.backgroundDark : const Color(0xFFF8F9FA),
       appBar: AppBar(
+        leading: ShellBackButton(onPressed: () => context.go('/driver/home')),
         backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -103,7 +105,9 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
           IconButton(
             onPressed: () {
               HapticFeedback.lightImpact();
-              context.read<ProfileBloc>().add(const LoadProfileEvent(refresh: true));
+              context
+                  .read<ProfileBloc>()
+                  .add(const LoadProfileEvent(refresh: true));
             },
             icon: const Icon(Icons.refresh_rounded, size: 22),
             tooltip: l10n.refresh,
@@ -126,7 +130,8 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
             }
           },
           builder: (context, state) {
-            if (state.status == ProfileStatus.loading && state.profile == null) {
+            if (state.status == ProfileStatus.loading &&
+                state.profile == null) {
               return Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -301,35 +306,19 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
                             ),
                             _buildMenuDivider(isDark),
                             _buildModernMenuItem(
-                              icon: Icons.language_rounded,
+                              icon: Icons.settings_rounded,
                               iconColor: AppColors.taxiYellowDark,
-                              title: 'Ilova tili',
-                              subtitle: isRu ? 'Русский язык' : 'O‘zbek tili',
-                              trailingPill: isRu ? 'Русский' : 'O‘zbekcha',
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                showLanguageModal(context);
-                              },
-                              isDark: isDark,
-                            ),
-                            _buildMenuDivider(isDark),
-                            _buildModernMenuItem(
-                              icon: Icons.palette_rounded,
-                              iconColor: const Color(0xFF8B5CF6),
-                              title: 'Ilova mavzusi',
-                              subtitle: themeMode == ThemeMode.dark
-                                  ? 'Qorong‘i mavzu'
-                                  : (themeMode == ThemeMode.light
-                                      ? 'Yorug‘ mavzu'
-                                      : 'Avtomatik tizim'),
+                              title: context.l10n.settings,
+                              subtitle:
+                                  '${context.l10n.language}, ${context.l10n.appearance.toLowerCase()}',
                               trailingPill: themeMode == ThemeMode.dark
-                                  ? 'Qorong‘i'
+                                  ? context.l10n.themeDarkShort
                                   : (themeMode == ThemeMode.light
-                                      ? 'Yorug‘'
-                                      : 'Avto'),
+                                      ? context.l10n.themeLightShort
+                                      : context.l10n.themeAuto),
                               onTap: () {
                                 HapticFeedback.lightImpact();
-                                showThemeModal(context);
+                                context.push('/settings');
                               },
                               isDark: isDark,
                             ),
@@ -424,7 +413,8 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
     required AppLocalizations l10n,
   }) {
     final cardBg = isDark ? const Color(0xFF13151D) : Colors.white;
-    final borderCol = isDark ? const Color(0xFF232733) : const Color(0xFFE5E7EB);
+    final borderCol =
+        isDark ? const Color(0xFF232733) : const Color(0xFFE5E7EB);
 
     return Container(
       decoration: BoxDecoration(
@@ -521,7 +511,8 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
                         style: TextStyle(
                           fontSize: AppTextSizes.lg,
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : AppColors.charcoalBlack,
+                          color:
+                              isDark ? Colors.white : AppColors.charcoalBlack,
                           letterSpacing: -0.2,
                         ),
                       ),
@@ -555,10 +546,14 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
           IconButton(
             onPressed: () {
               HapticFeedback.lightImpact();
-              context.read<ProfileBloc>().add(const LoadProfileEvent(refresh: true));
+              context
+                  .read<ProfileBloc>()
+                  .add(const LoadProfileEvent(refresh: true));
             },
             icon: const Icon(Icons.sync_rounded, size: 20),
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondaryLight,
             tooltip: 'Yangilash',
           ),
         ],
@@ -639,7 +634,6 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
             ],
           ),
           const SizedBox(height: 12),
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -871,7 +865,8 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
               ),
               if (trailingPill != null) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   decoration: BoxDecoration(
                     color: isDark
                         ? const Color(0xFF232733)

@@ -15,6 +15,7 @@ import '../../domain/entities/intercity_ride_entity.dart';
 import '../bloc/intercity_rides_bloc.dart';
 import '../bloc/intercity_rides_event.dart';
 import '../bloc/intercity_rides_state.dart';
+import '../../../../core/widgets/app_menu_drawer.dart';
 
 class DriverTripsPage extends StatefulWidget {
   const DriverTripsPage({super.key});
@@ -97,6 +98,7 @@ class _DriverTripsPageState extends State<DriverTripsPage>
       backgroundColor:
           isDark ? AppColors.backgroundDark : const Color(0xFFF8F9FA),
       appBar: AppBar(
+        leading: ShellBackButton(onPressed: () => context.go('/driver/home')),
         backgroundColor: cardBgColor,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -154,7 +156,8 @@ class _DriverTripsPageState extends State<DriverTripsPage>
                 elevation: 0,
                 minimumSize: const Size(0, 36),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -170,9 +173,8 @@ class _DriverTripsPageState extends State<DriverTripsPage>
               height: 44,
               padding: const EdgeInsets.all(3.5),
               decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF1E2330)
-                    : const Color(0xFFF1F5F9),
+                color:
+                    isDark ? const Color(0xFF1E2330) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: borderColor, width: 0.8),
               ),
@@ -183,7 +185,8 @@ class _DriverTripsPageState extends State<DriverTripsPage>
                   borderRadius: BorderRadius.circular(9),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
                       blurRadius: 4,
                       offset: const Offset(0, 1),
                     ),
@@ -316,7 +319,8 @@ class _DriverTripsPageState extends State<DriverTripsPage>
           if (count > 0) ...[
             const SizedBox(width: 5),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 1.5),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.5, vertical: 1.5),
               decoration: BoxDecoration(
                 color: isSelected
                     ? accentColor.withValues(alpha: 0.22)
@@ -414,7 +418,9 @@ class _DriverTripTabListViewState extends State<_DriverTripTabListView>
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * 0.12),
             AppEmptyState(
-              title: isTabActive ? 'Faol qatnovlar yo‘q' : widget.l10n.noTripsTitle,
+              title: isTabActive
+                  ? 'Faol qatnovlar yo‘q'
+                  : widget.l10n.noTripsTitle,
               description: isTabActive
                   ? 'Hozirda sizda faol qatnov mavjud emas. Yangi qatnov e’lon qiling va yo‘lovchilarni qabul qiling.'
                   : widget.l10n.noTripsHistoryDesc,
@@ -556,19 +562,23 @@ class _ExecutiveRideCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : AppColors.charcoalBlack,
+                            color:
+                                isDark ? Colors.white : AppColors.charcoalBlack,
                           ),
                         ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        StatusLocalizationMapper.mapStatus(ride.status, locale: locale).toUpperCase(),
+                        StatusLocalizationMapper.mapStatus(ride.status,
+                                locale: locale)
+                            .toUpperCase(),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w900,
@@ -599,7 +609,8 @@ class _ExecutiveRideCard extends StatelessWidget {
                         Container(
                           width: 2,
                           height: 24,
-                          color: isDark ? Colors.white24 : const Color(0xFFE5E7EB),
+                          color:
+                              isDark ? Colors.white24 : const Color(0xFFE5E7EB),
                         ),
                         const Icon(
                           Icons.location_on_rounded,
@@ -618,7 +629,9 @@ class _ExecutiveRideCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: isDark ? Colors.white : AppColors.charcoalBlack,
+                              color: isDark
+                                  ? Colors.white
+                                  : AppColors.charcoalBlack,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -627,7 +640,9 @@ class _ExecutiveRideCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
-                              color: isDark ? Colors.white : AppColors.charcoalBlack,
+                              color: isDark
+                                  ? Colors.white
+                                  : AppColors.charcoalBlack,
                             ),
                           ),
                         ],
@@ -643,7 +658,8 @@ class _ExecutiveRideCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w900,
-                            color: isDark ? Colors.white : AppColors.charcoalBlack,
+                            color:
+                                isDark ? Colors.white : AppColors.charcoalBlack,
                           ),
                         ),
                         Text(
@@ -665,7 +681,8 @@ class _ExecutiveRideCard extends StatelessWidget {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: isDark ? AppColors.borderDark : const Color(0xFFF3F4F6),
+                  color:
+                      isDark ? AppColors.borderDark : const Color(0xFFF3F4F6),
                 ),
                 const SizedBox(height: 12),
 
@@ -676,9 +693,12 @@ class _ExecutiveRideCard extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E2330) : const Color(0xFFF1F5F9),
+                            color: isDark
+                                ? const Color(0xFF1E2330)
+                                : const Color(0xFFF1F5F9),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -694,7 +714,9 @@ class _ExecutiveRideCard extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
-                                  color: isDark ? Colors.white : AppColors.charcoalBlack,
+                                  color: isDark
+                                      ? Colors.white
+                                      : AppColors.charcoalBlack,
                                 ),
                               ),
                             ],
@@ -703,14 +725,17 @@ class _ExecutiveRideCard extends StatelessWidget {
                         if (ride.hasAc) ...[
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6).withValues(alpha: 0.12),
+                              color: const Color(0xFF3B82F6)
+                                  .withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Row(
                               children: [
-                                Icon(Icons.ac_unit_rounded, size: 12, color: Color(0xFF3B82F6)),
+                                Icon(Icons.ac_unit_rounded,
+                                    size: 12, color: Color(0xFF3B82F6)),
                                 SizedBox(width: 3),
                                 Text(
                                   'AC',

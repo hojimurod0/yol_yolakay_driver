@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../core/config/pilot_route.dart';
 import '../../domain/entities/intercity_ride_entity.dart';
 
 part 'intercity_ride_model.g.dart';
@@ -15,9 +16,50 @@ class RidePassengerModel extends RidePassengerEntity {
     required super.passengerName,
     @JsonKey(name: 'passenger_phone', defaultValue: '')
     required super.passengerPhone,
+    super.pickupLat,
+    super.pickupLng,
+    super.pickupAddress,
+    super.answerBy,
   });
 
   factory RidePassengerModel.fromJson(Map<String, dynamic> json) {
+    final pickup = json['pickup_point'] is Map
+        ? Map<String, dynamic>.from(json['pickup_point'] as Map)
+        : const <String, dynamic>{};
+    double? coord(List<String> keys) {
+      for (final k in keys) {
+        final v = pickup[k];
+        if (v is num) return v.toDouble();
+        if (v is String) return double.tryParse(v);
+      }
+      return null;
+    }
+
+    final lat = coord(['lat', 'latitude']);
+    final lng = coord(['lng', 'lon', 'longitude']);
+    final address = (pickup['address'] ?? pickup['title'] ?? pickup['name'])
+        ?.toString();
+
+    final expiresAt = DateTime.tryParse(json['expires_at']?.toString() ?? '');
+    final createdAt = DateTime.tryParse(json['created_at']?.toString() ?? '');
+
+    final base = _baseFromJson(json);
+    return RidePassengerModel(
+      bookingId: base.bookingId,
+      seatsCount: base.seatsCount,
+      totalPrice: base.totalPrice,
+      status: base.status.toLowerCase(),
+      passengerId: base.passengerId,
+      passengerName: base.passengerName,
+      passengerPhone: base.passengerPhone,
+      pickupLat: lat,
+      pickupLng: lng,
+      pickupAddress: address,
+      answerBy: expiresAt ?? createdAt?.add(PilotRoute.answerWindow),
+    );
+  }
+
+  static RidePassengerModel _baseFromJson(Map<String, dynamic> json) {
     final passenger = json['passenger'] as Map<String, dynamic>?;
     if (passenger != null) {
       return RidePassengerModel(

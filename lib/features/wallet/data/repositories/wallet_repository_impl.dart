@@ -20,9 +20,12 @@ class WalletRepositoryImpl implements WalletRepository {
   Future<DepositInvoiceEntity> deposit({
     required int amount,
     required String paymentSystem,
+    required String idempotencyKey,
   }) async {
     final model = await _remoteDataSource.deposit(
-        amount: amount, paymentSystem: paymentSystem);
+        amount: amount,
+        paymentSystem: paymentSystem,
+        idempotencyKey: idempotencyKey);
     return model.toEntity();
   }
 

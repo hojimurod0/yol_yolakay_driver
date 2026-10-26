@@ -69,9 +69,21 @@ class AuthInterceptor extends Interceptor {
         } catch (e) {
           return handler.next(err);
         }
-      } else {
-        return handler.next(err);
       }
+
+      final transient = _coordinator.lastTransientError;
+      if (transient != null) {
+        // Surface the network/server error instead of a misleading
+        // "session expired" for the original 401.
+        return handler.next(DioException(
+          requestOptions: err.requestOptions,
+          response: transient.response,
+          type: transient.type,
+          error: transient.error,
+          message: transient.message,
+        ));
+      }
+      return handler.next(err);
     }
 
     handler.next(err);

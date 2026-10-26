@@ -14,9 +14,10 @@ abstract class AppConfig {
   static const String appVersion = '1.0.0';
   static const int buildNumber = 1;
 
-  /// Environment detection from compile-time flags (`--dart-define=ENV=dev`)
-  static const String _envString =
-      String.fromEnvironment('ENV', defaultValue: 'dev');
+  /// Environment detection from compile-time flags (`--dart-define=ENV=dev`).
+  /// Release builds default to prod so a forgotten flag never ships dev config.
+  static const String _envString = String.fromEnvironment('ENV',
+      defaultValue: kReleaseMode ? 'prod' : 'dev');
 
   static AppEnvironment get environment {
     return switch (_envString.toLowerCase()) {
@@ -28,6 +29,12 @@ abstract class AppConfig {
 
   /// Zero-mock enforcement: Always connect to real backend
   static const bool isMockMode = false;
+
+  /// Commission is not charged during the pilot: the wallet tab becomes an
+  /// earnings report (no balance, no top-up). Turn on with
+  /// `--dart-define=COMMISSION_ENABLED=true` to restore the wallet.
+  static const bool commissionEnabled =
+      bool.fromEnvironment('COMMISSION_ENABLED', defaultValue: false);
 
   /// Server metadata
   static const String serverUrl = ApiEndpoints.serverUrl;
@@ -62,8 +69,7 @@ abstract class AppConfig {
   static const int sendTimeout = 15000;
 
   /// Logging configuration
-  static bool get enableVerboseLogging =>
-      !kReleaseMode || environment == AppEnvironment.dev;
+  static bool get enableVerboseLogging => !kReleaseMode;
 
   /// Legal Document URLs (External configuration required in production)
   static const String privacyPolicyUrl = String.fromEnvironment(

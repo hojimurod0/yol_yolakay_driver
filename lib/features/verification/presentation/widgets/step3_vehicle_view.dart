@@ -106,11 +106,16 @@ class Step3VehicleView extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: ActionChip(
-                        label: Text(model, style: const TextStyle(fontSize: 11.5)),
+                        label:
+                            Text(model, style: const TextStyle(fontSize: 11.5)),
                         onPressed: () => carModelController.text = model,
-                        backgroundColor: isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
+                        backgroundColor: isDark
+                            ? AppColors.surfaceSubtleDark
+                            : AppColors.surfaceSubtleLight,
                         side: BorderSide(
-                          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                          color: isDark
+                              ? AppColors.borderDark
+                              : AppColors.borderLight,
                         ),
                       ),
                     );
@@ -163,11 +168,16 @@ class Step3VehicleView extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: ActionChip(
-                        label: Text(color, style: const TextStyle(fontSize: 11.5)),
+                        label:
+                            Text(color, style: const TextStyle(fontSize: 11.5)),
                         onPressed: () => carColorController.text = color,
-                        backgroundColor: isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
+                        backgroundColor: isDark
+                            ? AppColors.surfaceSubtleDark
+                            : AppColors.surfaceSubtleLight,
                         side: BorderSide(
-                          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                          color: isDark
+                              ? AppColors.borderDark
+                              : AppColors.borderLight,
                         ),
                       ),
                     );
@@ -182,12 +192,17 @@ class Step3VehicleView extends StatelessWidget {
                   final isCompact = constraints.maxWidth < 320;
 
                   final seatsWidget = Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
+                      color: isDark
+                          ? AppColors.surfaceSubtleDark
+                          : AppColors.surfaceSubtleLight,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                        color: isDark
+                            ? AppColors.borderDark
+                            : AppColors.borderLight,
                       ),
                     ),
                     child: Row(
@@ -195,29 +210,35 @@ class Step3VehicleView extends StatelessWidget {
                       children: [
                         const Text(
                           'O\'rindiqlar:',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 13),
                         ),
-                        DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            value: carSeatsCount,
-                            isDense: true,
-                            dropdownColor: isDark ? AppColors.surfaceDark : Colors.white,
-                            items: [1, 2, 3, 4, 5, 6, 7, 8].map((n) {
-                              return DropdownMenuItem(
-                                value: n,
-                                child: Text(
-                                  '$n ta',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13,
-                                    color: isDark ? Colors.white : AppColors.charcoalBlack,
+                        // Pilot cars always carry four passengers.
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                for (var i = 0; i < 4; i++)
+                                  Container(
+                                    width: 11,
+                                    height: 11,
+                                    margin: const EdgeInsets.only(right: 3),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
                                   ),
+                                const SizedBox(width: 4),
+                                const Text(
+                                  '4 ta',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 13),
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (val) {
-                              if (val != null) onCarSeatsChanged(val);
-                            },
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -225,12 +246,17 @@ class Step3VehicleView extends StatelessWidget {
                   );
 
                   final acWidget = Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
+                      color: isDark
+                          ? AppColors.surfaceSubtleDark
+                          : AppColors.surfaceSubtleLight,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                        color: isDark
+                            ? AppColors.borderDark
+                            : AppColors.borderLight,
                       ),
                     ),
                     child: Row(
@@ -238,7 +264,8 @@ class Step3VehicleView extends StatelessWidget {
                       children: [
                         const Text(
                           'Konditsioner',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 12.5),
                         ),
                         Transform.scale(
                           scale: 0.8,
@@ -318,7 +345,8 @@ class Step3VehicleView extends StatelessWidget {
         // 2. Davlat raqami Card (Authentic Uzbekistan License Plate Input)
         _buildSectionCard(
           title: 'Davlat raqam belgisi',
-          subtitle: 'Hudud kodi va raqamni aniq kiriting (masalan: 01 A 777 AA)',
+          subtitle:
+              'Hudud kodi va raqamni aniq kiriting (masalan: 01 A 777 AA)',
           icon: Icons.featured_play_list_rounded,
           isDark: isDark,
           child: UzbekLicensePlateInput(
@@ -337,7 +365,8 @@ class Step3VehicleView extends StatelessWidget {
         // 3. Texnik passport ma'lumotlari Card (Seriya va Raqam alohida)
         _buildSectionCard(
           title: 'Texnik pasport (Texpasport)',
-          subtitle: 'Transport vositasi qayd etish guvohnomasi seriyasi va raqami',
+          subtitle:
+              'Transport vositasi qayd etish guvohnomasi seriyasi va raqami',
           icon: Icons.description_rounded,
           isDark: isDark,
           child: Column(
@@ -356,7 +385,9 @@ class Step3VehicleView extends StatelessWidget {
                       prefixIcon: Icons.font_download_outlined,
                       inputFormatters: [SeriesInputFormatter(maxLength: 3)],
                       textCapitalization: TextCapitalization.characters,
-                      validator: (val) => VerificationValidators.validateTechPassportSeries(val),
+                      validator: (val) =>
+                          VerificationValidators.validateTechPassportSeries(
+                              val),
                       helperText: '2-3 ta harf',
                     ),
                   ),
@@ -371,7 +402,9 @@ class Step3VehicleView extends StatelessWidget {
                       isNumber: true,
                       prefixIcon: Icons.pin_rounded,
                       inputFormatters: [DigitsOnlyFormatter(maxLength: 7)],
-                      validator: (val) => VerificationValidators.validateTechPassportNumber(val),
+                      validator: (val) =>
+                          VerificationValidators.validateTechPassportNumber(
+                              val),
                       helperText: '6 yoki 7 ta raqam',
                     ),
                   ),
@@ -424,7 +457,8 @@ class Step3VehicleView extends StatelessWidget {
         // 4. Avtomobil fotosuratlari Card (Old ko'rinish va Salon)
         _buildSectionCard(
           title: 'Avtomobil fotosuratlari',
-          subtitle: 'Avtomobilingizning oldi (davlat raqami aniq ko\'ringan) va ichki salon suratlari',
+          subtitle:
+              'Avtomobilingizning oldi (davlat raqami aniq ko\'ringan) va ichki salon suratlari',
           icon: Icons.camera_alt_rounded,
           isDark: isDark,
           child: Row(
@@ -557,7 +591,8 @@ class Step3VehicleView extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white54 : const Color(0xFF6B7280),
+                        color:
+                            isDark ? Colors.white54 : const Color(0xFF6B7280),
                       ),
                     ),
                   ],
@@ -618,7 +653,8 @@ class Step3VehicleView extends StatelessWidget {
           color: isDark ? Colors.white54 : const Color(0xFF6B7280),
         ),
         filled: true,
-        fillColor: isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
+        fillColor:
+            isDark ? AppColors.surfaceSubtleDark : AppColors.surfaceSubtleLight,
         prefixIcon: prefixIcon != null
             ? Icon(prefixIcon,
                 size: 20,

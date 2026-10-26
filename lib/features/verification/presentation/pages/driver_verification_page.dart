@@ -62,7 +62,7 @@ class _DriverVerificationPageState extends State<DriverVerificationPage> {
   final _carYearController = TextEditingController(text: '2022');
   final _plateNumberController = TextEditingController(text: '01 A 777 AA');
   String? _plateNumberError;
-  int _carSeatsCount = 4;
+  final int _carSeatsCount = 4;
   bool _hasAc = true;
   String _ownershipType = 'own';
   final _techPassportSeriesController = TextEditingController(text: 'AAF');
@@ -776,8 +776,7 @@ class _DriverVerificationPageState extends State<DriverVerificationPage> {
                             techPassportNumberController:
                                 _techPassportNumberController,
                             photos: _photos,
-                            onCarSeatsChanged: (v) =>
-                                setState(() => _carSeatsCount = v),
+                            onCarSeatsChanged: (_) {},
                             onHasAcChanged: (v) => setState(() => _hasAc = v),
                             onOwnershipTypeChanged: (v) =>
                                 setState(() => _ownershipType = v),

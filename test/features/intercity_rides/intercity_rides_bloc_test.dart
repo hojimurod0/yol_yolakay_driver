@@ -81,6 +81,15 @@ class FakeIntercityRidesRepository implements IntercityRidesRepository {
   }) async {}
 
   @override
+  Future<void> markPickedUp(String bookingId) async {}
+
+  @override
+  Future<void> startRide(String rideId) async {}
+
+  @override
+  Future<void> completeRide(String rideId) async {}
+
+  @override
   Future<void> updateRide({
     required String rideId,
     required Map<String, dynamic> rideData,

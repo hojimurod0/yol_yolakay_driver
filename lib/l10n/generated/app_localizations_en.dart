@@ -1386,4 +1386,342 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get verificationRequiredMessage =>
       'You must verify your identity and vehicle documents before accepting orders.';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get themeLightShort => 'Light';
+
+  @override
+  String get themeDarkShort => 'Dark';
+
+  @override
+  String get themeAuto => 'Auto';
+
+  @override
+  String get themeLightHint => 'daytime';
+
+  @override
+  String get themeDarkHint => 'night';
+
+  @override
+  String get themeAutoHint => 'follows phone';
+
+  @override
+  String get languageLatinScript => 'Latin script';
+
+  @override
+  String get languageCyrillicScript => 'Cyrillic script';
+
+  @override
+  String get languageRussianHint => 'Russian';
+
+  @override
+  String get menuTitle => 'Menu';
+
+  @override
+  String get menuSettingsHint => 'Language, appearance';
+
+  @override
+  String get menuHelp => 'Help';
+
+  @override
+  String get menuHelpHint => 'Support';
+
+  @override
+  String get menuLogout => 'Log out';
+
+  @override
+  String get mapMyLocation => 'My location';
+
+  @override
+  String get mapNotifications => 'Notifications';
+
+  @override
+  String get driverTodayEarnings => 'Today\'s earnings';
+
+  @override
+  String driverTodayPill(String amount) {
+    return 'Today: $amount';
+  }
+
+  @override
+  String get menuEarnings => 'Earnings';
+
+  @override
+  String get menuEarningsHint => 'Day, week, month';
+
+  @override
+  String get menuTripHistory => 'Trip history';
+
+  @override
+  String get menuProfileCar => 'Profile and car';
+
+  @override
+  String get menuProfileCarHint => 'Document status';
+
+  @override
+  String get driverLastRoute => 'Last route';
+
+  @override
+  String get driverOpenAgain => 'Open again today';
+
+  @override
+  String get driverOpenRoute => 'Open a route';
+
+  @override
+  String get driverNoRouteYet =>
+      'Open a route so passengers can see you and book seats';
+
+  @override
+  String get driverChangeTimePrice => 'Change time or price';
+
+  @override
+  String get driverOnline => 'Online';
+
+  @override
+  String get driverOffline => 'Offline';
+
+  @override
+  String get driverDocsPending => 'Your documents are being reviewed';
+
+  @override
+  String get driverDocsAction => 'View status';
+
+  @override
+  String get driverActiveTrip => 'You have an active trip';
+
+  @override
+  String get statRating => 'rating';
+
+  @override
+  String get statTrips => 'trips';
+
+  @override
+  String get statInApp => 'with us';
+
+  @override
+  String statMonths(int count) {
+    return '$count mo';
+  }
+
+  @override
+  String get dateToday => 'Today';
+
+  @override
+  String get dateYesterday => 'Yesterday';
+
+  @override
+  String get histCompleted => 'Completed';
+
+  @override
+  String get histCancelled => 'Cancelled';
+
+  @override
+  String get histActive => 'Active';
+
+  @override
+  String histPassengers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count passengers',
+      one: '1 passenger',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileCar => 'Car';
+
+  @override
+  String get profileDocuments => 'Documents';
+
+  @override
+  String get docLicense => 'Driving licence';
+
+  @override
+  String get docVehicle => 'Registration and car photos';
+
+  @override
+  String get docApproved => 'Approved';
+
+  @override
+  String get docPending => 'In review';
+
+  @override
+  String get docRejected => 'Resubmit';
+
+  @override
+  String get carFourSeats => '4-seat passenger car';
+
+  @override
+  String get profilePhone => 'Phone';
+
+  @override
+  String get dpOpenRoute => 'Open a route';
+
+  @override
+  String get dpToCity => 'To the city';
+
+  @override
+  String get dpToHome => 'Back home';
+
+  @override
+  String get dpDepartureTime => 'Departure time';
+
+  @override
+  String get dpWhenFull => 'When full';
+
+  @override
+  String get dpPricePerSeat => 'Price · 1 seat (20–30k)';
+
+  @override
+  String get dpFourSeats => 'The car always has 4 seats';
+
+  @override
+  String dpFullCarTotal(String amount) {
+    return 'If all 4 seats fill: $amount';
+  }
+
+  @override
+  String get dpOpen => 'Open the route';
+
+  @override
+  String get dpNewRequest => 'NEW REQUEST';
+
+  @override
+  String dpPeople(int count) {
+    return '$count people';
+  }
+
+  @override
+  String get dpToPassenger => 'to the passenger';
+
+  @override
+  String get dpAccept => 'Accept';
+
+  @override
+  String get dpSkip => 'Skip';
+
+  @override
+  String get dpPickupTitle => 'Pick up passengers';
+
+  @override
+  String dpSeatsTaken(int taken, int total) {
+    return '$taken / $total seats taken';
+  }
+
+  @override
+  String get dpPickedUp => 'picked up';
+
+  @override
+  String dpSlidePickedUp(String name) {
+    return 'Slide: $name is in the car';
+  }
+
+  @override
+  String get dpDepart => 'Depart';
+
+  @override
+  String get dpWaitMore => 'Wait more';
+
+  @override
+  String get dpNoPassengersYet =>
+      'No passengers yet. New requests will appear here.';
+
+  @override
+  String get dpOnTheWay => 'On the way';
+
+  @override
+  String get dpCollected => 'Collected';
+
+  @override
+  String get dpOpenNavigator => 'Open in navigator';
+
+  @override
+  String get dpSlideArrived => 'Slide: we have arrived';
+
+  @override
+  String get dpTripDone => 'Trip finished';
+
+  @override
+  String dpEarned(String amount) {
+    return 'This trip: $amount';
+  }
+
+  @override
+  String get dpReturnTitle => 'Open the return trip?';
+
+  @override
+  String get dpOpenReturn => 'Open return trip';
+
+  @override
+  String get dpNotToday => 'Not returning today';
+
+  @override
+  String get dpActionFailed =>
+      'That didn\'t work. Check your connection and try again.';
+
+  @override
+  String get dpCall => 'Call';
+
+  @override
+  String get dpPassenger => 'Passenger';
+
+  @override
+  String get dpPickupPoint => 'Pickup point';
+
+  @override
+  String get daBadge => 'DRIVER';
+
+  @override
+  String get daPhoneTitle => 'Driver sign-in';
+
+  @override
+  String get daPhoneBody => 'We\'ll text a code to your number';
+
+  @override
+  String get daGetCode => 'Get code';
+
+  @override
+  String get daTermsNote => 'By continuing you agree to the terms';
+
+  @override
+  String get daPhoneInvalid => 'Enter a valid number (e.g. 93 456 78 90)';
+
+  @override
+  String get daWithPassword => 'Sign in with password';
+
+  @override
+  String get daOtpTitle => 'Enter the code';
+
+  @override
+  String daOtpSentTo(String phone) {
+    return 'Sent to $phone';
+  }
+
+  @override
+  String get daChange => 'Change';
+
+  @override
+  String daResendIn(String time) {
+    return 'Resend in $time';
+  }
+
+  @override
+  String get daResend => 'Resend code';
+
+  @override
+  String get daOtpAuto =>
+      'New number goes to documents; registered drivers go straight home';
+
+  @override
+  String dpPendingBanner(int count) {
+    return '$count new requests are waiting';
+  }
+
+  @override
+  String get dpPendingAction => 'Open';
 }

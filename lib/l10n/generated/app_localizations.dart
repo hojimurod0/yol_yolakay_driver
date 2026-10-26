@@ -97,7 +97,8 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('ru'),
-    Locale('uz')
+    Locale('uz'),
+    Locale.fromSubtags(languageCode: 'uz', scriptCode: 'Cyrl')
   ];
 
   /// No description provided for @appName.
@@ -2661,6 +2662,618 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Buyurtmalarni qabul qilish uchun shaxsingiz va avtomobil hujjatlari tasdiqlanishi kerak.'**
   String get verificationRequiredMessage;
+
+  /// No description provided for @appearance.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ko\'rinish'**
+  String get appearance;
+
+  /// No description provided for @themeLightShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yorug\''**
+  String get themeLightShort;
+
+  /// No description provided for @themeDarkShort.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qorong\'i'**
+  String get themeDarkShort;
+
+  /// No description provided for @themeAuto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avto'**
+  String get themeAuto;
+
+  /// No description provided for @themeLightHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'kunduzgi'**
+  String get themeLightHint;
+
+  /// No description provided for @themeDarkHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'tungi'**
+  String get themeDarkHint;
+
+  /// No description provided for @themeAutoHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'telefon bo\'yicha'**
+  String get themeAutoHint;
+
+  /// No description provided for @languageLatinScript.
+  ///
+  /// In uz, this message translates to:
+  /// **'lotin yozuvi'**
+  String get languageLatinScript;
+
+  /// No description provided for @languageCyrillicScript.
+  ///
+  /// In uz, this message translates to:
+  /// **'kirill yozuvi'**
+  String get languageCyrillicScript;
+
+  /// No description provided for @languageRussianHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'rus tili'**
+  String get languageRussianHint;
+
+  /// No description provided for @menuTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Menyu'**
+  String get menuTitle;
+
+  /// No description provided for @menuSettingsHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Til, ko\'rinish'**
+  String get menuSettingsHint;
+
+  /// No description provided for @menuHelp.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yordam'**
+  String get menuHelp;
+
+  /// No description provided for @menuHelpHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qo\'llab-quvvatlash'**
+  String get menuHelpHint;
+
+  /// No description provided for @menuLogout.
+  ///
+  /// In uz, this message translates to:
+  /// **'Chiqish'**
+  String get menuLogout;
+
+  /// No description provided for @mapMyLocation.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuvimga qaytish'**
+  String get mapMyLocation;
+
+  /// No description provided for @mapNotifications.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bildirishnomalar'**
+  String get mapNotifications;
+
+  /// No description provided for @driverTodayEarnings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugungi daromad'**
+  String get driverTodayEarnings;
+
+  /// No description provided for @driverTodayPill.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugun: {amount}'**
+  String driverTodayPill(String amount);
+
+  /// No description provided for @menuEarnings.
+  ///
+  /// In uz, this message translates to:
+  /// **'Daromad'**
+  String get menuEarnings;
+
+  /// No description provided for @menuEarningsHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kun, hafta, oy'**
+  String get menuEarningsHint;
+
+  /// No description provided for @menuTripHistory.
+  ///
+  /// In uz, this message translates to:
+  /// **'Safarlar tarixi'**
+  String get menuTripHistory;
+
+  /// No description provided for @menuProfileCar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profil va mashina'**
+  String get menuProfileCar;
+
+  /// No description provided for @menuProfileCarHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hujjatlar holati'**
+  String get menuProfileCarHint;
+
+  /// No description provided for @driverLastRoute.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oxirgi yo\'nalish'**
+  String get driverLastRoute;
+
+  /// No description provided for @driverOpenAgain.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugun ham ochish'**
+  String get driverOpenAgain;
+
+  /// No description provided for @driverOpenRoute.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'nalish ochish'**
+  String get driverOpenRoute;
+
+  /// No description provided for @driverNoRouteYet.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'nalish oching — yo\'lovchilar sizni ko\'radi va joy band qiladi'**
+  String get driverNoRouteYet;
+
+  /// No description provided for @driverChangeTimePrice.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqt yoki narxni o\'zgartirish'**
+  String get driverChangeTimePrice;
+
+  /// No description provided for @driverOnline.
+  ///
+  /// In uz, this message translates to:
+  /// **'Liniyada'**
+  String get driverOnline;
+
+  /// No description provided for @driverOffline.
+  ///
+  /// In uz, this message translates to:
+  /// **'Liniyadan tashqari'**
+  String get driverOffline;
+
+  /// No description provided for @driverDocsPending.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hujjatlaringiz tekshirilmoqda'**
+  String get driverDocsPending;
+
+  /// No description provided for @driverDocsAction.
+  ///
+  /// In uz, this message translates to:
+  /// **'Holatni ko\'rish'**
+  String get driverDocsAction;
+
+  /// No description provided for @driverActiveTrip.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sizda faol safar bor'**
+  String get driverActiveTrip;
+
+  /// No description provided for @statRating.
+  ///
+  /// In uz, this message translates to:
+  /// **'reyting'**
+  String get statRating;
+
+  /// No description provided for @statTrips.
+  ///
+  /// In uz, this message translates to:
+  /// **'safar'**
+  String get statTrips;
+
+  /// No description provided for @statInApp.
+  ///
+  /// In uz, this message translates to:
+  /// **'ilovada'**
+  String get statInApp;
+
+  /// No description provided for @statMonths.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} oy'**
+  String statMonths(int count);
+
+  /// No description provided for @dateToday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugun'**
+  String get dateToday;
+
+  /// No description provided for @dateYesterday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kecha'**
+  String get dateYesterday;
+
+  /// No description provided for @histCompleted.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yakunlandi'**
+  String get histCompleted;
+
+  /// No description provided for @histCancelled.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bekor qilindi'**
+  String get histCancelled;
+
+  /// No description provided for @histActive.
+  ///
+  /// In uz, this message translates to:
+  /// **'Faol'**
+  String get histActive;
+
+  /// No description provided for @histPassengers.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} yo\'lovchi'**
+  String histPassengers(int count);
+
+  /// No description provided for @profileCar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mashina'**
+  String get profileCar;
+
+  /// No description provided for @profileDocuments.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hujjatlar'**
+  String get profileDocuments;
+
+  /// No description provided for @docLicense.
+  ///
+  /// In uz, this message translates to:
+  /// **'Haydovchilik guvohnomasi'**
+  String get docLicense;
+
+  /// No description provided for @docVehicle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Texnik pasport va mashina rasmlari'**
+  String get docVehicle;
+
+  /// No description provided for @docApproved.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tasdiqlangan'**
+  String get docApproved;
+
+  /// No description provided for @docPending.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tekshirilmoqda'**
+  String get docPending;
+
+  /// No description provided for @docRejected.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yuboring'**
+  String get docRejected;
+
+  /// No description provided for @carFourSeats.
+  ///
+  /// In uz, this message translates to:
+  /// **'4 o\'rinli yengil mashina'**
+  String get carFourSeats;
+
+  /// No description provided for @profilePhone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon'**
+  String get profilePhone;
+
+  /// No description provided for @dpOpenRoute.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'nalish ochish'**
+  String get dpOpenRoute;
+
+  /// No description provided for @dpToCity.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shaharga'**
+  String get dpToCity;
+
+  /// No description provided for @dpToHome.
+  ///
+  /// In uz, this message translates to:
+  /// **'Uyga'**
+  String get dpToHome;
+
+  /// No description provided for @dpDepartureTime.
+  ///
+  /// In uz, this message translates to:
+  /// **'Jo\'nash vaqti'**
+  String get dpDepartureTime;
+
+  /// No description provided for @dpWhenFull.
+  ///
+  /// In uz, this message translates to:
+  /// **'To\'lsa'**
+  String get dpWhenFull;
+
+  /// No description provided for @dpPricePerSeat.
+  ///
+  /// In uz, this message translates to:
+  /// **'Narx · 1 o\'rin (20–30 ming)'**
+  String get dpPricePerSeat;
+
+  /// No description provided for @dpFourSeats.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mashina har doim 4 o\'rinli'**
+  String get dpFourSeats;
+
+  /// No description provided for @dpFullCarTotal.
+  ///
+  /// In uz, this message translates to:
+  /// **'4 o\'rin to\'lsa: {amount}'**
+  String dpFullCarTotal(String amount);
+
+  /// No description provided for @dpOpen.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'nalishni ochish'**
+  String get dpOpen;
+
+  /// No description provided for @dpNewRequest.
+  ///
+  /// In uz, this message translates to:
+  /// **'YANGI SO\'ROV'**
+  String get dpNewRequest;
+
+  /// No description provided for @dpPeople.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} kishi'**
+  String dpPeople(int count);
+
+  /// No description provided for @dpToPassenger.
+  ///
+  /// In uz, this message translates to:
+  /// **'yo\'lovchigacha'**
+  String get dpToPassenger;
+
+  /// No description provided for @dpAccept.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qabul qilish'**
+  String get dpAccept;
+
+  /// No description provided for @dpSkip.
+  ///
+  /// In uz, this message translates to:
+  /// **'O\'tkazib yuborish'**
+  String get dpSkip;
+
+  /// No description provided for @dpPickupTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'lovchilarni olish'**
+  String get dpPickupTitle;
+
+  /// No description provided for @dpSeatsTaken.
+  ///
+  /// In uz, this message translates to:
+  /// **'{taken} / {total} o\'rin band'**
+  String dpSeatsTaken(int taken, int total);
+
+  /// No description provided for @dpPickedUp.
+  ///
+  /// In uz, this message translates to:
+  /// **'olindi'**
+  String get dpPickedUp;
+
+  /// No description provided for @dpSlidePickedUp.
+  ///
+  /// In uz, this message translates to:
+  /// **'Surib tasdiqlang: {name}ni oldim'**
+  String dpSlidePickedUp(String name);
+
+  /// No description provided for @dpDepart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Jo\'nash'**
+  String get dpDepart;
+
+  /// No description provided for @dpWaitMore.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yana kutish'**
+  String get dpWaitMore;
+
+  /// No description provided for @dpNoPassengersYet.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hali yo\'lovchi yo\'q. Yangi so\'rovlar shu yerda chiqadi.'**
+  String get dpNoPassengersYet;
+
+  /// No description provided for @dpOnTheWay.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'ldasiz'**
+  String get dpOnTheWay;
+
+  /// No description provided for @dpCollected.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yig\'ildi'**
+  String get dpCollected;
+
+  /// No description provided for @dpOpenNavigator.
+  ///
+  /// In uz, this message translates to:
+  /// **'Navigatorda ochish'**
+  String get dpOpenNavigator;
+
+  /// No description provided for @dpSlideArrived.
+  ///
+  /// In uz, this message translates to:
+  /// **'Surib tasdiqlang: Yetib keldik'**
+  String get dpSlideArrived;
+
+  /// No description provided for @dpTripDone.
+  ///
+  /// In uz, this message translates to:
+  /// **'Safar yakunlandi'**
+  String get dpTripDone;
+
+  /// No description provided for @dpEarned.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu safar: {amount}'**
+  String dpEarned(String amount);
+
+  /// No description provided for @dpReturnTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaytishni ochasizmi?'**
+  String get dpReturnTitle;
+
+  /// No description provided for @dpOpenReturn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qaytishni ochish'**
+  String get dpOpenReturn;
+
+  /// No description provided for @dpNotToday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bugun qaytmayman'**
+  String get dpNotToday;
+
+  /// No description provided for @dpActionFailed.
+  ///
+  /// In uz, this message translates to:
+  /// **'Amal bajarilmadi. Internetni tekshirib, qayta urinib ko\'ring.'**
+  String get dpActionFailed;
+
+  /// No description provided for @dpCall.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qo\'ng\'iroq'**
+  String get dpCall;
+
+  /// No description provided for @dpPassenger.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yo\'lovchi'**
+  String get dpPassenger;
+
+  /// No description provided for @dpPickupPoint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Olib ketish joyi'**
+  String get dpPickupPoint;
+
+  /// No description provided for @daBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'HAYDOVCHI'**
+  String get daBadge;
+
+  /// No description provided for @daPhoneTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Haydovchi sifatida kirish'**
+  String get daPhoneTitle;
+
+  /// No description provided for @daPhoneBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqamingizga SMS kod yuboramiz'**
+  String get daPhoneBody;
+
+  /// No description provided for @daGetCode.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kod olish'**
+  String get daGetCode;
+
+  /// No description provided for @daTermsNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom etib, foydalanish shartlariga rozilik bildirasiz'**
+  String get daTermsNote;
+
+  /// No description provided for @daPhoneInvalid.
+  ///
+  /// In uz, this message translates to:
+  /// **'To\'g\'ri telefon raqam kiriting (masalan: 93 456 78 90)'**
+  String get daPhoneInvalid;
+
+  /// No description provided for @daWithPassword.
+  ///
+  /// In uz, this message translates to:
+  /// **'Parol bilan kirish'**
+  String get daWithPassword;
+
+  /// No description provided for @daOtpTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kodni kiriting'**
+  String get daOtpTitle;
+
+  /// No description provided for @daOtpSentTo.
+  ///
+  /// In uz, this message translates to:
+  /// **'{phone} raqamiga yuborildi'**
+  String daOtpSentTo(String phone);
+
+  /// No description provided for @daChange.
+  ///
+  /// In uz, this message translates to:
+  /// **'O\'zgartirish'**
+  String get daChange;
+
+  /// No description provided for @daResendIn.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yuborish: {time}'**
+  String daResendIn(String time);
+
+  /// No description provided for @daResend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kodni qayta yuborish'**
+  String get daResend;
+
+  /// No description provided for @daOtpAuto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yangi raqam — hujjatlarga, ro\'yxatdan o\'tgan haydovchi — bosh ekranga'**
+  String get daOtpAuto;
+
+  /// No description provided for @dpPendingBanner.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta yangi so\'rov javob kutmoqda'**
+  String dpPendingBanner(int count);
+
+  /// No description provided for @dpPendingAction.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ko\'rish'**
+  String get dpPendingAction;
 }
 
 class _AppLocalizationsDelegate
@@ -2681,6 +3294,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'uz':
+      {
+        switch (locale.scriptCode) {
+          case 'Cyrl':
+            return AppLocalizationsUzCyrl();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en':

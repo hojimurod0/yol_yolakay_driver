@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/utils/bloc_transformers.dart';
 import '../../domain/entities/wallet_history_entity.dart';
 import '../../domain/usecases/wallet_usecases.dart';
@@ -8,6 +9,12 @@ import 'wallet_state.dart';
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetWalletHistoryUseCase _getWalletHistoryUseCase;
   final DepositWalletUseCase _depositWalletUseCase;
+
+  /// Idempotency key for the deposit the driver is trying to make. Kept across
+  /// retries of the same amount/provider (e.g. after a timeout where the server
+  /// may already have created the invoice) and dropped once an invoice arrives.
+  String? _pendingDepositKey;
+  String? _pendingDepositSignature;
   final GetEarningsStatsUseCase _getEarningsStatsUseCase;
 
   int _currentPage = 1;
@@ -117,11 +124,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       clearDepositInvoice: true,
     ));
 
+    final signature = '${event.paymentSystem}:${event.amount}';
+    if (_pendingDepositSignature != signature) {
+      _pendingDepositSignature = signature;
+      _pendingDepositKey = 'deposit-${const Uuid().v4()}';
+    }
+
     try {
       final invoice = await _depositWalletUseCase(
         amount: event.amount,
         paymentSystem: event.paymentSystem,
+        idempotencyKey: _pendingDepositKey!,
       );
+      _pendingDepositKey = null;
+      _pendingDepositSignature = null;
 
       emit(state.copyWith(
         isDepositing: false,

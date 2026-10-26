@@ -23,7 +23,11 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
     required CancelTaxiOrderUseCase cancelTaxiOrderUseCase,
     required LocationService locationService,
     required WebSocketService webSocketService,
-  })  : _getRadarOrdersUseCase = getRadarOrdersUseCase,
+    Duration pollTick = const Duration(seconds: 8),
+    this.connectedPollInterval = const Duration(seconds: 30),
+    DateTime Function()? clock,
+  })  : _clock = clock ?? DateTime.now,
+        _getRadarOrdersUseCase = getRadarOrdersUseCase,
         _getActiveTaxiOrderUseCase = getActiveTaxiOrderUseCase,
         _acceptTaxiOrderUseCase = acceptTaxiOrderUseCase,
         _declineTaxiOrderUseCase = declineTaxiOrderUseCase,
@@ -44,6 +48,7 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
     on<CancelOrderEvent>(_onCancelOrder, transformer: droppableTransformer());
     on<NewOrderOfferReceivedEvent>(_onNewOrderOffer);
     on<OrderStatusChangedEvent>(_onOrderStatusChanged);
+    on<RadarPollTickEvent>(_onPollTick, transformer: droppableTransformer());
 
     // Listen to WebSocket events with managed subscriptions
     _taxiOfferSubscription = _webSocketService.onTaxiOffer.listen((data) {
@@ -53,7 +58,20 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
         _webSocketService.onOrderStatusChanged.listen((data) {
       add(OrderStatusChangedEvent(data));
     });
+    _pollTimer = Timer.periodic(pollTick, (_) {
+      if (!isClosed) add(const RadarPollTickEvent());
+    });
   }
+
+  /// While the socket is up it delivers offers; HTTP polling then only runs
+  /// this often as a safety net. While it is down, every tick polls.
+  final Duration connectedPollInterval;
+  final DateTime Function() _clock;
+  Timer? _pollTimer;
+  DateTime? _lastServerSync;
+
+  /// Offers the driver declined, so a poll does not bring them back.
+  final Set<String> _declinedOfferIds = {};
 
   StreamSubscription? _taxiOfferSubscription;
   StreamSubscription? _orderStatusSubscription;
@@ -100,7 +118,10 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
       final lng = pos?.longitude ?? 69.240562;
 
       final offers = await _getRadarOrdersUseCase(lat: lat, lng: lng);
-      _cachedOffers = List.from(offers);
+      _lastServerSync = _clock();
+      _cachedOffers = offers
+          .where((o) => !_declinedOfferIds.contains(o.orderId))
+          .toList();
       emit(RadarOrdersLoadedState(
         offers: _cachedOffers,
         activeOrder: _currentActiveOrder,
@@ -129,7 +150,8 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
       );
 
       _currentActiveOrder = assignedOrder;
-      _cachedOffers.removeWhere((o) => o.orderId == event.orderId);
+      _cachedOffers =
+        _cachedOffers.where((o) => o.orderId != event.orderId).toList();
       _webSocketService.subscribeToOrder(assignedOrder.orderId);
 
       emit(ActiveOrderLoadedState(assignedOrder));
@@ -148,7 +170,9 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
     DeclineOrderEvent event,
     Emitter<TaxiRadarState> emit,
   ) async {
-    _cachedOffers.removeWhere((o) => o.orderId == event.orderId);
+    _declinedOfferIds.add(event.orderId);
+    _cachedOffers =
+        _cachedOffers.where((o) => o.orderId != event.orderId).toList();
     emit(RadarOrdersLoadedState(
       offers: _cachedOffers,
       activeOrder: _currentActiveOrder,
@@ -238,7 +262,9 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
     try {
       final newOffer = TaxiOrderOfferModel.fromJson(event.data);
       if (!_cachedOffers.any((o) => o.orderId == newOffer.orderId)) {
-        _cachedOffers.insert(0, newOffer);
+        // New list, not insert(): states compare by value, so mutating the
+        // list the current state holds would make the emit a no-op.
+        _cachedOffers = [newOffer, ..._cachedOffers];
         AudioAlertService.instance.playNewOrderAlert();
         emit(RadarOrdersLoadedState(
           offers: _cachedOffers,
@@ -262,8 +288,76 @@ class TaxiRadarBloc extends Bloc<TaxiRadarEvent, TaxiRadarState> {
     }
   }
 
+  Future<void> _onPollTick(
+    RadarPollTickEvent event,
+    Emitter<TaxiRadarState> emit,
+  ) async {
+    // Never overwrite a screen that is mid-action or still loading.
+    if (state is OrderProcessingState ||
+        state is TaxiRadarLoading ||
+        state is TaxiRadarInitial ||
+        state is OrderCompletedState) {
+      return;
+    }
+    final last = _lastServerSync;
+    if (_webSocketService.isConnected &&
+        last != null &&
+        _clock().difference(last) < connectedPollInterval) {
+      return;
+    }
+
+    try {
+      if (_currentActiveOrder != null) {
+        await _pollActiveOrder(emit);
+      } else {
+        await _pollOffers(emit);
+      }
+    } catch (_) {
+      // Transient failure: keep what is on screen and retry on the next tick.
+    }
+  }
+
+  Future<void> _pollOffers(Emitter<TaxiRadarState> emit) async {
+    final pos = await _locationService.getCurrentPosition();
+    final offers = await _getRadarOrdersUseCase(
+      lat: pos?.latitude ?? 41.311081,
+      lng: pos?.longitude ?? 69.240562,
+    );
+    _lastServerSync = _clock();
+    if (_currentActiveOrder != null) return; // accepted meanwhile
+
+    final known = _cachedOffers.map((o) => o.orderId).toSet();
+    final fresh =
+        offers.where((o) => !_declinedOfferIds.contains(o.orderId)).toList();
+    if (fresh.any((o) => !known.contains(o.orderId))) {
+      AudioAlertService.instance.playNewOrderAlert();
+    }
+    _cachedOffers = fresh;
+    emit(RadarOrdersLoadedState(offers: _cachedOffers, activeOrder: null));
+  }
+
+  Future<void> _pollActiveOrder(Emitter<TaxiRadarState> emit) async {
+    final current = _currentActiveOrder!;
+    final latest = await _getActiveTaxiOrderUseCase();
+    _lastServerSync = _clock();
+    if (_currentActiveOrder?.orderId != current.orderId) return;
+
+    if (latest == null || latest.orderId != current.orderId) {
+      // The server no longer has this order active and the driver did not
+      // complete it here: the passenger (or dispatch) cancelled it.
+      if (current.status == 'cancelled') return;
+      AudioAlertService.instance.playOrderCancelledAlert();
+      _currentActiveOrder = current.copyWith(status: 'cancelled');
+      emit(ActiveOrderLoadedState(_currentActiveOrder!));
+    } else if (latest.status != current.status) {
+      _currentActiveOrder = latest;
+      emit(ActiveOrderLoadedState(latest));
+    }
+  }
+
   @override
   Future<void> close() {
+    _pollTimer?.cancel();
     _taxiOfferSubscription?.cancel();
     _orderStatusSubscription?.cancel();
     return super.close();

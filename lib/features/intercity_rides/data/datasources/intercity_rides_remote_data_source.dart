@@ -31,6 +31,12 @@ abstract class IntercityRidesRemoteDataSource {
     required String reason,
   });
 
+  Future<void> markPickedUp(String bookingId);
+
+  Future<void> startRide(String rideId);
+
+  Future<void> completeRide(String rideId);
+
   Future<void> updateRide({
     required String rideId,
     required Map<String, dynamic> rideData,
@@ -152,6 +158,30 @@ class IntercityRidesRemoteDataSourceImpl
       idempotencyKey:
           'booking-cancel-$bookingId-${DateTime.now().millisecondsSinceEpoch}',
       data: {'reason': reason},
+    );
+  }
+
+  @override
+  Future<void> markPickedUp(String bookingId) async {
+    await _apiClient.post(
+      ApiEndpoints.pickedUpBooking(bookingId),
+      idempotencyKey: 'booking-picked-up-$bookingId',
+    );
+  }
+
+  @override
+  Future<void> startRide(String rideId) async {
+    await _apiClient.post(
+      ApiEndpoints.startRide(rideId),
+      idempotencyKey: 'ride-start-$rideId',
+    );
+  }
+
+  @override
+  Future<void> completeRide(String rideId) async {
+    await _apiClient.post(
+      ApiEndpoints.completeRide(rideId),
+      idempotencyKey: 'ride-complete-$rideId',
     );
   }
 

@@ -65,6 +65,17 @@ class IntercityRidesRepositoryImpl implements IntercityRidesRepository {
   }
 
   @override
+  Future<void> markPickedUp(String bookingId) =>
+      _remoteDataSource.markPickedUp(bookingId);
+
+  @override
+  Future<void> startRide(String rideId) => _remoteDataSource.startRide(rideId);
+
+  @override
+  Future<void> completeRide(String rideId) =>
+      _remoteDataSource.completeRide(rideId);
+
+  @override
   Future<void> updateRide({
     required String rideId,
     required Map<String, dynamic> rideData,

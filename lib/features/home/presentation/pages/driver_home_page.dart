@@ -17,6 +17,7 @@ import '../../domain/entities/home_dashboard_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
+import '../../../../core/config/app_config.dart';
 
 class DriverHomePage extends StatefulWidget {
   const DriverHomePage({super.key});
@@ -44,8 +45,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       backgroundColor:
           isDark ? AppColors.backgroundDark : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor:
-            isDark ? AppColors.surfaceDark : Colors.white,
+        backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         titleSpacing: hPad,
@@ -151,7 +151,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
               if (state.isNoInternet) {
                 return NoInternetWidget(
                   onRetry: () {
-                    context.read<HomeBloc>().add(const LoadHomeDashboardEvent());
+                    context
+                        .read<HomeBloc>()
+                        .add(const LoadHomeDashboardEvent());
                   },
                 );
               }
@@ -159,7 +161,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 return AppErrorState(
                   message: state.message,
                   onRetry: () {
-                    context.read<HomeBloc>().add(const LoadHomeDashboardEvent());
+                    context
+                        .read<HomeBloc>()
+                        .add(const LoadHomeDashboardEvent());
                   },
                 );
               }
@@ -188,7 +192,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   backgroundColor:
                       isDark ? AppColors.surfaceDark : Colors.white,
                   onRefresh: () async {
-                    context.read<HomeBloc>().add(const LoadHomeDashboardEvent());
+                    context
+                        .read<HomeBloc>()
+                        .add(const LoadHomeDashboardEvent());
                   },
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(
@@ -224,8 +230,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             context, dashboard.activeTaxiOrder!, isDark, l10n),
                         const SizedBox(height: 16),
                       ] else if (dashboard.activeIntercityTrip != null) ...[
-                        _buildActiveTripAlert(
-                            context, dashboard.activeIntercityTrip!, isDark, l10n),
+                        _buildActiveTripAlert(context,
+                            dashboard.activeIntercityTrip!, isDark, l10n),
                         const SizedBox(height: 16),
                       ],
 
@@ -289,7 +295,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
         boxShadow: [
           BoxShadow(
             color: (isOnline ? const Color(0xFF10B981) : Colors.black)
-                .withValues(alpha: isOnline ? (isDark ? 0.25 : 0.12) : (isDark ? 0.25 : 0.04)),
+                .withValues(
+                    alpha: isOnline
+                        ? (isDark ? 0.25 : 0.12)
+                        : (isDark ? 0.25 : 0.04)),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -306,7 +315,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isOnline ? const Color(0xFF10B981) : const Color(0xFF9CA3AF),
+                  color: isOnline
+                      ? const Color(0xFF10B981)
+                      : const Color(0xFF9CA3AF),
                   boxShadow: [
                     if (isOnline)
                       BoxShadow(
@@ -332,14 +343,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
               const Spacer(),
               if (isOnline)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: const Color(0xFF10B981).withValues(alpha: 0.16),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.wifi_rounded, size: 13, color: Color(0xFF10B981)),
+                      Icon(Icons.wifi_rounded,
+                          size: 13, color: Color(0xFF10B981)),
                       SizedBox(width: 4),
                       Text(
                         'GPS Faol',
@@ -377,7 +390,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
             child: isToggling
                 ? Container(
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1F2937) : const Color(0xFFF3F4F6),
+                      color: isDark
+                          ? const Color(0xFF1F2937)
+                          : const Color(0xFFF3F4F6),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     alignment: Alignment.center,
@@ -402,7 +417,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isOnline
-                          ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0))
+                          ? (isDark
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFE2E8F0))
                           : AppColors.taxiYellow,
                       foregroundColor: isOnline
                           ? (isDark ? Colors.white : AppColors.charcoalBlack)
@@ -413,7 +430,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         borderRadius: BorderRadius.circular(14),
                         side: isOnline
                             ? BorderSide(
-                                color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                                color: isDark
+                                    ? const Color(0xFF334155)
+                                    : const Color(0xFFCBD5E1),
                                 width: 1.2,
                               )
                             : BorderSide.none,
@@ -427,7 +446,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               ? Icons.power_settings_new_rounded
                               : Icons.bolt_rounded,
                           size: 22,
-                          color: isOnline ? Colors.redAccent : AppColors.charcoalBlack,
+                          color: isOnline
+                              ? Colors.redAccent
+                              : AppColors.charcoalBlack,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -436,7 +457,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: isOnline
-                                ? (isDark ? Colors.white : AppColors.charcoalBlack)
+                                ? (isDark
+                                    ? Colors.white
+                                    : AppColors.charcoalBlack)
                                 : AppColors.charcoalBlack,
                             letterSpacing: 0.2,
                           ),
@@ -494,7 +517,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 if (verificationStatus != 'approved' &&
                     verificationStatus != 'under_review') {
                   HapticFeedback.heavyImpact();
-                  AppSnackBar.showWarning(context, l10n.verificationRequiredMessage);
+                  AppSnackBar.showWarning(
+                      context, l10n.verificationRequiredMessage);
                   context.push('/verification');
                   return;
                 }
@@ -510,7 +534,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   border: Border.all(color: borderCol, width: 1.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -535,7 +560,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(
                             color: AppColors.taxiYellow.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
@@ -587,7 +613,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 if (verificationStatus != 'approved' &&
                     verificationStatus != 'under_review') {
                   HapticFeedback.heavyImpact();
-                  AppSnackBar.showWarning(context, l10n.verificationRequiredMessage);
+                  AppSnackBar.showWarning(
+                      context, l10n.verificationRequiredMessage);
                   context.push('/verification');
                   return;
                 }
@@ -603,7 +630,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   border: Border.all(color: borderCol, width: 1.0),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -618,7 +646,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
+                            color:
+                                const Color(0xFF3B82F6).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -628,9 +657,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 3),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
+                            color:
+                                const Color(0xFF3B82F6).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
@@ -724,7 +755,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             ),
                           ),
                           const SizedBox(width: 6),
-                          const Icon(Icons.verified_rounded, size: 14, color: AppColors.success),
+                          const Icon(Icons.verified_rounded,
+                              size: 14, color: AppColors.success),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -737,7 +769,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             letterSpacing: -0.5,
-                            color: isDark ? Colors.white : AppColors.charcoalBlack,
+                            color:
+                                isDark ? Colors.white : AppColors.charcoalBlack,
                           ),
                         ),
                       ),
@@ -754,7 +787,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: AppColors.taxiYellow.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(12),
@@ -770,7 +804,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Hamyon',
+                              AppConfig.commissionEnabled
+                                  ? 'Hamyon'
+                                  : 'Daromad',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -778,18 +814,21 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               ),
                             ),
                             SizedBox(width: 3),
-                            Icon(Icons.chevron_right_rounded, size: 14, color: AppColors.taxiYellowDark),
+                            Icon(Icons.chevron_right_rounded,
+                                size: 14, color: AppColors.taxiYellowDark),
                           ],
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          AppCurrencyFormatter.format(walletBalance),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.charcoalBlack,
+                        if (AppConfig.commissionEnabled) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            AppCurrencyFormatter.format(walletBalance),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.charcoalBlack,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -822,7 +861,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 Container(
                   height: 28,
                   width: 1,
-                  color: isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
+                  color:
+                      isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
                 ),
                 Expanded(
                   child: _buildMetricItem(
@@ -836,7 +876,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 Container(
                   height: 28,
                   width: 1,
-                  color: isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
+                  color:
+                      isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
                 ),
                 Expanded(
                   child: _buildMetricItem(
@@ -965,7 +1006,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF3B82F6).withValues(alpha: isDark ? 0.20 : 0.12),
+            color:
+                const Color(0xFF3B82F6).withValues(alpha: isDark ? 0.20 : 0.12),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
           ),
@@ -1023,7 +1065,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
     switch (status) {
       case 'under_review':
-        bg = isDark ? AppColors.warning.withValues(alpha: 0.15) : const Color(0xFFFEF3C7);
+        bg = isDark
+            ? AppColors.warning.withValues(alpha: 0.15)
+            : const Color(0xFFFEF3C7);
         border = AppColors.warning.withValues(alpha: 0.5);
         icon = Icons.schedule_rounded;
         title = l10n.verificationUnderReviewTitle;
@@ -1039,7 +1083,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
         buttonText = 'Hujjatlarni qayta yuborish';
         break;
       default:
-        bg = isDark ? AppColors.warning.withValues(alpha: 0.15) : const Color(0xFFFEF3C7);
+        bg = isDark
+            ? AppColors.warning.withValues(alpha: 0.15)
+            : const Color(0xFFFEF3C7);
         border = AppColors.taxiYellowDark.withValues(alpha: 0.5);
         icon = Icons.assignment_late_outlined;
         title = l10n.verificationMissingTitle;
@@ -1149,7 +1195,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   const Expanded(
                     child: Text(
                       'Balansingiz yetarli emas',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],

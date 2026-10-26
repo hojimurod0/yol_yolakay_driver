@@ -15,9 +15,16 @@ class DepositWalletUseCase {
   final WalletRepository _repository;
   DepositWalletUseCase(this._repository);
 
-  Future<DepositInvoiceEntity> call(
-      {required int amount, required String paymentSystem}) {
-    return _repository.deposit(amount: amount, paymentSystem: paymentSystem);
+  Future<DepositInvoiceEntity> call({
+    required int amount,
+    required String paymentSystem,
+    required String idempotencyKey,
+  }) {
+    return _repository.deposit(
+      amount: amount,
+      paymentSystem: paymentSystem,
+      idempotencyKey: idempotencyKey,
+    );
   }
 }
 

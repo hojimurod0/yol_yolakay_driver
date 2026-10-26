@@ -2,16 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/auth/domain/entities/driver_user_entity.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/pages/otp_page.dart';
-import '../../features/auth/presentation/pages/phone_page.dart';
-import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/set_password_page.dart';
 import '../../features/driver/presentation/pages/driver_main_shell_page.dart';
 import '../../features/driver/presentation/pages/driver_splash_page.dart';
 import '../../features/home/presentation/pages/city_picker_page.dart';
-import '../../features/home/presentation/pages/driver_home_page.dart';
 import '../../features/intercity_rides/domain/entities/intercity_ride_entity.dart';
 import '../../features/intercity_rides/presentation/pages/create_driver_trip_page.dart';
 import '../../features/intercity_rides/presentation/pages/driver_trip_details_page.dart';
@@ -29,6 +26,10 @@ import '../di/injection.dart';
 import '../services/push_notification_service.dart';
 import '../services/session_manager.dart';
 import '../widgets/smooth_tab_branch_container.dart';
+import '../../features/home/presentation/pages/pilot_driver_home_page.dart';
+import '../../features/home/presentation/pages/pilot_active_ride_page.dart';
+import '../../features/auth/presentation/pages/pilot_auth_pages.dart';
+import '../../features/home/presentation/pages/pilot_open_route_page.dart';
 
 final driverRootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'driverRoot');
@@ -68,15 +69,23 @@ GoRouter createDriverRouter() {
       // 2. Auth Flows
       GoRoute(
         path: '/login',
+        builder: (context, state) => const PilotDriverPhonePage(),
+      ),
+      GoRoute(
+        path: '/login-password',
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterPage(),
+        builder: (context, state) => const PilotDriverPhonePage(),
       ),
       GoRoute(
         path: '/phone',
-        builder: (context, state) => const PhonePage(),
+        builder: (context, state) => const PilotDriverPhonePage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
       ),
       GoRoute(
         path: '/set-password',
@@ -99,7 +108,7 @@ GoRouter createDriverRouter() {
                 resendInterval: 60,
               );
 
-          return OtpPage(
+          return PilotDriverOtpPage(
             phone: phone,
             session: session,
           );
@@ -137,10 +146,33 @@ GoRouter createDriverRouter() {
         },
       ),
       GoRoute(
+        path: '/pilot/open-route',
+        builder: (context, state) {
+          final extra = state.extra is Map ? state.extra as Map : const {};
+          return PilotOpenRoutePage(
+            toCity: extra['toCity'] as bool?,
+            price: extra['price'] as int?,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/pilot/ride/:id',
+        builder: (context, state) {
+          final extra = state.extra is Map ? state.extra as Map : const {};
+          return PilotActiveRidePage(
+            rideId: state.pathParameters['id'] ?? '',
+            toCity: extra['toCity'] as bool?,
+          );
+        },
+      ),
+      GoRoute(
         path: '/driver/create-trip',
         builder: (context, state) {
           final extraRide = state.extra as IntercityRideEntity?;
-          return CreateDriverTripPage(editRide: extraRide);
+          return CreateDriverTripPage(
+            editRide: extraRide,
+            repeatLast: state.uri.queryParameters['repeat'] == '1',
+          );
         },
       ),
       GoRoute(
@@ -204,7 +236,7 @@ GoRouter createDriverRouter() {
             routes: [
               GoRoute(
                 path: '/driver/home',
-                builder: (context, state) => const DriverHomePage(),
+                builder: (context, state) => const PilotDriverHomePage(),
               ),
             ],
           ),

@@ -29,6 +29,13 @@ abstract class IntercityRidesRepository {
     required String reason,
   });
 
+  /// The passenger is in the car (door-to-door pickup done).
+  Future<void> markPickedUp(String bookingId);
+
+  Future<void> startRide(String rideId);
+
+  Future<void> completeRide(String rideId);
+
   Future<void> updateRide({
     required String rideId,
     required Map<String, dynamic> rideData,

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:yol_yolakay_driver/core/services/driver_tracking_service.dart';
 import 'package:yol_yolakay_driver/core/services/location_service.dart';
 import 'package:yol_yolakay_driver/features/home/domain/entities/home_dashboard_entity.dart';
 import 'package:yol_yolakay_driver/features/home/domain/repositories/home_repository.dart';
@@ -44,16 +45,21 @@ class FakeHomeRepository implements HomeRepository {
 }
 
 class FakeLocationService extends LocationService {
+  bool tracking = false;
+
+  @override
+  bool get isTracking => tracking;
+
   @override
   Future<bool> startLocationTracking({
     required void Function(Position position) onPositionChanged,
     int distanceFilter = 10,
     Duration interval = const Duration(seconds: 10),
   }) async =>
-      true;
+      tracking = true;
 
   @override
-  void stopLocationTracking() {}
+  void stopLocationTracking() => tracking = false;
 
   @override
   Future<Position?> getCurrentPosition() async => null;
@@ -70,8 +76,11 @@ void main() {
     homeBloc = HomeBloc(
       getHomeDashboardUseCase: GetHomeDashboardUseCase(fakeRepo),
       toggleShiftUseCase: ToggleShiftUseCase(fakeRepo),
-      updateLocationUseCase: UpdateLocationUseCase(fakeRepo),
       locationService: fakeLocationService,
+      trackingService: DriverTrackingService(
+        locationService: fakeLocationService,
+        updateLocationUseCase: UpdateLocationUseCase(fakeRepo),
+      ),
     );
   });
 
@@ -112,6 +121,17 @@ void main() {
           predicate<HomeLoaded>((s) => s.dashboard.isOnline == true),
         ]),
       );
+      expect(fakeLocationService.tracking, isTrue);
+    });
+
+    test('tracking keeps running after the home page bloc is closed',
+        () async {
+      fakeRepo.isOnline = true;
+      homeBloc.add(const LoadHomeDashboardEvent());
+      await homeBloc.stream.firstWhere((s) => s is HomeLoaded);
+      await homeBloc.close();
+
+      expect(fakeLocationService.tracking, isTrue);
     });
   });
 }

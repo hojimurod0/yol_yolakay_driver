@@ -1392,4 +1392,336 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get verificationRequiredMessage =>
       'Для приема заказов необходимо подтвердить личность и документы на автомобиль.';
+
+  @override
+  String get appearance => 'Внешний вид';
+
+  @override
+  String get themeLightShort => 'Светлая';
+
+  @override
+  String get themeDarkShort => 'Тёмная';
+
+  @override
+  String get themeAuto => 'Авто';
+
+  @override
+  String get themeLightHint => 'дневная';
+
+  @override
+  String get themeDarkHint => 'ночная';
+
+  @override
+  String get themeAutoHint => 'как в телефоне';
+
+  @override
+  String get languageLatinScript => 'латиница';
+
+  @override
+  String get languageCyrillicScript => 'кириллица';
+
+  @override
+  String get languageRussianHint => 'русский язык';
+
+  @override
+  String get menuTitle => 'Меню';
+
+  @override
+  String get menuSettingsHint => 'Язык, внешний вид';
+
+  @override
+  String get menuHelp => 'Помощь';
+
+  @override
+  String get menuHelpHint => 'Поддержка';
+
+  @override
+  String get menuLogout => 'Выйти';
+
+  @override
+  String get mapMyLocation => 'К моему местоположению';
+
+  @override
+  String get mapNotifications => 'Уведомления';
+
+  @override
+  String get driverTodayEarnings => 'Доход за сегодня';
+
+  @override
+  String driverTodayPill(String amount) {
+    return 'Сегодня: $amount';
+  }
+
+  @override
+  String get menuEarnings => 'Доход';
+
+  @override
+  String get menuEarningsHint => 'День, неделя, месяц';
+
+  @override
+  String get menuTripHistory => 'История поездок';
+
+  @override
+  String get menuProfileCar => 'Профиль и машина';
+
+  @override
+  String get menuProfileCarHint => 'Статус документов';
+
+  @override
+  String get driverLastRoute => 'Последний маршрут';
+
+  @override
+  String get driverOpenAgain => 'Открыть и сегодня';
+
+  @override
+  String get driverOpenRoute => 'Открыть маршрут';
+
+  @override
+  String get driverNoRouteYet =>
+      'Откройте маршрут — пассажиры увидят вас и забронируют места';
+
+  @override
+  String get driverChangeTimePrice => 'Изменить время или цену';
+
+  @override
+  String get driverOnline => 'На линии';
+
+  @override
+  String get driverOffline => 'Не на линии';
+
+  @override
+  String get driverDocsPending => 'Документы на проверке';
+
+  @override
+  String get driverDocsAction => 'Посмотреть статус';
+
+  @override
+  String get driverActiveTrip => 'У вас есть активная поездка';
+
+  @override
+  String get statRating => 'рейтинг';
+
+  @override
+  String get statTrips => 'поездок';
+
+  @override
+  String get statInApp => 'в приложении';
+
+  @override
+  String statMonths(int count) {
+    return '$count мес.';
+  }
+
+  @override
+  String get dateToday => 'Сегодня';
+
+  @override
+  String get dateYesterday => 'Вчера';
+
+  @override
+  String get histCompleted => 'Завершена';
+
+  @override
+  String get histCancelled => 'Отменена';
+
+  @override
+  String get histActive => 'Активна';
+
+  @override
+  String histPassengers(int count) {
+    return '$count пасс.';
+  }
+
+  @override
+  String get profileCar => 'Машина';
+
+  @override
+  String get profileDocuments => 'Документы';
+
+  @override
+  String get docLicense => 'Водительское удостоверение';
+
+  @override
+  String get docVehicle => 'Техпаспорт и фото машины';
+
+  @override
+  String get docApproved => 'Подтверждено';
+
+  @override
+  String get docPending => 'На проверке';
+
+  @override
+  String get docRejected => 'Отправьте заново';
+
+  @override
+  String get carFourSeats => 'Легковая машина, 4 места';
+
+  @override
+  String get profilePhone => 'Телефон';
+
+  @override
+  String get dpOpenRoute => 'Открыть направление';
+
+  @override
+  String get dpToCity => 'В город';
+
+  @override
+  String get dpToHome => 'Домой';
+
+  @override
+  String get dpDepartureTime => 'Время выезда';
+
+  @override
+  String get dpWhenFull => 'Когда заполнится';
+
+  @override
+  String get dpPricePerSeat => 'Цена · 1 место (20–30 тыс.)';
+
+  @override
+  String get dpFourSeats => 'В машине всегда 4 места';
+
+  @override
+  String dpFullCarTotal(String amount) {
+    return 'Если 4 места заполнятся: $amount';
+  }
+
+  @override
+  String get dpOpen => 'Открыть направление';
+
+  @override
+  String get dpNewRequest => 'НОВЫЙ ЗАПРОС';
+
+  @override
+  String dpPeople(int count) {
+    return '$count чел.';
+  }
+
+  @override
+  String get dpToPassenger => 'до пассажира';
+
+  @override
+  String get dpAccept => 'Принять';
+
+  @override
+  String get dpSkip => 'Пропустить';
+
+  @override
+  String get dpPickupTitle => 'Забрать пассажиров';
+
+  @override
+  String dpSeatsTaken(int taken, int total) {
+    return 'Занято $taken из $total';
+  }
+
+  @override
+  String get dpPickedUp => 'в машине';
+
+  @override
+  String dpSlidePickedUp(String name) {
+    return 'Сдвиньте: $name в машине';
+  }
+
+  @override
+  String get dpDepart => 'Поехали';
+
+  @override
+  String get dpWaitMore => 'Ещё подождать';
+
+  @override
+  String get dpNoPassengersYet =>
+      'Пассажиров пока нет. Новые запросы появятся здесь.';
+
+  @override
+  String get dpOnTheWay => 'В пути';
+
+  @override
+  String get dpCollected => 'Собрано';
+
+  @override
+  String get dpOpenNavigator => 'Открыть в навигаторе';
+
+  @override
+  String get dpSlideArrived => 'Сдвиньте: мы приехали';
+
+  @override
+  String get dpTripDone => 'Поездка завершена';
+
+  @override
+  String dpEarned(String amount) {
+    return 'За поездку: $amount';
+  }
+
+  @override
+  String get dpReturnTitle => 'Открыть обратный рейс?';
+
+  @override
+  String get dpOpenReturn => 'Открыть обратный рейс';
+
+  @override
+  String get dpNotToday => 'Сегодня не вернусь';
+
+  @override
+  String get dpActionFailed =>
+      'Не получилось. Проверьте интернет и попробуйте снова.';
+
+  @override
+  String get dpCall => 'Позвонить';
+
+  @override
+  String get dpPassenger => 'Пассажир';
+
+  @override
+  String get dpPickupPoint => 'Место посадки';
+
+  @override
+  String get daBadge => 'ВОДИТЕЛЬ';
+
+  @override
+  String get daPhoneTitle => 'Вход для водителя';
+
+  @override
+  String get daPhoneBody => 'Пришлём SMS-код на ваш номер';
+
+  @override
+  String get daGetCode => 'Получить код';
+
+  @override
+  String get daTermsNote => 'Продолжая, вы соглашаетесь с условиями';
+
+  @override
+  String get daPhoneInvalid => 'Введите верный номер (например: 93 456 78 90)';
+
+  @override
+  String get daWithPassword => 'Войти по паролю';
+
+  @override
+  String get daOtpTitle => 'Введите код';
+
+  @override
+  String daOtpSentTo(String phone) {
+    return 'Отправлен на $phone';
+  }
+
+  @override
+  String get daChange => 'Изменить';
+
+  @override
+  String daResendIn(String time) {
+    return 'Повторно через $time';
+  }
+
+  @override
+  String get daResend => 'Отправить код ещё раз';
+
+  @override
+  String get daOtpAuto =>
+      'Новый номер — к документам, зарегистрированный водитель — на главный экран';
+
+  @override
+  String dpPendingBanner(int count) {
+    return 'Новых запросов ждут ответа: $count';
+  }
+
+  @override
+  String get dpPendingAction => 'Открыть';
 }

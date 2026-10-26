@@ -66,7 +66,7 @@ abstract class AppColors {
   static const Color glassBorderLight = Color(0x14000000); // 8% black border
   static const Color borderLight = Color(0xFFE5E7EB); // 1px Subtle Border
   static const Color borderLightHover = Color(0xFFD1D5DB);
-  static const Color textPrimaryLight = Color(0xFF111111); // Clean Primary Text
+  static const Color textPrimaryLight = Color(0xFF1F2937); // Clean Primary Text
   static const Color textSecondaryLight = Color(0xFF6B7280); // Secondary Text
   static const Color textTertiaryLight = Color(0xFF9CA3AF); // Muted Gray
 

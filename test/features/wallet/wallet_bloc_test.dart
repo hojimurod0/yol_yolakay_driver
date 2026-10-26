@@ -34,11 +34,20 @@ class FakeWalletRepository implements WalletRepository {
     );
   }
 
+  final depositKeys = <String>[];
+  int failNextDeposits = 0;
+
   @override
   Future<DepositInvoiceEntity> deposit({
     required int amount,
     required String paymentSystem,
+    required String idempotencyKey,
   }) async {
+    depositKeys.add(idempotencyKey);
+    if (failNextDeposits > 0) {
+      failNextDeposits--;
+      throw Exception('timeout');
+    }
     return const DepositInvoiceEntity(
       invoiceId: 'inv-123',
       paymentUrl: 'https://checkout.payme.uz/inv-123',
@@ -112,6 +121,36 @@ void main() {
               s.depositInvoice?.paymentUrl.contains('payme.uz') == true),
         ]),
       );
+    });
+
+    test('retrying a failed deposit reuses its idempotency key', () async {
+      fakeRepo.failNextDeposits = 1;
+      const deposit = DepositRequestedEvent(amount: 50000, paymentSystem: 'payme');
+
+      walletBloc.add(deposit);
+      await walletBloc.stream.firstWhere((s) => s.depositError != null);
+      walletBloc.add(deposit);
+      await walletBloc.stream.firstWhere((s) => s.depositInvoice != null);
+      walletBloc.add(
+          const DepositRequestedEvent(amount: 50000, paymentSystem: 'payme'));
+      await walletBloc.stream.firstWhere((s) => s.depositInvoice != null);
+
+      expect(fakeRepo.depositKeys, hasLength(3));
+      expect(fakeRepo.depositKeys[1], fakeRepo.depositKeys[0]);
+      expect(fakeRepo.depositKeys[2], isNot(fakeRepo.depositKeys[1]));
+    });
+
+    test('changing the amount after a failure uses a new key', () async {
+      fakeRepo.failNextDeposits = 1;
+
+      walletBloc.add(
+          const DepositRequestedEvent(amount: 50000, paymentSystem: 'payme'));
+      await walletBloc.stream.firstWhere((s) => s.depositError != null);
+      walletBloc.add(
+          const DepositRequestedEvent(amount: 70000, paymentSystem: 'payme'));
+      await walletBloc.stream.firstWhere((s) => s.depositInvoice != null);
+
+      expect(fakeRepo.depositKeys[1], isNot(fakeRepo.depositKeys[0]));
     });
 
     test(

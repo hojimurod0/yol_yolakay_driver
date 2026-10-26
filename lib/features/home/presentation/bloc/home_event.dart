@@ -17,22 +17,3 @@ class ToggleShiftEvent extends HomeEvent {
   @override
   List<Object?> get props => [isOnline];
 }
-
-class UpdateDriverLocationEvent extends HomeEvent {
-  const UpdateDriverLocationEvent({
-    required this.lat,
-    required this.lng,
-    this.bearing,
-    this.speedKmh,
-  });
-
-  final double lat;
-  final double lng;
-  final double? bearing;
-
-  /// Speed in km/h (Geolocator reports m/s; convert before creating the event).
-  final double? speedKmh;
-
-  @override
-  List<Object?> get props => [lat, lng, bearing, speedKmh];
-}

@@ -12,6 +12,9 @@ import '../../domain/entities/wallet_history_entity.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
+import '../../../../core/config/app_config.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/app_menu_drawer.dart';
 
 class DriverWalletPage extends StatefulWidget {
   const DriverWalletPage({super.key});
@@ -89,8 +92,9 @@ class _DriverWalletPageState extends State<DriverWalletPage>
       backgroundColor:
           isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       appBar: AppBar(
+        leading: ShellBackButton(onPressed: () => context.go('/driver/home')),
         title: const Text(
-          'Hamyon va Daromadlar',
+          AppConfig.commissionEnabled ? 'Hamyon va Daromadlar' : 'Daromad',
           style: TextStyle(fontWeight: FontWeight.w700),
         ),
         centerTitle: true,
@@ -196,11 +200,21 @@ class _DriverWalletPageState extends State<DriverWalletPage>
                   ),
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
-                    _buildBalanceCard(context, state, isDark),
-                    const SizedBox(height: 16),
+                    if (AppConfig.commissionEnabled) ...[
+                      _buildBalanceCard(context, state, isDark),
+                      const SizedBox(height: 16),
+                    ],
                     _buildEarningsSection(context, state, isDark),
-                    const SizedBox(height: 24),
-                    _buildTransactionsSection(context, state, isDark),
+                    if (!AppConfig.commissionEnabled) ...[
+                      const SizedBox(height: 12),
+                      _buildNoCommissionNote(isDark),
+                      const SizedBox(height: 12),
+                      _buildTripHistoryLink(context, isDark),
+                    ],
+                    if (AppConfig.commissionEnabled) ...[
+                      const SizedBox(height: 24),
+                      _buildTransactionsSection(context, state, isDark),
+                    ],
                     if (state.isLoadingMore) ...[
                       const SizedBox(height: 16),
                       const Center(
@@ -214,6 +228,93 @@ class _DriverWalletPageState extends State<DriverWalletPage>
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildNoCommissionNote(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.success.withValues(alpha: 0.14)
+            : AppColors.successLight,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_rounded,
+              size: 20, color: AppColors.success),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              "Komissiya hozircha olinmaydi — yig'ilgan pulning hammasi sizniki.",
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                height: 1.35,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : const Color(0xFF166534),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTripHistoryLink(BuildContext context, bool isDark) {
+    return Material(
+      color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.go('/driver/trips'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? AppColors.surfaceSubtleDark
+                      : AppColors.surfaceSubtleLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.history_rounded,
+                    size: 20,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimaryLight),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Safarlar tarixi',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimaryLight,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded,
+                  color: isDark
+                      ? AppColors.textTertiaryDark
+                      : AppColors.textTertiaryLight),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -309,7 +410,8 @@ class _DriverWalletPageState extends State<DriverWalletPage>
               decoration: BoxDecoration(
                 color: AppColors.warning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+                border:
+                    Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [

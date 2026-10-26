@@ -5,8 +5,11 @@ import '../models/wallet_history_model.dart';
 
 abstract class WalletRemoteDataSource {
   Future<WalletHistoryModel> getWalletHistory({int page = 1, int limit = 20});
-  Future<DepositInvoiceModel> deposit(
-      {required int amount, required String paymentSystem});
+  Future<DepositInvoiceModel> deposit({
+    required int amount,
+    required String paymentSystem,
+    required String idempotencyKey,
+  });
   Future<EarningsStatsModel> getEarningsStats({required String period});
 }
 
@@ -37,11 +40,11 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
   Future<DepositInvoiceModel> deposit({
     required int amount,
     required String paymentSystem,
+    required String idempotencyKey,
   }) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       ApiEndpoints.walletDeposit,
-      idempotencyKey:
-          'deposit-$paymentSystem-$amount-${DateTime.now().millisecondsSinceEpoch}',
+      idempotencyKey: idempotencyKey,
       data: {
         'amount': amount,
         'payment_system': paymentSystem,

@@ -42,9 +42,16 @@ class RoutePriceRecommendation {
 }
 
 class CreateDriverTripPage extends StatefulWidget {
-  const CreateDriverTripPage({super.key, this.editRide});
+  const CreateDriverTripPage({
+    super.key,
+    this.editRide,
+    this.repeatLast = false,
+  });
 
   final IntercityRideEntity? editRide;
+
+  /// Opened from "Bugun ham ochish": prefill the last route the driver opened.
+  final bool repeatLast;
 
   @override
   State<CreateDriverTripPage> createState() => _CreateDriverTripPageState();
@@ -55,22 +62,102 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
 
   // Full default list of Uzbekistan cities so user is never blocked
   static const List<CityEntity> _defaultCities = [
-    CityEntity(id: 'tashkent', name: 'Toshkent', region: 'Toshkent shahri', latitude: 41.2995, longitude: 69.2401),
-    CityEntity(id: 'samarkand', name: 'Samarqand', region: 'Samarqand viloyati', latitude: 39.6547, longitude: 66.9758),
-    CityEntity(id: 'bukhara', name: 'Buxoro', region: 'Buxoro viloyati', latitude: 39.7681, longitude: 64.4556),
-    CityEntity(id: 'andijan', name: 'Andijon', region: 'Andijon viloyati', latitude: 40.7821, longitude: 72.3442),
-    CityEntity(id: 'fergana', name: 'Farg\'ona', region: 'Farg\'ona viloyati', latitude: 40.3842, longitude: 71.7843),
-    CityEntity(id: 'namangan', name: 'Namangan', region: 'Namangan viloyati', latitude: 40.9983, longitude: 71.6726),
-    CityEntity(id: 'qarshi', name: 'Qarshi', region: 'Qashqadaryo viloyati', latitude: 38.8606, longitude: 65.7891),
-    CityEntity(id: 'termez', name: 'Termiz', region: 'Surxondaryo viloyati', latitude: 37.2286, longitude: 67.2753),
-    CityEntity(id: 'navoiy', name: 'Navoiy', region: 'Navoiy viloyati', latitude: 40.0844, longitude: 65.3792),
-    CityEntity(id: 'jizzakh', name: 'Jizzax', region: 'Jizzax viloyati', latitude: 40.1158, longitude: 67.8422),
-    CityEntity(id: 'gulistan', name: 'Guliston', region: 'Sirdaryo viloyati', latitude: 40.4897, longitude: 68.7842),
-    CityEntity(id: 'urgench', name: 'Urganch', region: 'Xorazm viloyati', latitude: 41.5562, longitude: 60.6313),
-    CityEntity(id: 'nukus', name: 'Nukus', region: 'Qoraqalpog\'iston', latitude: 42.4619, longitude: 59.6166),
-    CityEntity(id: 'khiva', name: 'Xiva', region: 'Xorazm viloyati', latitude: 41.3783, longitude: 60.3639),
-    CityEntity(id: 'kokand', name: 'Qo\'qon', region: 'Farg\'ona viloyati', latitude: 40.5342, longitude: 70.9428),
-    CityEntity(id: 'shakhrisabz', name: 'Shahrisabz', region: 'Qashqadaryo viloyati', latitude: 39.0573, longitude: 66.8339),
+    CityEntity(
+        id: 'tashkent',
+        name: 'Toshkent',
+        region: 'Toshkent shahri',
+        latitude: 41.2995,
+        longitude: 69.2401),
+    CityEntity(
+        id: 'samarkand',
+        name: 'Samarqand',
+        region: 'Samarqand viloyati',
+        latitude: 39.6547,
+        longitude: 66.9758),
+    CityEntity(
+        id: 'bukhara',
+        name: 'Buxoro',
+        region: 'Buxoro viloyati',
+        latitude: 39.7681,
+        longitude: 64.4556),
+    CityEntity(
+        id: 'andijan',
+        name: 'Andijon',
+        region: 'Andijon viloyati',
+        latitude: 40.7821,
+        longitude: 72.3442),
+    CityEntity(
+        id: 'fergana',
+        name: 'Farg\'ona',
+        region: 'Farg\'ona viloyati',
+        latitude: 40.3842,
+        longitude: 71.7843),
+    CityEntity(
+        id: 'namangan',
+        name: 'Namangan',
+        region: 'Namangan viloyati',
+        latitude: 40.9983,
+        longitude: 71.6726),
+    CityEntity(
+        id: 'qarshi',
+        name: 'Qarshi',
+        region: 'Qashqadaryo viloyati',
+        latitude: 38.8606,
+        longitude: 65.7891),
+    CityEntity(
+        id: 'termez',
+        name: 'Termiz',
+        region: 'Surxondaryo viloyati',
+        latitude: 37.2286,
+        longitude: 67.2753),
+    CityEntity(
+        id: 'navoiy',
+        name: 'Navoiy',
+        region: 'Navoiy viloyati',
+        latitude: 40.0844,
+        longitude: 65.3792),
+    CityEntity(
+        id: 'jizzakh',
+        name: 'Jizzax',
+        region: 'Jizzax viloyati',
+        latitude: 40.1158,
+        longitude: 67.8422),
+    CityEntity(
+        id: 'gulistan',
+        name: 'Guliston',
+        region: 'Sirdaryo viloyati',
+        latitude: 40.4897,
+        longitude: 68.7842),
+    CityEntity(
+        id: 'urgench',
+        name: 'Urganch',
+        region: 'Xorazm viloyati',
+        latitude: 41.5562,
+        longitude: 60.6313),
+    CityEntity(
+        id: 'nukus',
+        name: 'Nukus',
+        region: 'Qoraqalpog\'iston',
+        latitude: 42.4619,
+        longitude: 59.6166),
+    CityEntity(
+        id: 'khiva',
+        name: 'Xiva',
+        region: 'Xorazm viloyati',
+        latitude: 41.3783,
+        longitude: 60.3639),
+    CityEntity(
+        id: 'kokand',
+        name: 'Qo\'qon',
+        region: 'Farg\'ona viloyati',
+        latitude: 40.5342,
+        longitude: 70.9428),
+    CityEntity(
+        id: 'shakhrisabz',
+        name: 'Shahrisabz',
+        region: 'Qashqadaryo viloyati',
+        latitude: 39.0573,
+        longitude: 66.8339),
   ];
 
   String _fromCityId = 'tashkent';
@@ -109,7 +196,12 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
       }
     } else {
       _loadLastSavedTrip();
-      if (_lastSavedTrip == null) {
+      if (widget.repeatLast && _lastSavedTrip != null) {
+        _fromCityId = _lastSavedTrip!['from'] as String;
+        _toCityId = _lastSavedTrip!['to'] as String;
+        _priceController.text = (_lastSavedTrip!['price'] as int).toString();
+        _totalSeats = _lastSavedTrip!['seats'] as int;
+      } else if (_lastSavedTrip == null) {
         final rec = _calculateRoutePricing(_fromCityId, _toCityId);
         _priceController.text = rec.recommendedPrice.toString();
       }
@@ -347,7 +439,8 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         return _CitySelectionModal(
-          title: isFrom ? 'Qayerdan (Jo\'nash shahri)' : 'Qayerga (Borish shahri)',
+          title:
+              isFrom ? 'Qayerdan (Jo\'nash shahri)' : 'Qayerga (Borish shahri)',
           cities: cities,
           selectedCityId: isFrom ? _fromCityId : _toCityId,
           onCitySelected: (city) {
@@ -495,7 +588,8 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
               .add(const LoadRidesEvent(status: 'active'));
           context.pop(true);
         } else if (state is RideUpdatedSuccessState) {
-          AppSnackBar.showSuccess(context, 'Qatnov muvaffaqiyatli tahrirlandi!');
+          AppSnackBar.showSuccess(
+              context, 'Qatnov muvaffaqiyatli tahrirlandi!');
           context
               .read<IntercityRidesBloc>()
               .add(const LoadRidesEvent(status: 'active'));
@@ -559,11 +653,14 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
                         // 1. ROUTE CARD (From / To with Swap)
                         Container(
                           decoration: BoxDecoration(
-                            color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                            color: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceLight,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+                                color: Colors.black
+                                    .withValues(alpha: isDark ? 0.20 : 0.04),
                                 blurRadius: 10,
                                 offset: const Offset(0, 3),
                               ),
@@ -574,673 +671,708 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
                                   : AppColors.borderLight,
                             ),
                           ),
-                      child: Stack(
-                        alignment: Alignment.centerRight,
-                        children: [
-                          Column(
+                          child: Stack(
+                            alignment: Alignment.centerRight,
                             children: [
-                              // Origin Tile
-                              InkWell(
-                                onTap: () => _showCitySearchSheet(
-                                    isFrom: true, cities: cities),
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      16, 16, 64, 14),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 36,
-                                        height: 36,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.success
-                                              .withValues(alpha: 0.12),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.trip_origin_rounded,
-                                          color: AppColors.success,
-                                          size: 18,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Qayerdan (Jo\'nash)',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                                color: isDark
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[600],
-                                              ),
+                              Column(
+                                children: [
+                                  // Origin Tile
+                                  InkWell(
+                                    onTap: () => _showCitySearchSheet(
+                                        isFrom: true, cities: cities),
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 16, 64, 14),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.success
+                                                  .withValues(alpha: 0.12),
+                                              shape: BoxShape.circle,
                                             ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              fromCity.name,
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w800,
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : AppColors.charcoalBlack,
-                                              ),
+                                            child: const Icon(
+                                              Icons.trip_origin_rounded,
+                                              color: AppColors.success,
+                                              size: 18,
                                             ),
-                                            if (fromCity.region.isNotEmpty)
-                                              Text(
-                                                fromCity.region,
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: isDark
-                                                      ? Colors.grey[500]
-                                                      : Colors.grey[500],
+                                          ),
+                                          const SizedBox(width: 14),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Qayerdan (Jo\'nash)',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: isDark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[600],
+                                                  ),
                                                 ),
-                                              ),
-                                          ],
-                                        ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  fromCity.name,
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : AppColors
+                                                            .charcoalBlack,
+                                                  ),
+                                                ),
+                                                if (fromCity.region.isNotEmpty)
+                                                  Text(
+                                                    fromCity.region,
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: isDark
+                                                          ? Colors.grey[500]
+                                                          : Colors.grey[500],
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.chevron_right_rounded,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
                                       ),
-                                      const Icon(
-                                        Icons.chevron_right_rounded,
-                                        color: Colors.grey,
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
 
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                                indent: 56,
-                                endIndent: 56,
-                                color: isDark
-                                    ? const Color(0xFF2E2E3C)
-                                    : const Color(0xFFF0F1F5),
-                              ),
+                                  Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    indent: 56,
+                                    endIndent: 56,
+                                    color: isDark
+                                        ? const Color(0xFF2E2E3C)
+                                        : const Color(0xFFF0F1F5),
+                                  ),
 
-                              // Destination Tile
-                              InkWell(
-                                onTap: () => _showCitySearchSheet(
-                                    isFrom: false, cities: cities),
-                                borderRadius: const BorderRadius.vertical(
-                                    bottom: Radius.circular(20)),
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      16, 14, 64, 16),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 36,
-                                        height: 36,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.error
-                                              .withValues(alpha: 0.12),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.location_on_rounded,
-                                          color: AppColors.error,
-                                          size: 20,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Qayerga (Yetib borish)',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                                color: isDark
-                                                    ? Colors.grey[400]
-                                                    : Colors.grey[600],
-                                              ),
+                                  // Destination Tile
+                                  InkWell(
+                                    onTap: () => _showCitySearchSheet(
+                                        isFrom: false, cities: cities),
+                                    borderRadius: const BorderRadius.vertical(
+                                        bottom: Radius.circular(20)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 14, 64, 16),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 36,
+                                            height: 36,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.error
+                                                  .withValues(alpha: 0.12),
+                                              shape: BoxShape.circle,
                                             ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              toCity.name,
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w800,
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : AppColors.charcoalBlack,
-                                              ),
+                                            child: const Icon(
+                                              Icons.location_on_rounded,
+                                              color: AppColors.error,
+                                              size: 20,
                                             ),
-                                            if (toCity.region.isNotEmpty)
-                                              Text(
-                                                toCity.region,
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: isDark
-                                                      ? Colors.grey[500]
-                                                      : Colors.grey[500],
+                                          ),
+                                          const SizedBox(width: 14),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Qayerga (Yetib borish)',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: isDark
+                                                        ? Colors.grey[400]
+                                                        : Colors.grey[600],
+                                                  ),
                                                 ),
-                                              ),
-                                          ],
-                                        ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  toCity.name,
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : AppColors
+                                                            .charcoalBlack,
+                                                  ),
+                                                ),
+                                                if (toCity.region.isNotEmpty)
+                                                  Text(
+                                                    toCity.region,
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: isDark
+                                                          ? Colors.grey[500]
+                                                          : Colors.grey[500],
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.chevron_right_rounded,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
                                       ),
-                                      const Icon(
-                                        Icons.chevron_right_rounded,
-                                        color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // Floating Swap Button
+                              Positioned(
+                                right: 14,
+                                child: Material(
+                                  color: AppColors.taxiYellow,
+                                  shape: const CircleBorder(),
+                                  elevation: 2,
+                                  child: InkWell(
+                                    onTap: _swapCities,
+                                    customBorder: const CircleBorder(),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Icon(
+                                        Icons.swap_vert_rounded,
+                                        color: Colors.black87,
+                                        size: 22,
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
+                        ),
 
-                          // Floating Swap Button
-                          Positioned(
-                            right: 14,
-                            child: Material(
-                              color: AppColors.taxiYellow,
-                              shape: const CircleBorder(),
-                              elevation: 2,
-                              child: InkWell(
-                                onTap: _swapCities,
-                                customBorder: const CircleBorder(),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Icon(
-                                    Icons.swap_vert_rounded,
-                                    color: Colors.black87,
-                                    size: 22,
-                                  ),
-                                ),
-                              ),
+                        const SizedBox(height: 12),
+
+                        // Quick Route Chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          child: Row(
+                            children: [
+                              _buildRouteChip('Toshkent ➔ Samarqand',
+                                  'tashkent', 'samarkand', isDark),
+                              _buildRouteChip('Toshkent ➔ Farg\'ona',
+                                  'tashkent', 'fergana', isDark),
+                              _buildRouteChip('Toshkent ➔ Andijon', 'tashkent',
+                                  'andijan', isDark),
+                              _buildRouteChip('Samarqand ➔ Buxoro', 'samarkand',
+                                  'bukhara', isDark),
+                              _buildRouteChip('Toshkent ➔ Buxoro', 'tashkent',
+                                  'bukhara', isDark),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 2. DEPARTURE DATE & TIME
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.borderDark
+                                  : AppColors.borderLight,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Quick Route Chips
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      child: Row(
-                        children: [
-                          _buildRouteChip('Toshkent ➔ Samarqand', 'tashkent', 'samarkand', isDark),
-                          _buildRouteChip('Toshkent ➔ Farg\'ona', 'tashkent', 'fergana', isDark),
-                          _buildRouteChip('Toshkent ➔ Andijon', 'tashkent', 'andijan', isDark),
-                          _buildRouteChip('Samarqand ➔ Buxoro', 'samarkand', 'bukhara', isDark),
-                          _buildRouteChip('Toshkent ➔ Buxoro', 'tashkent', 'bukhara', isDark),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // 2. DEPARTURE DATE & TIME
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? AppColors.borderDark
-                              : AppColors.borderLight,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.taxiYellow.withValues(alpha: 0.18),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.calendar_month_rounded,
-                                  color: AppColors.taxiYellowDark,
-                                  size: 20,
-                                ),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.taxiYellow
+                                          .withValues(alpha: 0.18),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.calendar_month_rounded,
+                                      color: AppColors.taxiYellowDark,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          l10n.departureDateLabel,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: isDark
+                                                ? Colors.grey[400]
+                                                : Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          AppDateFormatter.formatDateTime(
+                                              _departureDateTime,
+                                              locale: currentLocale),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16,
+                                            color: isDark
+                                                ? Colors.white
+                                                : AppColors.charcoalBlack,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: _selectDateTime,
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 14, vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      side: BorderSide(
+                                        color: isDark
+                                            ? const Color(0xFF3E3E50)
+                                            : const Color(0xFFD0D3D9),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'O\'zgartirish',
+                                      style: TextStyle(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: [
+                                  _buildQuickTimeChip('+1 soat',
+                                      const Duration(hours: 1), isDark),
+                                  _buildQuickTimeChip('+2 soat',
+                                      const Duration(hours: 2), isDark),
+                                  _buildQuickTimeChip('+4 soat',
+                                      const Duration(hours: 4), isDark),
+                                  _buildQuickTimeChip('Ertaga',
+                                      const Duration(days: 1), isDark),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 3. PRICE & SEATS
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Price Input
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? AppColors.surfaceDark
+                                      : AppColors.surfaceLight,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? AppColors.borderDark
+                                        : AppColors.borderLight,
+                                  ),
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      l10n.departureDateLabel,
+                                      'Har bir o\'rin narxi',
                                       style: TextStyle(
                                         fontSize: 12,
+                                        fontWeight: FontWeight.w600,
                                         color: isDark
                                             ? Colors.grey[400]
                                             : Colors.grey[600],
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      AppDateFormatter.formatDateTime(
-                                          _departureDateTime,
-                                          locale: currentLocale),
+                                    const SizedBox(height: 6),
+                                    TextFormField(
+                                      controller: _priceController,
+                                      keyboardType: TextInputType.number,
                                       style: TextStyle(
+                                        fontSize: 18,
                                         fontWeight: FontWeight.w800,
-                                        fontSize: 16,
                                         color: isDark
                                             ? Colors.white
                                             : AppColors.charcoalBlack,
+                                      ),
+                                      decoration: InputDecoration(
+                                        suffixText: 'so\'m',
+                                        suffixStyle: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: isDark
+                                              ? Colors.grey[400]
+                                              : Colors.grey[600],
+                                        ),
+                                        isDense: true,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 8),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Tavsiya etilgan narxlar pastda',
+                                      style: TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w500,
+                                        color: isDark
+                                            ? Colors.grey[500]
+                                            : Colors.grey[500],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              OutlinedButton(
-                                onPressed: _selectDateTime,
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  side: BorderSide(
+                            ),
+
+                            const SizedBox(width: 12),
+
+                            // Seats Stepper
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? AppColors.surfaceDark
+                                      : AppColors.surfaceLight,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
                                     color: isDark
-                                        ? const Color(0xFF3E3E50)
-                                        : const Color(0xFFD0D3D9),
+                                        ? AppColors.borderDark
+                                        : AppColors.borderLight,
                                   ),
                                 ),
-                                child: const Text(
-                                  'O\'zgartirish',
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w700,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Bo\'sh o\'rinlar',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.grey[400]
+                                            : Colors.grey[600],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        InkWell(
+                                          onTap: _totalSeats > 1
+                                              ? () =>
+                                                  setState(() => _totalSeats--)
+                                              : null,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? const Color(0xFF2C2C38)
+                                                  : const Color(0xFFF0F1F5),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(Icons.remove,
+                                                size: 18),
+                                          ),
+                                        ),
+                                        Text(
+                                          '$_totalSeats',
+                                          style: TextStyle(
+                                            fontSize: 19,
+                                            fontWeight: FontWeight.w800,
+                                            color: isDark
+                                                ? Colors.white
+                                                : AppColors.charcoalBlack,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: _totalSeats < 8
+                                              ? () =>
+                                                  setState(() => _totalSeats++)
+                                              : null,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(6),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.taxiYellow,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(Icons.add,
+                                                size: 18,
+                                                color: Colors.black87),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Smart Recommended Price Engine Pills
+                        _buildSmartPriceEngine(isDark, cities),
+
+                        const SizedBox(height: 20),
+
+                        // 4. PICKUP & DROPOFF ADDRESSES
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.borderDark
+                                  : AppColors.borderLight,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Bekatlar va uchrashuv nuqtalari',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: isDark
+                                      ? Colors.white
+                                      : AppColors.charcoalBlack,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              TextFormField(
+                                controller: _pickupController,
+                                decoration: InputDecoration(
+                                  labelText:
+                                      'Chiqish nuqtasi (Jo\'nash bekati)',
+                                  hintText:
+                                      'Masalan, Chilonzor metro, Janubiy vokzal',
+                                  prefixIcon: const Icon(
+                                      Icons.trip_origin_rounded,
+                                      color: AppColors.success,
+                                      size: 20),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? const Color(0xFF262632)
+                                      : const Color(0xFFF7F8FA),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              TextFormField(
+                                controller: _dropoffController,
+                                decoration: InputDecoration(
+                                  labelText: 'Tushish nuqtasi (Borish bekati)',
+                                  hintText:
+                                      'Masalan, Samarqand vokzal, Registon',
+                                  prefixIcon: const Icon(
+                                      Icons.location_on_rounded,
+                                      color: AppColors.error,
+                                      size: 20),
+                                  filled: true,
+                                  fillColor: isDark
+                                      ? const Color(0xFF262632)
+                                      : const Color(0xFFF7F8FA),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 6,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // 5. AMENITIES
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceLight,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark
+                                  ? AppColors.borderDark
+                                  : AppColors.borderLight,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildQuickTimeChip('+1 soat', const Duration(hours: 1), isDark),
-                              _buildQuickTimeChip('+2 soat', const Duration(hours: 2), isDark),
-                              _buildQuickTimeChip('+4 soat', const Duration(hours: 4), isDark),
-                              _buildQuickTimeChip('Ertaga', const Duration(days: 1), isDark),
+                              Text(
+                                l10n.amenitiesSectionTitle,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: isDark
+                                      ? Colors.white
+                                      : AppColors.charcoalBlack,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              SwitchListTile.adaptive(
+                                value: _hasAc,
+                                activeTrackColor: AppColors.taxiYellowDark,
+                                contentPadding: EdgeInsets.zero,
+                                secondary: const Icon(Icons.ac_unit_rounded,
+                                    color: Colors.blueAccent),
+                                title: Text(l10n.hasAcLabel,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                                onChanged: (v) => setState(() => _hasAc = v),
+                              ),
+                              SwitchListTile.adaptive(
+                                value: _allowLuggage,
+                                activeTrackColor: AppColors.taxiYellowDark,
+                                contentPadding: EdgeInsets.zero,
+                                secondary: const Icon(Icons.luggage_rounded,
+                                    color: Colors.orangeAccent),
+                                title: Text(l10n.allowLuggageLabel,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                                onChanged: (v) =>
+                                    setState(() => _allowLuggage = v),
+                              ),
+                              SwitchListTile.adaptive(
+                                value: _womenOnly,
+                                activeTrackColor: AppColors.taxiYellowDark,
+                                contentPadding: EdgeInsets.zero,
+                                secondary: const Icon(Icons.woman_rounded,
+                                    color: Colors.pinkAccent),
+                                title: Text(l10n.womenOnlyLabel,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600)),
+                                onChanged: (v) =>
+                                    setState(() => _womenOnly = v),
+                              ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
 
-                    const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                    // 3. PRICE & SEATS
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Price Input
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.surfaceDark
-                                  : AppColors.surfaceLight,
+                        // 6. COMMENT
+                        TextFormField(
+                          controller: _commentController,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            labelText: l10n.additionalCommentLabel,
+                            hintText:
+                                'Yo\'lovchilar uchun qo\'shimcha ma\'lumot yoki eslatma',
+                            filled: true,
+                            fillColor: isDark
+                                ? AppColors.surfaceDark
+                                : AppColors.surfaceLight,
+                            border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
+                              borderSide: BorderSide(
                                 color: isDark
                                     ? AppColors.borderDark
                                     : AppColors.borderLight,
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Har bir o\'rin narxi',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                TextFormField(
-                                  controller: _priceController,
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: isDark
-                                        ? Colors.white
-                                        : AppColors.charcoalBlack,
-                                  ),
-                                  decoration: InputDecoration(
-                                    suffixText: 'so\'m',
-                                    suffixStyle: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: isDark
-                                          ? Colors.grey[400]
-                                          : Colors.grey[600],
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 8),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Tavsiya etilgan narxlar pastda',
-                                  style: TextStyle(
-                                    fontSize: 10.5,
-                                    fontWeight: FontWeight.w500,
-                                    color: isDark
-                                        ? Colors.grey[500]
-                                        : Colors.grey[500],
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ),
 
-                        const SizedBox(width: 12),
+                        const SizedBox(height: 32),
 
-                        // Seats Stepper
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.surfaceDark
-                                  : AppColors.surfaceLight,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: isDark
-                                    ? AppColors.borderDark
-                                    : AppColors.borderLight,
+                        // 7. SUBMIT BUTTON
+                        BlocBuilder<IntercityRidesBloc, IntercityRidesState>(
+                          builder: (context, state) {
+                            final isBusy = state is CreatingRideState ||
+                                state is UpdatingRideState;
+                            return SizedBox(
+                              width: double.infinity,
+                              child: AppButton(
+                                text: _isEditMode
+                                    ? 'O\'zgarishlarni saqlash'
+                                    : l10n.publishTripAction,
+                                onPressed: isBusy ? null : () => _submit(l10n),
+                                isLoading: isBusy,
+                                variant: AppButtonVariant.taxi,
+                                height: 54,
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Bo\'sh o\'rinlar',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? Colors.grey[400]
-                                        : Colors.grey[600],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    InkWell(
-                                      onTap: _totalSeats > 1
-                                          ? () => setState(
-                                              () => _totalSeats--)
-                                          : null,
-                                      borderRadius:
-                                          BorderRadius.circular(8),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? const Color(0xFF2C2C38)
-                                              : const Color(0xFFF0F1F5),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: const Icon(Icons.remove,
-                                            size: 18),
-                                      ),
-                                    ),
-                                    Text(
-                                      '$_totalSeats',
-                                      style: TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w800,
-                                        color: isDark
-                                            ? Colors.white
-                                            : AppColors.charcoalBlack,
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: _totalSeats < 8
-                                          ? () => setState(
-                                              () => _totalSeats++)
-                                          : null,
-                                      borderRadius:
-                                          BorderRadius.circular(8),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(6),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.taxiYellow,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: const Icon(Icons.add,
-                                            size: 18,
-                                            color: Colors.black87),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    // Smart Recommended Price Engine Pills
-                    _buildSmartPriceEngine(isDark, cities),
-
-                    const SizedBox(height: 20),
-
-                    // 4. PICKUP & DROPOFF ADDRESSES
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? AppColors.borderDark
-                              : AppColors.borderLight,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Bekatlar va uchrashuv nuqtalari',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? Colors.white
-                                  : AppColors.charcoalBlack,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _pickupController,
-                            decoration: InputDecoration(
-                              labelText: 'Chiqish nuqtasi (Jo\'nash bekati)',
-                              hintText: 'Masalan, Chilonzor metro, Janubiy vokzal',
-                              prefixIcon: const Icon(Icons.trip_origin_rounded,
-                                  color: AppColors.success, size: 20),
-                              filled: true,
-                              fillColor: isDark
-                                  ? const Color(0xFF262632)
-                                  : const Color(0xFFF7F8FA),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _dropoffController,
-                            decoration: InputDecoration(
-                              labelText: 'Tushish nuqtasi (Borish bekati)',
-                              hintText: 'Masalan, Samarqand vokzal, Registon',
-                              prefixIcon: const Icon(Icons.location_on_rounded,
-                                  color: AppColors.error, size: 20),
-                              filled: true,
-                              fillColor: isDark
-                                  ? const Color(0xFF262632)
-                                  : const Color(0xFFF7F8FA),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // 5. AMENITIES
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDark
-                              ? AppColors.borderDark
-                              : AppColors.borderLight,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.amenitiesSectionTitle,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: isDark
-                                  ? Colors.white
-                                  : AppColors.charcoalBlack,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          SwitchListTile.adaptive(
-                            value: _hasAc,
-                            activeTrackColor: AppColors.taxiYellowDark,
-                            contentPadding: EdgeInsets.zero,
-                            secondary: const Icon(Icons.ac_unit_rounded,
-                                color: Colors.blueAccent),
-                            title: Text(l10n.hasAcLabel,
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600)),
-                            onChanged: (v) => setState(() => _hasAc = v),
-                          ),
-                          SwitchListTile.adaptive(
-                            value: _allowLuggage,
-                            activeTrackColor: AppColors.taxiYellowDark,
-                            contentPadding: EdgeInsets.zero,
-                            secondary: const Icon(Icons.luggage_rounded,
-                                color: Colors.orangeAccent),
-                            title: Text(l10n.allowLuggageLabel,
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600)),
-                            onChanged: (v) => setState(() => _allowLuggage = v),
-                          ),
-                          SwitchListTile.adaptive(
-                            value: _womenOnly,
-                            activeTrackColor: AppColors.taxiYellowDark,
-                            contentPadding: EdgeInsets.zero,
-                            secondary: const Icon(Icons.woman_rounded,
-                                color: Colors.pinkAccent),
-                            title: Text(l10n.womenOnlyLabel,
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600)),
-                            onChanged: (v) => setState(() => _womenOnly = v),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // 6. COMMENT
-                    TextFormField(
-                      controller: _commentController,
-                      maxLines: 2,
-                      decoration: InputDecoration(
-                        labelText: l10n.additionalCommentLabel,
-                        hintText: 'Yo\'lovchilar uchun qo\'shimcha ma\'lumot yoki eslatma',
-                        filled: true,
-                        fillColor:
-                            isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: isDark
-                                ? AppColors.borderDark
-                                : AppColors.borderLight,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // 7. SUBMIT BUTTON
-                    BlocBuilder<IntercityRidesBloc, IntercityRidesState>(
-                      builder: (context, state) {
-                        final isBusy =
-                            state is CreatingRideState || state is UpdatingRideState;
-                        return SizedBox(
-                          width: double.infinity,
-                          child: AppButton(
-                            text: _isEditMode
-                                ? 'O\'zgarishlarni saqlash'
-                                : l10n.publishTripAction,
-                            onPressed: isBusy ? null : () => _submit(l10n),
-                            isLoading: isBusy,
-                            variant: AppButtonVariant.taxi,
-                            height: 54,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
-    ),
-  ),
-);
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildRepeatLastTripBanner(bool isDark, List<CityEntity> cities) {
@@ -1492,7 +1624,9 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
                 ? AppColors.taxiYellowDark
                 : (isRecommended
                     ? AppColors.taxiYellow.withValues(alpha: 0.5)
-                    : (isDark ? const Color(0xFF333748) : const Color(0xFFE2E4E9))),
+                    : (isDark
+                        ? const Color(0xFF333748)
+                        : const Color(0xFFE2E4E9))),
             width: isSelected ? 1.8 : 1.0,
           ),
           boxShadow: isSelected
@@ -1511,7 +1645,8 @@ class _CreateDriverTripPageState extends State<CreateDriverTripPage> {
             if (isRecommended)
               Container(
                 margin: const EdgeInsets.only(bottom: 3),
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                 decoration: BoxDecoration(
                   color: AppColors.taxiYellow,
                   borderRadius: BorderRadius.circular(6),
@@ -1677,9 +1812,8 @@ class _CitySelectionModalState extends State<_CitySelectionModal> {
               itemCount: filteredCities.length,
               separatorBuilder: (_, __) => Divider(
                 height: 1,
-                color: isDark
-                    ? const Color(0xFF262634)
-                    : const Color(0xFFF0F1F5),
+                color:
+                    isDark ? const Color(0xFF262634) : const Color(0xFFF0F1F5),
               ),
               itemBuilder: (ctx, idx) {
                 final city = filteredCities[idx];

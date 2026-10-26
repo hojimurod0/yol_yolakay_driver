@@ -86,3 +86,9 @@ class OrderStatusChangedEvent extends TaxiRadarEvent {
   @override
   List<Object?> get props => [data];
 }
+
+/// Periodic HTTP refresh so offers and passenger cancellations still arrive
+/// when the WebSocket is down.
+class RadarPollTickEvent extends TaxiRadarEvent {
+  const RadarPollTickEvent();
+}
