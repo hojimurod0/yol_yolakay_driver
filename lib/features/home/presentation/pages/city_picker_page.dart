@@ -23,11 +23,16 @@ class CityPickerPage extends StatefulWidget {
     required this.title,
     this.excludedCityId,
     this.initialMode = CityPickerViewMode.map,
+    this.onlyIds,
   });
 
   final String title;
   final String? excludedCityId;
   final CityPickerViewMode initialMode;
+
+  /// When set, only these city ids are selectable — the pilot runs a
+  /// single fixed route, so every other city would just show "no cars".
+  final Set<String>? onlyIds;
 
   @override
   State<CityPickerPage> createState() => _CityPickerPageState();
@@ -86,6 +91,8 @@ class _CityPickerPageState extends State<CityPickerPage> {
 
     for (final city in cities) {
       if (city.id == widget.excludedCityId) continue;
+      final onlyIds = widget.onlyIds;
+      if (onlyIds != null && !onlyIds.contains(city.id)) continue;
       final dLat = city.latitude - point.latitude;
       final dLng = city.longitude - point.longitude;
       final distSq = dLat * dLat + dLng * dLng;
@@ -124,6 +131,8 @@ class _CityPickerPageState extends State<CityPickerPage> {
     final Set<Marker> markers = {};
     for (final city in cities) {
       if (city.id == widget.excludedCityId) continue;
+      final onlyIds = widget.onlyIds;
+      if (onlyIds != null && !onlyIds.contains(city.id)) continue;
       final isSelected = _selectedCity?.id == city.id;
 
       markers.add(
@@ -260,6 +269,8 @@ class _CityPickerPageState extends State<CityPickerPage> {
 
     return allCities.where((city) {
       if (city.id == widget.excludedCityId) return false;
+      final onlyIds = widget.onlyIds;
+      if (onlyIds != null) return onlyIds.contains(city.id);
 
       // Search Query Filter
       if (query.isNotEmpty) {
@@ -643,7 +654,9 @@ class _CityPickerPageState extends State<CityPickerPage> {
                   const SizedBox(height: 10),
 
                   // 2. Vodiy Region Filter Tabs (Andijon, Farg'ona, Namangan)
-                  if (_searchController.text.isEmpty)
+                  // Hidden when restricted to a fixed set of cities (pilot
+                  // route) — the tabs would just do nothing there.
+                  if (_searchController.text.isEmpty && widget.onlyIds == null)
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),

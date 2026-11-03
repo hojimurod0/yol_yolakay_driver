@@ -131,6 +131,7 @@ GoRouter createDriverRouter() {
             excludedCityId: extra?['excludedId'] as String?,
             initialMode: extra?['initialMode'] as CityPickerViewMode? ??
                 CityPickerViewMode.map,
+            onlyIds: extra?['onlyIds'] as Set<String>?,
           );
         },
       ),

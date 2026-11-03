@@ -76,6 +76,7 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
       'title': from ? l10n.from : l10n.to,
       'excludedId': from ? _to.id : _from.id,
       'initialMode': CityPickerViewMode.list,
+      'onlyIds': const {PilotRoute.districtCityId, PilotRoute.centerCityId},
     });
     if (city == null || !mounted) return;
     HapticFeedback.selectionClick();
