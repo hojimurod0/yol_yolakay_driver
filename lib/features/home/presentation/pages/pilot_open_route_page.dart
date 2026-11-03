@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/config/pilot_route.dart';
@@ -12,6 +13,8 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/app_menu_drawer.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../intercity_rides/domain/repositories/intercity_rides_repository.dart';
+import '../../domain/entities/city_entity.dart';
+import 'city_picker_page.dart';
 
 /// B2 — open today's pilot route with two choices: when and how much.
 /// The car always has four seats.
@@ -26,27 +29,77 @@ class PilotOpenRoutePage extends StatefulWidget {
   State<PilotOpenRoutePage> createState() => _PilotOpenRoutePageState();
 }
 
-class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
-  static const _morning = ['06:30', '07:00', '07:30'];
-  static const _evening = ['16:30', '17:00', '17:30'];
+/// A town the line runs from or to; [name] is null for the pilot defaults.
+class _Place {
+  const _Place(this.id, this.latLng, [this.name]);
 
-  late bool _toCity = widget.toCity ?? DateTime.now().hour < 12;
+  static const district =
+      _Place(PilotRoute.districtCityId, PilotRoute.districtLatLng);
+  static const center =
+      _Place(PilotRoute.centerCityId, PilotRoute.centerLatLng);
+
+  final String id;
+  final LatLng latLng;
+  final String? name;
+
+  String get label => name ?? PilotRoute.cityName(id);
+}
+
+class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
+  late _Place _from = (widget.toCity ?? DateTime.now().hour < 12)
+      ? _Place.district
+      : _Place.center;
+  late _Place _to =
+      _from.id == PilotRoute.districtCityId ? _Place.center : _Place.district;
   late int _price = PilotRoute.seatPrices.contains(widget.price)
       ? widget.price!
       : PilotRoute.seatPrices[1];
 
   /// Index into the time chips; -1 = leave when the car is full.
-  int _time = 1;
+  int _time = 0;
   bool _sending = false;
 
-  List<String> get _times => _toCity ? _morning : _evening;
+  /// The next three half-hour slots, so every chip is still ahead of now.
+  final List<String> _times = () {
+    final now = DateTime.now();
+    var t = DateTime(now.year, now.month, now.day, now.hour)
+        .add(Duration(minutes: now.minute < 30 ? 30 : 60));
+    return [
+      for (var i = 0; i < 3; i++)
+        DateFormat('HH:mm').format(t.add(Duration(minutes: 30 * i))),
+    ];
+  }();
+
+  Future<void> _pickCity({required bool from}) async {
+    final l10n = context.l10n;
+    final city = await context.push<CityEntity>('/city-picker', extra: {
+      'title': from ? l10n.from : l10n.to,
+      'excludedId': from ? _to.id : _from.id,
+      'initialMode': CityPickerViewMode.list,
+    });
+    if (city == null || !mounted) return;
+    HapticFeedback.selectionClick();
+    final lang = Localizations.localeOf(context).languageCode;
+    final place = _Place(city.id, LatLng(city.latitude, city.longitude),
+        city.localizedName(lang));
+    setState(() => from ? _from = place : _to = place);
+  }
+
+  void _swap() {
+    HapticFeedback.selectionClick();
+    setState(() {
+      final from = _from;
+      _from = _to;
+      _to = from;
+    });
+  }
 
   DateTime _departure() {
     final now = DateTime.now();
     if (_time < 0) return now.add(const Duration(minutes: 30));
     final parts = _times[_time].split(':');
-    var t = DateTime(now.year, now.month, now.day, int.parse(parts[0]),
-        int.parse(parts[1]));
+    var t = DateTime(
+        now.year, now.month, now.day, int.parse(parts[0]), int.parse(parts[1]));
     if (t.isBefore(now)) t = now.add(const Duration(minutes: 15));
     return t;
   }
@@ -54,8 +107,8 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
   Future<void> _open() async {
     HapticFeedback.mediumImpact();
     setState(() => _sending = true);
-    final from = _toCity ? PilotRoute.districtCityId : PilotRoute.centerCityId;
-    final to = _toCity ? PilotRoute.centerCityId : PilotRoute.districtCityId;
+    final from = _from.id;
+    final to = _to.id;
     try {
       final id = await sl<IntercityRidesRepository>().createRide({
         'from_city_id': from,
@@ -73,7 +126,8 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
         await prefs.setInt('last_trip_seats', PilotRoute.seats);
       } catch (_) {}
       if (!mounted) return;
-      context.pushReplacement('/pilot/ride/$id', extra: {'toCity': _toCity});
+      context.pushReplacement('/pilot/ride/$id',
+          extra: {'toCity': from == PilotRoute.districtCityId});
     } catch (_) {
       if (mounted) AppSnackBar.showError(context, context.l10n.dpActionFailed);
     } finally {
@@ -86,8 +140,8 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
     final l10n = context.l10n;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final lang = Localizations.localeOf(context).languageCode;
-    final from = _toCity ? PilotRoute.districtLatLng : PilotRoute.centerLatLng;
-    final to = _toCity ? PilotRoute.centerLatLng : PilotRoute.districtLatLng;
+    final from = _from.latLng;
+    final to = _to.latLng;
 
     return Scaffold(
       body: Stack(
@@ -141,14 +195,14 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  PilotSegmented(
-                    left: l10n.dpToCity,
-                    right: l10n.dpToHome,
-                    leftSelected: _toCity,
-                    onChanged: (v) => setState(() {
-                      _toCity = v;
-                      _time = 1;
-                    }),
+                  _RouteBox(
+                    fromLabel: l10n.from,
+                    from: _from.label,
+                    toLabel: l10n.to,
+                    to: _to.label,
+                    onPickFrom: () => _pickCity(from: true),
+                    onPickTo: () => _pickCity(from: false),
+                    onSwap: _swap,
                   ),
                   const SizedBox(height: 14),
                   _Label(l10n.dpDepartureTime),
@@ -175,8 +229,8 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
                     children: [
                       for (final p in PilotRoute.seatPrices) ...[
                         PilotChip(
-                          label: AppCurrencyFormatter.formatShort(p,
-                              locale: lang),
+                          label:
+                              AppCurrencyFormatter.formatShort(p, locale: lang),
                           selected: _price == p,
                           onTap: () => setState(() => _price = p),
                         ),
@@ -187,8 +241,8 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
                   ),
                   const SizedBox(height: 14),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 11),
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppColors.surfaceSubtleDark
@@ -220,6 +274,112 @@ class _PilotOpenRoutePageState extends State<PilotOpenRoutePage> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "From" and "To" towns, each tappable, with a swap button.
+class _RouteBox extends StatelessWidget {
+  const _RouteBox({
+    required this.fromLabel,
+    required this.from,
+    required this.toLabel,
+    required this.to,
+    required this.onPickFrom,
+    required this.onPickTo,
+    required this.onSwap,
+  });
+
+  final String fromLabel;
+  final String from;
+  final String toLabel;
+  final String to;
+  final VoidCallback onPickFrom;
+  final VoidCallback onPickTo;
+  final VoidCallback onSwap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Widget row(String label, String value, Widget marker, VoidCallback onTap) {
+      return InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            children: [
+              SizedBox(width: 12, child: Center(child: marker)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label,
+                        style: const TextStyle(
+                            fontSize: 12.5,
+                            color: AppColors.textSecondaryLight)),
+                    Text(value,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w800)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 20, color: AppColors.textSecondaryLight),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.only(left: 14),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceSubtleDark : AppColors.backgroundLight,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                row(
+                  fromLabel,
+                  from,
+                  Container(
+                    width: 11,
+                    height: 11,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Color(0xFF2563EB)),
+                  ),
+                  onPickFrom,
+                ),
+                Divider(
+                    height: 1,
+                    indent: 24,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight),
+                row(
+                  toLabel,
+                  to,
+                  Container(
+                    width: 11,
+                    height: 11,
+                    decoration: BoxDecoration(
+                        color: AppColors.primaryHover,
+                        borderRadius: BorderRadius.circular(3)),
+                  ),
+                  onPickTo,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onSwap,
+            icon: const Icon(Icons.swap_vert_rounded),
           ),
         ],
       ),
@@ -415,37 +575,42 @@ class PilotPrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryHover.withValues(alpha: 0.35),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onPressed,
+    // Faded when it cannot be pressed, so it does not look like a dead tap.
+    return Opacity(
+      opacity: onPressed == null && !loading ? 0.45 : 1,
+      child: SizedBox(
+        height: height,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
             borderRadius: BorderRadius.circular(16),
-            child: Center(
-              child: loading
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2.5, color: AppColors.textPrimaryLight))
-                  : Text(label,
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimaryLight)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryHover.withValues(alpha: 0.35),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onPressed,
+              borderRadius: BorderRadius.circular(16),
+              child: Center(
+                child: loading
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppColors.textPrimaryLight))
+                    : Text(label,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textPrimaryLight)),
+              ),
             ),
           ),
         ),

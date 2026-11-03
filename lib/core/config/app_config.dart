@@ -45,8 +45,13 @@ abstract class AppConfig {
   static const String stagingBaseUrl = ApiEndpoints.devBaseUrl;
   static const String devBaseUrl = ApiEndpoints.devBaseUrl;
 
+  /// Local backend override: `--dart-define=API_BASE_URL=http://localhost:3002/api/v1`.
+  static const String _baseUrlOverride = String.fromEnvironment('API_BASE_URL');
+  static const String _wsUrlOverride = String.fromEnvironment('WS_URL');
+
   /// Active Base URL according to environment
   static String get activeBaseUrl {
+    if (_baseUrlOverride.isNotEmpty) return _baseUrlOverride;
     return switch (environment) {
       AppEnvironment.dev => devBaseUrl,
       AppEnvironment.staging => stagingBaseUrl,
@@ -56,6 +61,7 @@ abstract class AppConfig {
 
   /// Active WebSocket URL according to environment
   static String get activeWebSocketUrl {
+    if (_wsUrlOverride.isNotEmpty) return _wsUrlOverride;
     return switch (environment) {
       AppEnvironment.dev => ApiEndpoints.webSocketUrl,
       AppEnvironment.staging => ApiEndpoints.webSocketUrl,

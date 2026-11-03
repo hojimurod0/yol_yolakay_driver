@@ -283,7 +283,7 @@ abstract class AppTheme {
       titleMedium: AppTypography.titleMedium.copyWith(color: primaryColor),
       titleSmall: AppTypography.titleSmall.copyWith(color: secondaryColor),
       bodyLarge: AppTypography.bodyLarge.copyWith(color: primaryColor),
-      bodyMedium: AppTypography.bodyMedium.copyWith(color: secondaryColor),
+      bodyMedium: AppTypography.bodyMedium.copyWith(color: primaryColor),
       bodySmall: AppTypography.bodySmall.copyWith(color: secondaryColor),
       labelLarge: AppTypography.labelLarge.copyWith(color: primaryColor),
       labelMedium: AppTypography.labelMedium.copyWith(color: secondaryColor),

@@ -454,7 +454,7 @@
   "driverLastRoute": "Охирги йўналиш",
   "driverOpenAgain": "Бугун ҳам очиш",
   "driverOpenRoute": "Йўналиш очиш",
-  "driverNoRouteYet": "Йўналиш очинг — йўловчилар сизни кўради ва жой банд қилади",
+  "driverNoRouteYet": "Йўналиш очинг — йўловчилар сизни кўриб, сўров юборади",
   "driverChangeTimePrice": "Вақт ёки нархни ўзгартириш",
   "driverOnline": "Линияда",
   "driverOffline": "Линиядан ташқари",
@@ -526,7 +526,7 @@
   "daChange": "Ўзгартириш",
   "daResendIn": "Қайта юбориш: {time}",
   "daResend": "Кодни қайта юбориш",
-  "daOtpAuto": "Янги рақам — ҳужжатларга, рўйхатдан ўтган ҳайдовчи — бош экранга",
+  "daOtpAuto": "Код SMS'дан автоматик қўйилади",
   "dpPendingBanner": "{count} та янги сўров жавоб кутмоқда",
   "dpPendingAction": "Кўриш"
 }

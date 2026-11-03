@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../storage/local_storage_service.dart';
+import '../utils/currency_formatter.dart';
 
 class LocaleCubit extends Cubit<Locale> {
   LocaleCubit(this._localStorageService)
-      : super(localeFromTag(_localStorageService.getLocale()));
+      : super(localeFromTag(_localStorageService.getLocale())) {
+    AppCurrencyFormatter.currentLocale = tagOf(state);
+  }
 
   final LocalStorageService _localStorageService;
+
+  @override
+  void onChange(Change<Locale> change) {
+    super.onChange(change);
+    AppCurrencyFormatter.currentLocale = tagOf(change.nextState);
+  }
 
   /// Stored tags: `uz` (Latin), `uz_Cyrl` (Cyrillic), `ru`, `en`.
   static Locale localeFromTag(String tag) {

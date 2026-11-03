@@ -651,7 +651,7 @@
   "driverLastRoute": "Oxirgi yo'nalish",
   "driverOpenAgain": "Bugun ham ochish",
   "driverOpenRoute": "Yo'nalish ochish",
-  "driverNoRouteYet": "Yo'nalish oching — yo'lovchilar sizni ko'radi va joy band qiladi",
+  "driverNoRouteYet": "Yo'nalish oching — yo'lovchilar sizni ko'rib, so'rov yuboradi",
   "driverChangeTimePrice": "Vaqt yoki narxni o'zgartirish",
   "driverOnline": "Liniyada",
   "driverOffline": "Liniyadan tashqari",
@@ -789,7 +789,7 @@
     }
   },
   "daResend": "Kodni qayta yuborish",
-  "daOtpAuto": "Yangi raqam — hujjatlarga, ro'yxatdan o'tgan haydovchi — bosh ekranga",
+  "daOtpAuto": "Kod SMS'dan avtomatik qo'yiladi",
   "dpPendingBanner": "{count} ta yangi so'rov javob kutmoqda",
   "@dpPendingBanner": {
     "placeholders": {

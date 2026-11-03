@@ -630,7 +630,7 @@
   "driverLastRoute": "Последний маршрут",
   "driverOpenAgain": "Открыть и сегодня",
   "driverOpenRoute": "Открыть маршрут",
-  "driverNoRouteYet": "Откройте маршрут — пассажиры увидят вас и забронируют места",
+  "driverNoRouteYet": "Откройте маршрут — пассажиры увидят вас и отправят запрос",
   "driverChangeTimePrice": "Изменить время или цену",
   "driverOnline": "На линии",
   "driverOffline": "Не на линии",
@@ -702,7 +702,7 @@
   "daChange": "Изменить",
   "daResendIn": "Повторно через {time}",
   "daResend": "Отправить код ещё раз",
-  "daOtpAuto": "Новый номер — к документам, зарегистрированный водитель — на главный экран",
+  "daOtpAuto": "Код подставится из SMS автоматически",
   "dpPendingBanner": "Новых запросов ждут ответа: {count}",
   "dpPendingAction": "Открыть"
 }

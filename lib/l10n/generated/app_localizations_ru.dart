@@ -1478,7 +1478,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get driverNoRouteYet =>
-      'Откройте маршрут — пассажиры увидят вас и забронируют места';
+      'Откройте маршрут — пассажиры увидят вас и отправят запрос';
 
   @override
   String get driverChangeTimePrice => 'Изменить время или цену';
@@ -1714,8 +1714,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get daResend => 'Отправить код ещё раз';
 
   @override
-  String get daOtpAuto =>
-      'Новый номер — к документам, зарегистрированный водитель — на главный экран';
+  String get daOtpAuto => 'Код подставится из SMS автоматически';
 
   @override
   String dpPendingBanner(int count) {

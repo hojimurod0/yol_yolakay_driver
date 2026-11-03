@@ -21,23 +21,24 @@ class SecureStorageService {
     String? driverId,
     String? verificationStatus,
   }) async {
-    await Future.wait([
-      _storage.write(key: _keyAccessToken, value: accessToken),
-      _storage.write(key: _keyRefreshToken, value: refreshToken),
-      if (driverId != null) _storage.write(key: _keyDriverId, value: driverId),
-      if (verificationStatus != null)
-        _storage.write(key: _keyVerificationStatus, value: verificationStatus),
-    ]);
+    // Sequential on purpose: parallel first writes on web each create their
+    // own encryption key, and later reads fail with OperationError.
+    await _storage.write(key: _keyAccessToken, value: accessToken);
+    await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    if (driverId != null) {
+      await _storage.write(key: _keyDriverId, value: driverId);
+    }
+    if (verificationStatus != null) {
+      await _storage.write(key: _keyVerificationStatus, value: verificationStatus);
+    }
   }
 
   Future<void> saveTokenPair({
     required String accessToken,
     required String refreshToken,
   }) async {
-    await Future.wait([
-      _storage.write(key: _keyAccessToken, value: accessToken),
-      _storage.write(key: _keyRefreshToken, value: refreshToken),
-    ]);
+    await _storage.write(key: _keyAccessToken, value: accessToken);
+    await _storage.write(key: _keyRefreshToken, value: refreshToken);
   }
 
   Future<void> saveDriverId(String driverId) =>

@@ -6,5 +6,5 @@ import 'driver_app.dart';
 /// Main entry point for the Yo'l-Yo'lakay Driver application.
 Future<void> main() async {
   await AppInitializer.init();
-  runApp(const YolYolakayDriverApp());
+  runApp(const YolYolakayDriverApp());  
 }

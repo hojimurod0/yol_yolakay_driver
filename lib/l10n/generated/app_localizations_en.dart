@@ -1472,7 +1472,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverNoRouteYet =>
-      'Open a route so passengers can see you and book seats';
+      'Open a route so passengers can see you and send requests';
 
   @override
   String get driverChangeTimePrice => 'Change time or price';
@@ -1714,8 +1714,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daResend => 'Resend code';
 
   @override
-  String get daOtpAuto =>
-      'New number goes to documents; registered drivers go straight home';
+  String get daOtpAuto => 'The code fills in from the SMS automatically';
 
   @override
   String dpPendingBanner(int count) {

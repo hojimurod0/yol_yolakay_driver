@@ -1484,7 +1484,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get driverNoRouteYet =>
-      'Yo\'nalish oching — yo\'lovchilar sizni ko\'radi va joy band qiladi';
+      'Yo\'nalish oching — yo\'lovchilar sizni ko\'rib, so\'rov yuboradi';
 
   @override
   String get driverChangeTimePrice => 'Vaqt yoki narxni o\'zgartirish';
@@ -1722,8 +1722,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get daResend => 'Kodni qayta yuborish';
 
   @override
-  String get daOtpAuto =>
-      'Yangi raqam — hujjatlarga, ro\'yxatdan o\'tgan haydovchi — bosh ekranga';
+  String get daOtpAuto => 'Kod SMS\'dan avtomatik qo\'yiladi';
 
   @override
   String dpPendingBanner(int count) {
@@ -3210,7 +3209,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
 
   @override
   String get driverNoRouteYet =>
-      'Йўналиш очинг — йўловчилар сизни кўради ва жой банд қилади';
+      'Йўналиш очинг — йўловчилар сизни кўриб, сўров юборади';
 
   @override
   String get driverChangeTimePrice => 'Вақт ёки нархни ўзгартириш';
@@ -3448,8 +3447,7 @@ class AppLocalizationsUzCyrl extends AppLocalizationsUz {
   String get daResend => 'Кодни қайта юбориш';
 
   @override
-  String get daOtpAuto =>
-      'Янги рақам — ҳужжатларга, рўйхатдан ўтган ҳайдовчи — бош экранга';
+  String get daOtpAuto => 'Код SMS\'дан автоматик қўйилади';
 
   @override
   String dpPendingBanner(int count) {

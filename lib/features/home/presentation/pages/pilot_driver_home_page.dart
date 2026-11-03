@@ -200,6 +200,9 @@ class _PilotDriverHomePageState extends State<PilotDriverHomePage> {
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerLeft,
+                          // Without it the Align fills the screen height and
+                          // pulls the whole top bar to the middle of the map.
+                          heightFactor: 1,
                           child: dashboard == null
                               ? const SizedBox.shrink()
                               : _EarningsPill(
@@ -391,7 +394,11 @@ class _DriverPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
               ],
-              if (trip != null) ...[
+              // With a line already open, offering to open another one only
+              // confuses; the notice above leads to the open line instead.
+              if (activeTrip)
+                const SizedBox.shrink()
+              else if (trip != null) ...[
                 Text(
                   l10n.driverLastRoute.toUpperCase(),
                   style: const TextStyle(
@@ -443,13 +450,16 @@ class _DriverPanel extends StatelessWidget {
                   l10n.driverNoRouteYet,
                   style: TextStyle(fontSize: 14, height: 1.4, color: muted),
                 ),
-              const SizedBox(height: 12),
-              _PrimaryButton(
-                label:
-                    trip != null ? l10n.driverOpenAgain : l10n.driverOpenRoute,
-                onTap: () => onOpenRoute(repeat: trip != null),
-              ),
-              if (trip != null)
+              if (!activeTrip) ...[
+                const SizedBox(height: 12),
+                _PrimaryButton(
+                  label: trip != null
+                      ? l10n.driverOpenAgain
+                      : l10n.driverOpenRoute,
+                  onTap: () => onOpenRoute(repeat: trip != null),
+                ),
+              ],
+              if (trip != null && !activeTrip)
                 TextButton(
                   onPressed: () => onOpenRoute(repeat: false),
                   child: Text(

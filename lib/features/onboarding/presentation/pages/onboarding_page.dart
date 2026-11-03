@@ -92,52 +92,52 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentLocale = context.watch<LocaleCubit>().state;
-    final isRu = currentLocale.languageCode == 'ru';
+    final lang = LocaleCubit.tagOf(context.watch<LocaleCubit>().state);
+    String t(String uz, String cyrl, String ru) =>
+        lang == 'ru' ? ru : (lang == 'uz_Cyrl' ? cyrl : uz);
     final screenHeight = MediaQuery.of(context).size.height;
     // 58% screen height for the hero visual as per specification
     final imageHeight = screenHeight * 0.58;
 
     final slides = [
-      // 1. Ishonchli daromad
+      // 1. Pilot yo'nalishi
       _SlideData(
-        tag: isRu ? 'НАДЁЖНЫЙ ДОХОД' : 'ISHONCHLI DAROMAD',
-        title: isRu
-            ? 'Постоянные пассажиры,\nгарантированные заказы!'
-            : 'Doimiy yo‘lovchilar,\nkafolatlangan buyurtmalar!',
-        description: isRu
-            ? 'Тысячи междугородних и городских пассажиров ждут вас каждый день.'
-            : 'Har kuni minglab shaharlararo va shahar ichi yo‘lovchilari sizni kutmoqda.',
+        title: t('Jalaquduq ⇄ Andijon:\nyo‘lovchilar sizni kutmoqda',
+            'Жалақудуқ ⇄ Андижон:\nйўловчилар сизни кутмоқда',
+            'Джалакудук ⇄ Андижан:\nпассажиры вас ждут'),
+        description: t(
+            'Ertalab yo‘nalish oching, kechqurun qaytishga oching. Bo‘sh o‘rindiq bilan yurmaysiz.',
+            'Эрталаб йўналиш очинг, кечқурун қайтишга очинг. Бўш ўриндиқ билан юрмайсиз.',
+            'Откройте маршрут утром и на обратный путь вечером. Без пустых мест.'),
         imagePath: 'assets/images/onboarding_1.jpg',
-        badgeText: isRu ? 'НАДЁЖНЫЙ ДОХОД' : 'ISHONCHLI DAROMAD',
+        badgeText: t('Pilot yo‘nalish', 'Пилот йўналиш', 'Пилотный маршрут'),
       ),
 
-      // 2. 0% Komissiya
+      // 2. So'rovlarni o'zi qabul qiladi
       _SlideData(
-        tag: isRu ? '0% КОМИССИЯ' : '0% KOMISSIYA',
-        title: isRu
-            ? 'Деньги остаются у вас,\nбез посредников и скрытых плат!'
-            : 'Pulingiz o‘zingizda qoladi,\nvositachisiz to‘g‘ridan-to‘g‘ri!',
-        description: isRu
-            ? 'Расплачивайтесь напрямую с пассажиром, получайте 100% заработка.'
-            : 'Yo‘lovchi bilan to‘g‘ridan-to‘g‘ri hisob-kitob qiling, ortiqcha to‘lovlarsiz 100% daromad oling.',
-        imagePath: 'assets/images/onboarding_2.jpg',
-        badgeText: isRu ? '0% КОМИССИЯ' : '0% KOMISSIYA',
-      ),
-
-      // 3. Yuk va posilkalar
-      _SlideData(
-        tag: isRu ? 'ГРУЗЫ И ПОСЫЛКИ' : 'YUK VA POSILKALAR',
-        title: isRu
-            ? 'Берите грузы в дорогу,\nполучайте доп. доход!'
-            : 'Bo‘sh joyingizga yuk oling,\nqo‘shimcha daromad qiling!',
-        description: isRu
-            ? 'Доставляйте попутные посылки и зарабатывайте больше на каждой поездке.'
-            : 'Yo‘l-yo‘lakay posilka va yuklarni yetkazib, har bir safardan maksimal daromad ko‘ring.',
+        title: t('So‘rovni o‘zingiz\nqabul qilasiz',
+            'Сўровни ўзингиз\nқабул қиласиз', 'Запросы принимаете\nвы сами'),
+        description: t(
+            'Yo‘lovchi xaritada uyini belgilaydi. Qabul qilsangiz — manzili ko‘rinadi, uyidan olib ketasiz.',
+            'Йўловчи харитада уйини белгилайди. Қабул қилсангиз — манзили кўринади, уйидан олиб кетасиз.',
+            'Пассажир отмечает дом на карте. Примете — увидите адрес и заберёте его от дома.'),
         imagePath: 'assets/images/onboarding_3.jpg',
-        badgeText: isRu ? 'YUK VA POSILKALAR' : 'YUK VA POSILKALAR',
+        badgeText: t('Uyidan olib ketish', 'Уйидан олиб кетиш', 'Забор от дома'),
+      ),
+
+      // 3. 0% Komissiya
+      _SlideData(
+        title: t('Pulingiz o‘zingizda,\nkomissiya yo‘q',
+            'Пулингиз ўзингизда,\nкомиссия йўқ', 'Деньги у вас,\nбез комиссии'),
+        description: t(
+            'Yo‘lovchi sizga naqd to‘laydi. Narxni 20 000 – 30 000 so‘m oralig‘ida o‘zingiz belgilaysiz.',
+            'Йўловчи сизга нақд тўлайди. Нархни 20 000 – 30 000 сўм оралиғида ўзингиз белгилайсиз.',
+            'Пассажир платит наличными. Цену 20 000 – 30 000 сум выбираете сами.'),
+        imagePath: 'assets/images/onboarding_2.jpg',
+        badgeText: t('0% komissiya', '0% комиссия', '0% комиссия'),
       ),
     ];
+    final isLast = _currentPage == slides.length - 1;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -222,9 +222,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                _currentPage == slides.length - 1
-                                    ? (isRu ? 'Boshladik' : 'Boshladik')
-                                    : (isRu ? 'Keyingisi' : 'Keyingisi'),
+                                isLast
+                                    ? t('Boshlash', 'Бошлаш', 'Начать')
+                                    : t('Keyingisi', 'Кейингиси', 'Далее'),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 15,
@@ -410,14 +410,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
 class _SlideData {
   const _SlideData({
-    required this.tag,
     required this.title,
     required this.description,
     required this.imagePath,
     required this.badgeText,
   });
 
-  final String tag;
   final String title;
   final String description;
   final String imagePath;

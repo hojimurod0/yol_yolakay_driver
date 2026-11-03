@@ -152,18 +152,10 @@ class _PilotDriverPhonePageState extends State<PilotDriverPhonePage> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Text('YY',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textPrimaryLight)),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset('assets/icon/app_logo_full_yellow.png',
+                      width: 48, height: 48),
                 ),
                 const Spacer(),
                 Container(
@@ -324,7 +316,7 @@ class _PilotDriverOtpPageState extends State<PilotDriverOtpPage> {
             Row(
               children: [
                 Flexible(
-                  child: Text(l10n.daOtpSentTo(widget.phone),
+                  child: Text(l10n.daOtpSentTo(AppValidator.formatUzPhone(widget.phone)),
                       style: const TextStyle(
                           fontSize: 14.5, color: AppColors.textSecondaryLight)),
                 ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/config/pilot_route.dart';
 import '../../../../core/di/injection.dart';
@@ -205,6 +206,20 @@ class _PilotActiveRidePageState extends State<PilotActiveRidePage> {
           .where((p) => !p.isPending && !p.isRejectedOrCancelled)
           .fold(0, (sum, p) => sum + p.totalPrice);
     });
+    _findNextRide(ride.id);
+  }
+
+  /// A line the driver opened on the way (usually the way back).
+  String? _nextRideId;
+
+  Future<void> _findNextRide(String currentId) async {
+    try {
+      final open = await _repo.getRides(status: 'active', limit: 5);
+      final next = open.items.where((r) => r.id != currentId).firstOrNull;
+      if (mounted && next != null) setState(() => _nextRideId = next.id);
+    } catch (_) {
+      // Without it the page offers to open the way back instead.
+    }
   }
 
   @override
@@ -327,15 +342,25 @@ class _PilotActiveRidePageState extends State<PilotActiveRidePage> {
               style: const TextStyle(
                   fontSize: 14, color: AppColors.textSecondaryLight)),
           const SizedBox(height: 16),
-          Text(l10n.dpReturnTitle,
-              style:
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 10),
-          PilotPrimaryButton(
-            label: l10n.dpOpenReturn,
-            onPressed: () => context.pushReplacement('/pilot/open-route',
-                extra: {'toCity': !_toCity, 'price': ride.pricePerSeat}),
-          ),
+          if (_nextRideId == null) ...[
+            Text(l10n.dpReturnTitle,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 10),
+          ],
+          if (_nextRideId != null)
+            PilotPrimaryButton(
+              label: '${l10n.driverActiveTrip} ›',
+              onPressed: () => context.pushReplacement(
+                  '/pilot/ride/$_nextRideId',
+                  extra: {'toCity': !_toCity}),
+            )
+          else
+            PilotPrimaryButton(
+              label: l10n.dpOpenReturn,
+              onPressed: () => context.pushReplacement('/pilot/open-route',
+                  extra: {'toCity': !_toCity, 'price': ride.pricePerSeat}),
+            ),
           TextButton(
             onPressed: () => context.go('/driver/home'),
             child: Text(l10n.dpNotToday),
@@ -403,6 +428,13 @@ class _PilotActiveRidePageState extends State<PilotActiveRidePage> {
               if (mounted) _markFinished(ride);
             }),
           ),
+          // Plan the next line (usually the way back) without ending this one.
+          TextButton.icon(
+            onPressed: () => context.push('/pilot/open-route',
+                extra: {'toCity': !_toCity, 'price': ride.pricePerSeat}),
+            icon: const Icon(Icons.add_road_rounded, size: 20),
+            label: Text(l10n.dpOpenReturn),
+          ),
         ],
       );
     }
@@ -426,6 +458,15 @@ class _PilotActiveRidePageState extends State<PilotActiveRidePage> {
                     fontWeight: FontWeight.w800,
                     color: Color(0xFFB45309))),
           ],
+        ),
+        const SizedBox(height: 4),
+        // Which line this is: route, departure and the price per seat.
+        Text(
+          '${ride.fromCity} → ${ride.toCity} · '
+          '${DateFormat('HH:mm').format(ride.departureTime.toLocal())} · '
+          '${AppCurrencyFormatter.format(ride.pricePerSeat, locale: lang)}',
+          style: const TextStyle(
+              fontSize: 13.5, color: AppColors.textSecondaryLight),
         ),
         const SizedBox(height: 10),
         if (order.isEmpty)
@@ -469,8 +510,40 @@ class _PilotActiveRidePageState extends State<PilotActiveRidePage> {
                     _run(() => _repo.startRide(ride.id));
                   },
           ),
+        // Nobody has joined yet, so the driver can still take the line down.
+        if (order.isEmpty && ride.status == 'active')
+          TextButton(
+            onPressed: _busy ? null : () => _confirmCancel(ride),
+            child: Text(l10n.cancelTripTitle,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w700, color: AppColors.error)),
+          ),
       ],
     );
+  }
+
+  Future<void> _confirmCancel(IntercityRideEntity ride) async {
+    final l10n = context.l10n;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.cancelTripTitle),
+        content: Text(l10n.cancelTripDesc),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.back)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.cancelTripTitle,
+                  style: const TextStyle(color: AppColors.error))),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await _run(() => _repo.updateRideStatus(
+        rideId: ride.id, status: 'cancelled', cancelReason: 'driver_closed'));
+    if (mounted) context.go('/driver/home');
   }
 }
 
@@ -548,13 +621,20 @@ class _StopRow extends StatelessWidget {
                 ],
               ),
             ),
-            if (!done && passenger.passengerPhone.isNotEmpty)
+            if (!done && passenger.passengerPhone.isNotEmpty) ...[
+              IconButton(
+                tooltip: 'SMS',
+                onPressed: () => DirectContactLauncher.sendSms(
+                    context, passenger.passengerPhone),
+                icon: const Icon(Icons.sms_outlined),
+              ),
               IconButton(
                 tooltip: l10n.dpCall,
                 onPressed: () => DirectContactLauncher.makePhoneCall(
                     context, passenger.passengerPhone),
                 icon: const Icon(Icons.call_outlined),
               ),
+            ],
           ],
         ),
       ),

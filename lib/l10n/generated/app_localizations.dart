@@ -2828,7 +2828,7 @@ abstract class AppLocalizations {
   /// No description provided for @driverNoRouteYet.
   ///
   /// In uz, this message translates to:
-  /// **'Yo\'nalish oching — yo\'lovchilar sizni ko\'radi va joy band qiladi'**
+  /// **'Yo\'nalish oching — yo\'lovchilar sizni ko\'rib, so\'rov yuboradi'**
   String get driverNoRouteYet;
 
   /// No description provided for @driverChangeTimePrice.
@@ -3260,7 +3260,7 @@ abstract class AppLocalizations {
   /// No description provided for @daOtpAuto.
   ///
   /// In uz, this message translates to:
-  /// **'Yangi raqam — hujjatlarga, ro\'yxatdan o\'tgan haydovchi — bosh ekranga'**
+  /// **'Kod SMS\'dan avtomatik qo\'yiladi'**
   String get daOtpAuto;
 
   /// No description provided for @dpPendingBanner.
